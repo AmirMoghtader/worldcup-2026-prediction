@@ -51,7 +51,7 @@
 ### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/worldcup-2026-prediction.git
+git clone https://github.com/AmirMoghtader/worldcup-2026-prediction.git
 cd worldcup-2026-prediction
 ```
 
