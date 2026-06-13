@@ -7,7 +7,7 @@ $userTable = hmn_table('users');
 
 $rewards = $pdo->query("SELECT * FROM {$rewardTable} ORDER BY sort_order ASC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
 $redemptions = $pdo->query(
-    "SELECT rr.*, r.title AS reward_title, u.name AS user_name, u.phone AS user_phone
+    "SELECT rr.*, r.title AS reward_title, u.name AS user_name, u.phone AS user_phone, u.total_points AS user_total_points, u.redeemed_points AS user_redeemed_points
      FROM {$redemptionTable} rr
      JOIN {$rewardTable} r ON r.id = rr.reward_id
      JOIN {$userTable} u ON u.id = rr.user_id
