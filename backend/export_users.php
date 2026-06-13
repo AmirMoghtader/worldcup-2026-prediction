@@ -26,7 +26,8 @@ $rows = $pdo->query(
 )->fetchAll(PDO::FETCH_ASSOC);
 
 header('Content-Type: text/csv; charset=utf-8');
-header('Content-Disposition: attachment; filename=\"worldcup-users-' . date('Ymd-His') . '.csv\"');
+$filename = 'worldcup-users-' . date('Ymd-His') . '.csv';
+header('Content-Disposition: attachment; filename="' . $filename . '"');
 echo "\xEF\xBB\xBF";
 $out = fopen('php://output', 'wb');
 fputcsv($out, ['نام', 'شماره تلفن', 'امتیاز کل', 'امتیاز خرج شده', 'امتیاز قابل خرج', 'تعداد پیش‌بینی', 'پیش‌بینی صحیح', 'تاریخ عضویت']);

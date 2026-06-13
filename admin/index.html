@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>پنل ادمین</title>
+  <meta name="description" content="پنل مدیریت سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+  <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
   <style>
     body {
@@ -36,7 +38,7 @@
     .admin-sidebar {
       position: sticky;
       top: calc(var(--wc-nav-h) + 1rem);
-      border-radius: 30px;
+      border-radius: 20px;
       padding: 1rem;
       color: rgba(255,255,255,0.86);
     }
@@ -53,7 +55,7 @@
     .admin-brand-mark {
       width: 64px;
       height: 64px;
-      border-radius: 22px;
+      border-radius: 16px;
       overflow: hidden;
       background: rgba(255,255,255,0.14);
       padding: 0.45rem;
@@ -72,7 +74,7 @@
     .admin-nav button {
       width: 100%;
       border: 0;
-      border-radius: 18px;
+      border-radius: 12px;
       background: transparent;
       color: rgba(255,255,255,0.7);
       padding: 0.82rem 0.95rem;
@@ -94,7 +96,7 @@
     }
 
     .admin-panel {
-      border-radius: 30px;
+      border-radius: 20px;
       padding: 1.2rem;
     }
 
@@ -131,7 +133,7 @@
     }
 
     .admin-stat {
-      border-radius: 24px;
+      border-radius: 16px;
       padding: 1rem 1.1rem;
       color: #fff;
     }
@@ -148,7 +150,7 @@
     }
 
     .admin-card {
-      border-radius: 26px;
+      border-radius: 18px;
       padding: 1rem;
       color: #13253e;
       background: rgba(255,255,255,0.92);
@@ -216,7 +218,7 @@
       justify-content: center;
       gap: 0.4rem;
       padding: 0.72rem 1rem;
-      border-radius: 16px;
+      border-radius: 12px;
       border: 0;
       font-weight: 800;
       cursor: pointer;
@@ -240,7 +242,7 @@
 
     .admin-btn.small {
       padding: 0.45rem 0.75rem;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 0.76rem;
     }
 
@@ -270,7 +272,7 @@
     .admin-field select,
     .admin-field textarea {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 12px;
       border: 1px solid rgba(145,164,184,0.28);
       padding: 0.85rem 1rem;
       background: rgba(255,255,255,0.94);
@@ -301,7 +303,7 @@
       width: min(760px, 100%);
       max-height: 90vh;
       overflow: auto;
-      border-radius: 30px;
+      border-radius: 20px;
       background: rgba(255,255,255,0.96);
       padding: 1.2rem;
       box-shadow: 0 30px 70px rgba(6,12,24,0.24);
@@ -353,7 +355,7 @@
     .logo-preview {
       width: 96px;
       height: 96px;
-      border-radius: 22px;
+      border-radius: 16px;
       overflow: hidden;
       background: rgba(16,36,63,0.05);
       padding: 0.5rem;
@@ -364,7 +366,7 @@
 
     .admin-note {
       padding: 0.9rem 1rem;
-      border-radius: 18px;
+      border-radius: 12px;
       background: rgba(16,36,63,0.05);
       color: var(--wc-muted);
       font-size: 0.82rem;
@@ -378,7 +380,7 @@
     }
 
     .reward-card {
-      border-radius: 24px;
+      border-radius: 16px;
       border: 1px solid rgba(145,164,184,0.18);
       background: rgba(255,255,255,0.86);
       box-shadow: 0 12px 28px rgba(16,36,63,0.06);
@@ -420,7 +422,7 @@
 
     .backup-box {
       padding: 1rem;
-      border-radius: 24px;
+      border-radius: 16px;
       background: rgba(16,36,63,0.04);
       border: 1px solid rgba(145,164,184,0.18);
       display: flex;
@@ -448,7 +450,7 @@
     }
 
     .asset-preview {
-      border-radius: 22px;
+      border-radius: 16px;
       overflow: hidden;
       border: 1px solid rgba(145,164,184,0.18);
       background: rgba(16,36,63,0.04);
@@ -666,22 +668,34 @@
             <div class="admin-toolbar"><h3>تنظیمات برندینگ و پیش‌بینی</h3></div>
             <div class="admin-form-grid">
               <div class="admin-field"><label>نام سایت</label><input id="settingSiteName" type="text"></div>
+              <div class="admin-field"><label>نام برند</label><input id="settingBrandName" type="text" placeholder="مثلا: آنوبز"></div>
               <div class="admin-field"><label>تگ‌لاین</label><input id="settingSiteTagline" type="text"></div>
               <div class="admin-field"><label>قفل پیش‌بینی (دقیقه)</label><input id="settingLockMinutes" type="number" min="0"></div>
               <div class="admin-field"><label>پنجره فعال‌سازی (ساعت)</label><input id="settingWindowHours" type="number" min="1" max="168"></div>
             </div>
             <div class="admin-form-grid" style="margin-top:1rem">
               <div class="admin-field"><label>لوگوی اصلی</label><input id="settingLogoUrl" type="text" oninput="previewLogo('settingLogoUrl', 'logoPreviewMain')"></div>
+              <div class="admin-field"><label>آیکن مرورگر و جستجوی گوگل</label><input id="settingBrowserIconUrl" type="text" oninput="previewLogo('settingBrowserIconUrl', 'logoPreviewBrowser')"></div>
               <div class="admin-field"><label>لوگوی نوبار</label><input id="settingNavLogoUrl" type="text" oninput="previewLogo('settingNavLogoUrl', 'logoPreviewNav')"></div>
               <div class="admin-field"><label>لوگوی مودال ورود</label><input id="settingAuthLogoUrl" type="text" oninput="previewLogo('settingAuthLogoUrl', 'logoPreviewAuth')"></div>
               <div class="admin-field"><label>لوگوی فوتر</label><input id="settingFooterLogoUrl" type="text" oninput="previewLogo('settingFooterLogoUrl', 'logoPreviewFooter')"></div>
               <div class="admin-field"><label>لوگوی پنل ادمین</label><input id="settingAdminLogoUrl" type="text" oninput="previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin')"></div>
             </div>
             <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field">
+                <label>آپلود آیکن مرورگر</label>
+                <div class="upload-row">
+                  <input id="browserIconUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('browserIconUpload', 'settingBrowserIconUrl', 'brand')">آپلود</button>
+                </div>
+              </div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
               <div class="admin-field"><label>متن فوتر</label><input id="settingFooterNote" type="text"></div>
               <div class="admin-field"><label>اعتبارسنجی فوتر</label><input id="settingFooterCredit" type="text"></div>
             </div>
-            <div class="admin-note" style="margin-top:1rem">راهنمای عکس‌ها: لوگوی اصلی بهتر است `512x512` باشد. لوگوی نوبار، ورود، فوتر و پنل بهتر است `256x256` و PNG شفاف باشند. بنر هیرو: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. اگر خالی بماند، هیروی شیشه‌ای پیش‌فرض سایت نمایش داده می‌شود.</div>
+            <div class="admin-note" style="margin-top:1rem">راهنمای عکس‌ها: لوگوی اصلی بهتر است `512x512` باشد. آیکن مرورگر و جستجوی گوگل بهتر است `512x512` یا `192x192` و مربع باشد. لوگوی نوبار، ورود، فوتر و پنل بهتر است `256x256` و PNG شفاف باشند. بنر هیرو: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. اگر خالی بماند، هیروی شیشه‌ای پیش‌فرض سایت نمایش داده می‌شود.</div>
+            <div class="admin-note" style="margin-top:1rem">برندینگ و سئو: اگر در فیلد نام برند مثلا `آنوبز` وارد شود، عنوان صفحه‌ها، توضیحات متا، favicon، و لینک‌های sitemap با همان هویت برند برای کل سایت ساخته و به‌روز می‌شوند.</div>
             <div class="admin-form-grid" style="margin-top:1rem">
               <div class="admin-field"><label>بنر هیرو دسکتاپ</label><input id="settingHeroBannerUrl" type="text"></div>
               <div class="admin-field"><label>بنر هیرو موبایل</label><input id="settingHeroBannerMobileUrl" type="text"></div>
@@ -734,6 +748,7 @@
             </div>
             <div class="admin-actions" style="margin:1rem 0">
               <div class="logo-preview" id="logoPreviewMain"><img alt=""></div>
+              <div class="logo-preview" id="logoPreviewBrowser"><img alt=""></div>
               <div class="logo-preview" id="logoPreviewNav"><img alt=""></div>
               <div class="logo-preview" id="logoPreviewAuth"><img alt=""></div>
               <div class="logo-preview" id="logoPreviewFooter"><img alt=""></div>
@@ -847,6 +862,7 @@
       <div class="admin-form-grid">
         <div class="admin-field"><label>عنوان جایزه</label><input id="rewardTitle" type="text"></div>
         <div class="admin-field"><label>عکس جایزه</label><input id="rewardImageUrl" type="text" placeholder="https://..."></div>
+        <div class="admin-field"><label>درصد تخفیف</label><input id="rewardDiscountPercent" type="number" min="0" max="100" value="15" placeholder="مثلا 15"></div>
         <div class="admin-field"><label>امتیاز لازم</label><input id="rewardPointsCost" type="number" min="1" value="40"></div>
         <div class="admin-field"><label>موجودی</label><input id="rewardStock" type="number" min="0" placeholder="خالی = نامحدود"></div>
         <div class="admin-field"><label>کد/خروجی تحویل به کاربر</label><input id="rewardCode" type="text" placeholder="OFF15-WC26"></div>
@@ -927,8 +943,29 @@
     }
 
     function parseTehranDate(value) {
-      if (value && typeof value === 'object') return value;
-      return new Date(String(value).replace(' ', 'T') + '+03:30');
+      if (value instanceof Date) return value;
+      if (value && typeof value === 'object') {
+        if (typeof value.match_timestamp === 'number' && value.match_timestamp > 0) {
+          return new Date(value.match_timestamp * 1000);
+        }
+        if (typeof value.match_datetime === 'string') {
+          value = value.match_datetime;
+        }
+      }
+      const normalized = String(value || '').trim().replace('T', ' ');
+      const parts = normalized.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/);
+      if (parts) {
+        const utcMs = Date.UTC(
+          Number(parts[1]),
+          Number(parts[2]) - 1,
+          Number(parts[3]),
+          Number(parts[4]),
+          Number(parts[5]),
+          Number(parts[6] || 0)
+        ) - (3.5 * 60 * 60 * 1000);
+        return new Date(utcMs);
+      }
+      return new Date(normalized);
     }
 
     function formatDate(dateString) {
@@ -1033,7 +1070,7 @@
       }).join('');
 
       const upcoming = matchesCache.filter(function (match) {
-        const diff = new Date(match.match_datetime).getTime() - Date.now();
+        const diff = parseTehranDate(match.match_datetime).getTime() - Date.now();
         return diff > 0 && diff <= 48 * 3600000;
       });
       document.getElementById('upcomingRoot').innerHTML = upcoming.length ? (
@@ -1161,6 +1198,7 @@
               '<div class="reward-card-body">' +
                 '<div class="admin-actions" style="justify-content:space-between"><h4>' + rewardTitle + '</h4><span class="wc-badge ' + (reward.is_active ? 'success' : 'danger') + '">' + (reward.is_active ? 'فعال' : 'غیرفعال') + '</span></div>' +
                 '<p>' + (reward.description || 'بدون توضیح') + '</p>' +
+                '<div class="admin-pill">تخفیف: ' + toFaDigits(reward.discount_percent || 0) + '٪</div>' +
                 '<div class="admin-pill">' + toFaDigits(reward.points_cost || 0) + ' امتیاز</div>' +
                 '<div class="admin-pill">موجودی: ' + (reward.stock === null ? 'نامحدود' : toFaDigits(reward.stock)) + '</div>' +
                 (reward.product_url ? '<a class="admin-btn secondary small" href="' + reward.product_url + '" target="_blank" rel="noopener">لینک خرید</a>' : '') +
@@ -1217,10 +1255,12 @@
       if (!response.success || !response.settings) return;
       const settings = response.settings;
       document.getElementById('settingSiteName').value = settings.site_name || '';
+      document.getElementById('settingBrandName').value = settings.brand_name || '';
       document.getElementById('settingSiteTagline').value = settings.site_tagline || '';
       document.getElementById('settingLockMinutes').value = settings.prediction_lock_minutes || 10;
       document.getElementById('settingWindowHours').value = settings.prediction_window_hours || 48;
       document.getElementById('settingLogoUrl').value = settings.logo_url || '';
+      document.getElementById('settingBrowserIconUrl').value = settings.browser_icon_url || '';
       document.getElementById('settingNavLogoUrl').value = settings.nav_logo_url || '';
       document.getElementById('settingAuthLogoUrl').value = settings.auth_logo_url || '';
       document.getElementById('settingFooterLogoUrl').value = settings.footer_logo_url || '';
@@ -1242,6 +1282,7 @@
       document.getElementById('settingFooterNote').value = settings.footer_note || '';
       document.getElementById('settingFooterCredit').value = settings.footer_credit || '';
       previewLogo('settingLogoUrl', 'logoPreviewMain');
+      previewLogo('settingBrowserIconUrl', 'logoPreviewBrowser');
       previewLogo('settingNavLogoUrl', 'logoPreviewNav');
       previewLogo('settingAuthLogoUrl', 'logoPreviewAuth');
       previewLogo('settingFooterLogoUrl', 'logoPreviewFooter');
@@ -1249,7 +1290,7 @@
       previewAsset('settingHeroBannerUrl', 'heroBannerPreview');
       previewAsset('settingHomeSidebarBannerUrl', 'sidebarBannerPreview');
       document.getElementById('adminBrandLogo').src = settings.admin_logo_url || settings.logo_url || '/assets/worldcup.jpeg';
-      document.getElementById('adminBrandName').textContent = settings.site_name || 'پنل ادمین';
+      document.getElementById('adminBrandName').textContent = WC.displaySiteName();
     }
 
     function updateLiveFeedPlaceholder() {
@@ -1599,10 +1640,12 @@
     async function saveSettings() {
       const payload = {
         site_name: document.getElementById('settingSiteName').value.trim(),
+        brand_name: document.getElementById('settingBrandName').value.trim(),
         site_tagline: document.getElementById('settingSiteTagline').value.trim(),
         prediction_lock_minutes: parseInt(document.getElementById('settingLockMinutes').value || '10', 10),
         prediction_window_hours: parseInt(document.getElementById('settingWindowHours').value || '48', 10),
         logo_url: document.getElementById('settingLogoUrl').value.trim(),
+        browser_icon_url: document.getElementById('settingBrowserIconUrl').value.trim(),
         nav_logo_url: document.getElementById('settingNavLogoUrl').value.trim(),
         auth_logo_url: document.getElementById('settingAuthLogoUrl').value.trim(),
         footer_logo_url: document.getElementById('settingFooterLogoUrl').value.trim(),
@@ -1637,6 +1680,7 @@
       document.getElementById('rewardId').value = '';
       document.getElementById('rewardTitle').value = '';
       document.getElementById('rewardImageUrl').value = '';
+      document.getElementById('rewardDiscountPercent').value = 15;
       document.getElementById('rewardPointsCost').value = 40;
       document.getElementById('rewardStock').value = '';
       document.getElementById('rewardCode').value = '';
@@ -1651,6 +1695,7 @@
           document.getElementById('rewardId').value = reward.id;
           document.getElementById('rewardTitle').value = reward.title || '';
           document.getElementById('rewardImageUrl').value = reward.image_url || '';
+          document.getElementById('rewardDiscountPercent').value = reward.discount_percent || 0;
           document.getElementById('rewardPointsCost').value = reward.points_cost || 10;
           document.getElementById('rewardStock').value = reward.stock === null ? '' : reward.stock;
           document.getElementById('rewardCode').value = reward.reward_code || '';
@@ -1669,6 +1714,7 @@
         id: parseInt(document.getElementById('rewardId').value || '0', 10) || undefined,
         title: document.getElementById('rewardTitle').value.trim(),
         image_url: document.getElementById('rewardImageUrl').value.trim(),
+        discount_percent: parseInt(document.getElementById('rewardDiscountPercent').value || '0', 10),
         points_cost: parseInt(document.getElementById('rewardPointsCost').value || '10', 10),
         stock: document.getElementById('rewardStock').value.trim(),
         reward_code: document.getElementById('rewardCode').value.trim(),
@@ -1800,6 +1846,7 @@
       });
       document.getElementById('settingLiveScoresProvider').addEventListener('change', updateLiveFeedPlaceholder);
       [
+        ['settingBrowserIconUrl', 'logoPreviewBrowser'],
         ['settingHeroBannerUrl', 'heroBannerPreview'],
         ['settingHomeSidebarBannerUrl', 'sidebarBannerPreview'],
         ['rewardImageUrl', 'rewardImagePreview'],

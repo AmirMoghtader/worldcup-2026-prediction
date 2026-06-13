@@ -6,10 +6,12 @@ function wc_default_settings_row(): array
 {
     return [
         'site_name' => 'پیشبینی جام جهانی ۲۰۲۶',
+        'brand_name' => '',
         'site_tagline' => 'پیش‌بینی زنده بازی‌ها، شرط‌های اختصاصی هر مسابقه و جدول امتیازات کاربران',
         'prediction_lock_minutes' => 10,
         'prediction_window_hours' => 48,
         'logo_url' => '/assets/worldcup.jpeg',
+        'browser_icon_url' => '',
         'nav_logo_url' => '',
         'auth_logo_url' => '',
         'footer_logo_url' => '',
@@ -189,10 +191,12 @@ function wc_ensure_tables(PDO $pdo): void
     CREATE TABLE IF NOT EXISTS {$px}settings (
         id INT UNSIGNED NOT NULL DEFAULT 1 PRIMARY KEY,
         site_name VARCHAR(200) DEFAULT 'پیشبینی جام جهانی ۲۰۲۶',
+        brand_name VARCHAR(120) DEFAULT '',
         site_tagline VARCHAR(255) DEFAULT '',
         prediction_lock_minutes INT NOT NULL DEFAULT 10,
         prediction_window_hours INT NOT NULL DEFAULT 48,
         logo_url VARCHAR(500) DEFAULT '',
+        browser_icon_url VARCHAR(500) DEFAULT '',
         nav_logo_url VARCHAR(500) DEFAULT '',
         auth_logo_url VARCHAR(500) DEFAULT '',
         footer_logo_url VARCHAR(500) DEFAULT '',
@@ -223,6 +227,7 @@ function wc_ensure_tables(PDO $pdo): void
         image_url VARCHAR(500) DEFAULT '',
         reward_code VARCHAR(255) DEFAULT '',
         product_url VARCHAR(500) DEFAULT '',
+        discount_percent SMALLINT UNSIGNED NOT NULL DEFAULT 0,
         points_cost INT NOT NULL DEFAULT 10,
         stock INT NULL DEFAULT NULL,
         is_active TINYINT(1) NOT NULL DEFAULT 1,
@@ -277,8 +282,10 @@ function wc_ensure_tables(PDO $pdo): void
     wc_ensure_column($pdo, $matchesTable, 'live_status_text', "VARCHAR(80) DEFAULT ''");
     wc_ensure_column($pdo, $matchesTable, 'external_ref', "VARCHAR(190) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'site_tagline', "VARCHAR(255) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'brand_name', "VARCHAR(120) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'prediction_window_hours', 'INT NOT NULL DEFAULT 48');
     wc_ensure_column($pdo, $settingsTable, 'logo_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'browser_icon_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'nav_logo_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'auth_logo_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'footer_logo_url', "VARCHAR(500) DEFAULT ''");
@@ -304,23 +311,26 @@ function wc_ensure_tables(PDO $pdo): void
     wc_ensure_column($pdo, $betsTable, 'display_order', 'INT NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, $usersTable, 'redeemed_points', 'INT NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, hmn_table('rewards'), 'product_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, hmn_table('rewards'), 'discount_percent', 'SMALLINT UNSIGNED NOT NULL DEFAULT 0');
 
     $defaults = wc_default_settings_row();
     $existing = $pdo->query("SELECT * FROM {$settingsTable} WHERE id = 1 LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     if (!$existing) {
         $pdo->prepare(
             "INSERT INTO {$settingsTable}
-            (id, site_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, home_sidebar_banner_url, home_sidebar_banner_link_url, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
-            VALUES (1, :site_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
+            (id, site_name, brand_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, browser_icon_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, home_sidebar_banner_url, home_sidebar_banner_link_url, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
+            VALUES (1, :site_name, :brand_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :browser_icon_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
         )->execute($defaults);
     } else {
         $merged = array_merge($defaults, $existing);
         $updatePayload = [
             'site_name' => $merged['site_name'],
+            'brand_name' => $merged['brand_name'],
             'site_tagline' => $merged['site_tagline'],
             'prediction_lock_minutes' => (int)$merged['prediction_lock_minutes'],
             'prediction_window_hours' => (int)$merged['prediction_window_hours'],
             'logo_url' => $merged['logo_url'],
+            'browser_icon_url' => $merged['browser_icon_url'],
             'nav_logo_url' => $merged['nav_logo_url'],
             'auth_logo_url' => $merged['auth_logo_url'],
             'footer_logo_url' => $merged['footer_logo_url'],
@@ -345,10 +355,12 @@ function wc_ensure_tables(PDO $pdo): void
         $pdo->prepare(
             "UPDATE {$settingsTable} SET
             site_name = :site_name,
+            brand_name = :brand_name,
             site_tagline = :site_tagline,
             prediction_lock_minutes = :prediction_lock_minutes,
             prediction_window_hours = :prediction_window_hours,
             logo_url = :logo_url,
+            browser_icon_url = :browser_icon_url,
             nav_logo_url = :nav_logo_url,
             auth_logo_url = :auth_logo_url,
             footer_logo_url = :footer_logo_url,
@@ -544,7 +556,7 @@ function wc_get_settings(PDO $pdo): array
 
 function wc_match_storage_timezone(): DateTimeZone
 {
-    return new DateTimeZone('Europe/London');
+    return new DateTimeZone('UTC');
 }
 
 function wc_display_timezone(): DateTimeZone

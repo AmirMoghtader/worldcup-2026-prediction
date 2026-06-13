@@ -4,10 +4,12 @@
   var API = '/backend/api.php';
   var DEFAULT_SETTINGS = {
     site_name: 'پیشبینی جام جهانی ۲۰۲۶',
+    brand_name: '',
     site_tagline: 'پیش‌بینی زنده بازی‌ها، شرط‌های اختصاصی هر مسابقه و جدول امتیازات کاربران',
     prediction_lock_minutes: 10,
     prediction_window_hours: 48,
     logo_url: '/assets/worldcup.jpeg',
+    browser_icon_url: '',
     nav_logo_url: '',
     auth_logo_url: '',
     footer_logo_url: '',
@@ -46,6 +48,27 @@
     return specific || settings.logo_url || DEFAULT_SETTINGS.logo_url;
   }
 
+  function seoBrandName() {
+    var settings = getSettings();
+    return String(settings.brand_name || '').trim();
+  }
+
+  function seoBaseTitle() {
+    var settings = getSettings();
+    var brand = seoBrandName();
+    return brand ? ('پیشبینی جام جهانی ' + brand) : (settings.site_name || DEFAULT_SETTINGS.site_name);
+  }
+
+  function displaySiteName() {
+    var settings = getSettings();
+    var brand = seoBrandName();
+    var current = String(settings.site_name || '').trim();
+    if (brand && (!current || current === DEFAULT_SETTINGS.site_name)) {
+      return 'پیشبینی جام جهانی ' + brand;
+    }
+    return current || DEFAULT_SETTINGS.site_name;
+  }
+
   function escapeHtml(value) {
     return String(value || '')
       .replace(/&/g, '&amp;')
@@ -57,7 +80,23 @@
 
   function renderLogo(kind, className, alt) {
     var src = getLogoUrl(kind);
-    return '<img class="' + className + '" src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt || getSettings().site_name) + '">';
+    return '<img class="' + className + '" src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt || displaySiteName()) + '">';
+  }
+
+  function renderFooterCredit(value) {
+    var text = String(value || DEFAULT_SETTINGS.footer_credit || '');
+    var target = 'ویرا وب آریا';
+    if (text.indexOf(target) === -1) {
+      return escapeHtml(text);
+    }
+    var parts = text.split(target);
+    return parts.map(function (part, index) {
+      var chunk = escapeHtml(part);
+      if (index === parts.length - 1) {
+        return chunk;
+      }
+      return chunk + '<a href="https://onwebs.ir" target="_blank" rel="noopener">ویرا وب آریا</a>';
+    }).join('');
   }
 
   function ensureNav(cfg) {
@@ -71,9 +110,9 @@
     nav.innerHTML =
       '<div class="wc-nav-inner">' +
         '<a href="/" class="wc-nav-brand">' +
-          '<span class="wc-brand-mark">' + renderLogo('nav_logo_url', 'wc-nav-logo', settings.site_name) + '</span>' +
+          '<span class="wc-brand-mark">' + renderLogo('nav_logo_url', 'wc-nav-logo', displaySiteName()) + '</span>' +
           '<span class="wc-brand-copy">' +
-            '<strong>' + escapeHtml(settings.site_name) + '</strong>' +
+            '<strong>' + escapeHtml(displaySiteName()) + '</strong>' +
             '<small>' + escapeHtml(settings.site_tagline || 'جام جهانی ۲۰۲۶') + '</small>' +
           '</span>' +
         '</a>' +
@@ -82,7 +121,6 @@
           '<ul class="wc-nav-links">' +
             '<li><a href="/" ' + ((cfg.activePage || '') === 'home' ? 'class="active"' : '') + '>بازی‌ها</a></li>' +
             '<li><a href="/knockout" ' + ((cfg.activePage || '') === 'knockout' ? 'class="active"' : '') + '>حذفی</a></li>' +
-            '<li><a href="/profile" ' + ((cfg.activePage || '') === 'profile' ? 'class="active"' : '') + '>حساب کاربری</a></li>' +
           '</ul>' +
           '<div class="wc-nav-auth" id="wcNavAuth"></div>' +
         '</div>' +
@@ -111,13 +149,13 @@
     footer.innerHTML =
       '<div class="wc-footer-inner">' +
         '<div class="wc-footer-brand">' +
-          '<span class="wc-footer-mark">' + renderLogo('footer_logo_url', 'wc-footer-logo', settings.site_name) + '</span>' +
+          '<span class="wc-footer-mark">' + renderLogo('footer_logo_url', 'wc-footer-logo', displaySiteName()) + '</span>' +
           '<div>' +
-            '<strong>' + escapeHtml(settings.site_name) + '</strong>' +
+            '<strong>' + escapeHtml(displaySiteName()) + '</strong>' +
             '<p>' + escapeHtml(settings.footer_note || DEFAULT_SETTINGS.footer_note) + '</p>' +
           '</div>' +
         '</div>' +
-        '<div class="wc-footer-meta">' + escapeHtml(settings.footer_credit || DEFAULT_SETTINGS.footer_credit) + '</div>' +
+        '<div class="wc-footer-meta">' + renderFooterCredit(settings.footer_credit || DEFAULT_SETTINGS.footer_credit) + '</div>' +
       '</div>';
   }
 
@@ -130,8 +168,8 @@
       '<div class="wc-modal-box" role="dialog" aria-modal="true">' +
         '<button class="wc-modal-close" id="wcModalClose" type="button" aria-label="بستن">×</button>' +
         '<div class="wc-modal-head">' +
-          '<div class="wc-modal-brand">' + renderLogo('auth_logo_url', 'wc-modal-logo', getSettings().site_name) + '</div>' +
-          '<h3 id="wcModalTitle">' + escapeHtml(getSettings().site_name) + '</h3>' +
+          '<div class="wc-modal-brand">' + renderLogo('auth_logo_url', 'wc-modal-logo', displaySiteName()) + '</div>' +
+          '<h3 id="wcModalTitle">' + escapeHtml(displaySiteName()) + '</h3>' +
           '<p id="wcModalSubtitle">ورود کاربر یا ادمین از همین پنجره انجام می‌شود.</p>' +
         '</div>' +
         '<div class="wc-modal-body">' +
@@ -200,14 +238,86 @@
   function renderSettingsBoundElements() {
     ensureNav(window.__wcConfig || {});
     renderFooter();
+    applySeo(window.__wcConfig || {});
     var title = document.getElementById('wcModalTitle');
-    if (title) title.textContent = getSettings().site_name;
+    if (title) title.textContent = displaySiteName();
     var subtitle = document.getElementById('wcModalSubtitle');
     if (subtitle) subtitle.textContent = getSettings().site_tagline || DEFAULT_SETTINGS.site_tagline;
     var modalBrand = document.querySelector('.wc-modal-brand');
     if (modalBrand) {
-      modalBrand.innerHTML = renderLogo('auth_logo_url', 'wc-modal-logo', getSettings().site_name);
+      modalBrand.innerHTML = renderLogo('auth_logo_url', 'wc-modal-logo', displaySiteName());
     }
+  }
+
+  function ensureHeadNode(selector, tagName, attrs) {
+    var node = document.head.querySelector(selector);
+    if (!node) {
+      node = document.createElement(tagName);
+      Object.keys(attrs || {}).forEach(function (key) {
+        node.setAttribute(key, attrs[key]);
+      });
+      document.head.appendChild(node);
+    }
+    return node;
+  }
+
+  function applySeo(cfg) {
+    cfg = cfg || {};
+    var settings = getSettings();
+    var base = seoBaseTitle();
+    var page = cfg.activePage || '';
+    var pageTitle = base;
+    var pageDescription = (settings.site_tagline || DEFAULT_SETTINGS.site_tagline);
+
+    if (page === 'home') {
+      pageTitle = base + ' | پیش‌بینی با جایزه و جدول امتیازات';
+      pageDescription = base + ' با پیش‌بینی زنده مسابقات، جوایز، جدول امتیازات و شرط‌های اختصاصی هر بازی.';
+    } else if (page === 'profile') {
+      pageTitle = 'حساب کاربری | ' + base;
+      pageDescription = 'حساب کاربری، امتیازها، تاریخچه پیش‌بینی‌ها و جوایز شما در ' + base + '.';
+    } else if (page === 'knockout') {
+      pageTitle = 'مرحله حذفی | ' + base;
+      pageDescription = 'نمودار مرحله حذفی و مسیر تیم‌ها در ' + base + '.';
+    } else if (page === 'admin') {
+      pageTitle = 'پنل ادمین | ' + base;
+      pageDescription = 'مدیریت بازی‌ها، شرط‌ها، کاربران، جوایز و بنرها در ' + base + '.';
+    }
+
+    if (cfg.seoTitle) {
+      pageTitle = cfg.seoTitle;
+    }
+    if (cfg.seoDescription) {
+      pageDescription = cfg.seoDescription;
+    }
+
+    document.title = pageTitle;
+
+    var description = ensureHeadNode('meta[name="description"]', 'meta', { name: 'description' });
+    description.setAttribute('content', pageDescription);
+
+    var ogTitle = ensureHeadNode('meta[property="og:title"]', 'meta', { property: 'og:title' });
+    ogTitle.setAttribute('content', pageTitle);
+
+    var ogDescription = ensureHeadNode('meta[property="og:description"]', 'meta', { property: 'og:description' });
+    ogDescription.setAttribute('content', pageDescription);
+
+    var ogSite = ensureHeadNode('meta[property="og:site_name"]', 'meta', { property: 'og:site_name' });
+    ogSite.setAttribute('content', base);
+
+    var ogImage = ensureHeadNode('meta[property="og:image"]', 'meta', { property: 'og:image' });
+    ogImage.setAttribute('content', window.location.origin + '/favicon.php');
+
+    var appName = ensureHeadNode('meta[name="application-name"]', 'meta', { name: 'application-name' });
+    appName.setAttribute('content', base);
+
+    var canonical = ensureHeadNode('link[rel="canonical"]', 'link', { rel: 'canonical' });
+    canonical.setAttribute('href', window.location.origin + window.location.pathname + window.location.search);
+
+    ['icon', 'shortcut icon', 'apple-touch-icon'].forEach(function (rel) {
+      var selector = rel === 'icon' ? 'link[rel="icon"]' : 'link[rel="' + rel + '"]';
+      var icon = ensureHeadNode(selector, 'link', { rel: rel });
+      icon.setAttribute('href', '/favicon.php');
+    });
   }
 
   function fetchSettings() {
@@ -451,6 +561,14 @@
 
     getSettings: function () {
       return getSettings();
+    },
+
+    displaySiteName: function () {
+      return displaySiteName();
+    },
+
+    applySeo: function (cfg) {
+      applySeo(cfg || {});
     },
 
     refreshAuth: function () {

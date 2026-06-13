@@ -13,10 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $payload = [
         'site_name' => trim((string)($data['site_name'] ?? $defaults['site_name'])) ?: $defaults['site_name'],
+        'brand_name' => trim((string)($data['brand_name'] ?? $defaults['brand_name'])),
         'site_tagline' => trim((string)($data['site_tagline'] ?? $defaults['site_tagline'])),
         'prediction_lock_minutes' => max(0, (int)($data['prediction_lock_minutes'] ?? $defaults['prediction_lock_minutes'])),
         'prediction_window_hours' => max(1, min(168, (int)($data['prediction_window_hours'] ?? $defaults['prediction_window_hours']))),
         'logo_url' => trim((string)($data['logo_url'] ?? $defaults['logo_url'])),
+        'browser_icon_url' => trim((string)($data['browser_icon_url'] ?? $defaults['browser_icon_url'])),
         'nav_logo_url' => trim((string)($data['nav_logo_url'] ?? '')),
         'auth_logo_url' => trim((string)($data['auth_logo_url'] ?? '')),
         'footer_logo_url' => trim((string)($data['footer_logo_url'] ?? '')),
@@ -39,10 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->prepare(
         "UPDATE {$ts} SET
         site_name=:site_name,
+        brand_name=:brand_name,
         site_tagline=:site_tagline,
         prediction_lock_minutes=:prediction_lock_minutes,
         prediction_window_hours=:prediction_window_hours,
         logo_url=:logo_url,
+        browser_icon_url=:browser_icon_url,
         nav_logo_url=:nav_logo_url,
         auth_logo_url=:auth_logo_url,
         footer_logo_url=:footer_logo_url,

@@ -76,6 +76,7 @@ try {
         'description' => $reward['description'],
         'image_url' => $reward['image_url'],
         'product_url' => $reward['product_url'],
+        'discount_percent' => (int)($reward['discount_percent'] ?? 0),
         'points_cost' => $cost,
     ];
     $code = trim((string)($reward['reward_code'] ?? ''));

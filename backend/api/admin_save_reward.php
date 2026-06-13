@@ -8,6 +8,7 @@ $description = trim((string)($data['description'] ?? ''));
 $imageUrl = trim((string)($data['image_url'] ?? ''));
 $rewardCode = trim((string)($data['reward_code'] ?? ''));
 $productUrl = trim((string)($data['product_url'] ?? ''));
+$discountPercent = max(0, min(100, (int)($data['discount_percent'] ?? 0)));
 $pointsCost = max(1, (int)($data['points_cost'] ?? 10));
 $sortOrder = (int)($data['sort_order'] ?? 0);
 $isActive = !empty($data['is_active']) ? 1 : 0;
@@ -28,6 +29,7 @@ if ($id > 0) {
              image_url = :image_url,
              reward_code = :reward_code,
              product_url = :product_url,
+             discount_percent = :discount_percent,
              points_cost = :points_cost,
              stock = :stock,
              is_active = :is_active,
@@ -39,6 +41,7 @@ if ($id > 0) {
         ':image_url' => $imageUrl,
         ':reward_code' => $rewardCode,
         ':product_url' => $productUrl,
+        ':discount_percent' => $discountPercent,
         ':points_cost' => $pointsCost,
         ':stock' => $stock,
         ':is_active' => $isActive,
@@ -50,15 +53,16 @@ if ($id > 0) {
 
 $pdo->prepare(
     "INSERT INTO {$table}
-    (title, description, image_url, reward_code, product_url, points_cost, stock, is_active, sort_order)
+    (title, description, image_url, reward_code, product_url, discount_percent, points_cost, stock, is_active, sort_order)
     VALUES
-    (:title, :description, :image_url, :reward_code, :product_url, :points_cost, :stock, :is_active, :sort_order)"
+    (:title, :description, :image_url, :reward_code, :product_url, :discount_percent, :points_cost, :stock, :is_active, :sort_order)"
 )->execute([
     ':title' => $title,
     ':description' => $description,
     ':image_url' => $imageUrl,
     ':reward_code' => $rewardCode,
     ':product_url' => $productUrl,
+    ':discount_percent' => $discountPercent,
     ':points_cost' => $pointsCost,
     ':stock' => $stock,
     ':is_active' => $isActive,

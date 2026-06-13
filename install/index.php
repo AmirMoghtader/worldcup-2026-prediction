@@ -4,9 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>نصب سیستم پیشبینی جام جهانی ۲۰۲۶</title>
+<meta name="description" content="نصب و راه‌اندازی سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+<link rel="icon" href="/favicon.php">
 <style>
+@font-face{font-family:'IRANSansX';src:url('/assets/IRANSansX-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:'IRANSansX';src:url('/assets/IRANSansX-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'IRANSansX';src:url('/assets/IRANSansX-Medium.ttf') format('truetype');font-weight:500 900;font-style:normal;font-display:swap}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Tahoma,sans-serif;background:#f0f4f8;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:2rem 1rem}
+body{font-family:'IRANSansX',Tahoma,sans-serif;background:#f0f4f8;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:2rem 1rem}
 .card{background:#fff;border-radius:16px;box-shadow:0 4px 32px rgba(0,0,0,.1);padding:2.5rem;max-width:560px;width:100%}
 h1{color:#0b1f3f;font-size:1.4rem;margin-bottom:.4rem}
 p.sub{color:#64748b;font-size:.85rem;margin-bottom:2rem}

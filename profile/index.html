@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حساب کاربری</title>
+  <meta name="description" content="حساب کاربری، امتیازات و جوایز شما در سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+  <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
   <style>
     .profile-layout {
@@ -37,7 +39,7 @@
     .profile-avatar {
       width: 88px;
       height: 88px;
-      border-radius: 28px;
+      border-radius: 18px;
       background: rgba(255,255,255,0.16);
       border: 1px solid rgba(255,255,255,0.2);
       display: grid;
@@ -67,7 +69,7 @@
 
     .profile-stat {
       padding: 0.95rem 1rem;
-      border-radius: 18px;
+      border-radius: 12px;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.16);
     }
@@ -86,7 +88,7 @@
 
     .history-match {
       padding: 1rem;
-      border-radius: 20px;
+      border-radius: 14px;
       border: 1px solid rgba(145,164,184,0.18);
       background: rgba(255,255,255,0.74);
     }
@@ -133,47 +135,195 @@
 
     .profile-rewards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
     }
 
     .profile-reward-card {
-      padding: 1rem;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.76);
+      position: relative;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
       border: 1px solid rgba(145,164,184,0.18);
+      box-shadow: 0 18px 42px rgba(16,36,63,0.08);
       display: flex;
       flex-direction: column;
-      gap: 0.7rem;
+      overflow: hidden;
+    }
+
+    .profile-reward-media {
+      position: relative;
+      background: linear-gradient(180deg, rgba(16,36,63,0.03), rgba(16,36,63,0.08));
+      padding: 0.75rem;
     }
 
     .profile-reward-card img {
       width: 100%;
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
-      border-radius: 18px;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+      border-radius: 14px;
       background: rgba(16,36,63,0.05);
     }
 
+    .profile-reward-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      min-width: 68px;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: #07111e;
+      color: #fff;
+      font-weight: 900;
+      font-size: 1rem;
+      text-align: center;
+      box-shadow: 0 12px 22px rgba(7,17,30,0.18);
+    }
+
+    .profile-reward-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.72rem;
+      padding: 1rem 1rem 1.05rem;
+    }
+
     .profile-reward-card h4,
-    .profile-reward-card p {
+    .profile-reward-card p,
+    .profile-reward-card h5 {
       margin: 0;
     }
 
     .profile-reward-card h4 {
       color: var(--wc-navy);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .profile-reward-subtitle {
+      color: var(--wc-gold);
+      font-size: 0.84rem;
+      font-weight: 900;
     }
 
     .profile-reward-card p {
       color: var(--wc-muted);
       font-size: 0.8rem;
-      line-height: 1.9;
+      line-height: 1.95;
+      min-height: 3.7em;
+    }
+
+    .profile-reward-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-reward-points,
+    .profile-reward-stock {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.32rem;
+      padding: 0.48rem 0.72rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-navy);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .profile-reward-stock {
+      color: var(--wc-muted);
+      font-weight: 700;
+    }
+
+    .profile-owned-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .profile-owned-reward {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      gap: 0.85rem;
+      padding: 0.95rem;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(145,164,184,0.18);
+    }
+
+    .profile-owned-reward img {
+      width: 88px;
+      height: 88px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .profile-owned-reward h5 {
+      color: var(--wc-navy);
+      font-size: 0.96rem;
+      line-height: 1.7;
+    }
+
+    .profile-owned-reward-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      color: var(--wc-muted);
+      font-size: 0.78rem;
+    }
+
+    .profile-owned-reward-code {
+      margin-top: 0.5rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 12px;
+      background: rgba(16,36,63,0.05);
+      color: var(--wc-navy);
+      font-weight: 900;
+      text-align: center;
+      direction: ltr;
+      letter-spacing: 0.06em;
+    }
+
+    .profile-leaderboard .leader-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.8rem;
+      padding: 0.82rem 0;
+    }
+
+    .profile-leaderboard .leader-name {
+      justify-content: space-between;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .profile-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 64px;
+      padding: 0.38rem 0.62rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      font-size: 0.76rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .profile-leaderboard .leader-row.me {
+      padding: 0.85rem;
+      border-radius: 16px;
+      background: rgba(182,136,36,0.08);
+      border-bottom: 0;
     }
 
     .reward-code-box {
       padding: 0.8rem 0.9rem;
-      border-radius: 16px;
+      border-radius: 12px;
       background: rgba(16,36,63,0.06);
       color: var(--wc-navy);
       font-weight: 900;
@@ -206,7 +356,7 @@
 
     .reward-pop-card {
       width: min(520px, 100%);
-      border-radius: 30px;
+      border-radius: 20px;
       background: rgba(255,255,255,0.96);
       border: 1px solid rgba(145,164,184,0.2);
       box-shadow: 0 30px 70px rgba(6,12,24,0.24);
@@ -247,7 +397,7 @@
     .reward-pop-code {
       margin: 1rem 0;
       padding: 1rem;
-      border-radius: 22px;
+      border-radius: 16px;
       background: linear-gradient(135deg, rgba(182,136,36,0.12), rgba(16,36,63,0.05));
       color: var(--wc-navy);
       font-weight: 900;
@@ -287,6 +437,16 @@
     @media (max-width: 640px) {
       .history-row {
         grid-template-columns: 1fr;
+      }
+
+      .profile-owned-reward {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-owned-reward img {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3;
       }
     }
   </style>
@@ -337,11 +497,11 @@
         </div>
         <div class="wc-glass-panel profile-card">
           <div class="wc-section-title"><h3>جوایز دریافت‌شده</h3></div>
-          <div id="myRewardsRoot" class="profile-side-card"></div>
+          <div id="myRewardsRoot" class="profile-owned-list"></div>
         </div>
         <div class="wc-glass-panel profile-card">
           <div class="wc-section-title"><h3>جدول امتیازات</h3></div>
-          <div class="profile-rank-list" id="leaderboardRoot"></div>
+          <div class="profile-rank-list profile-leaderboard" id="leaderboardRoot"></div>
         </div>
       </aside>
     </div>
@@ -374,9 +534,46 @@
       });
     }
 
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function rewardDiscountLabel(reward) {
+      const percent = parseInt(reward.discount_percent || 0, 10) || 0;
+      return percent > 0 ? ('٪' + toFaDigits(percent)) : 'جایزه';
+    }
+
     function parseTehranDate(value) {
-      if (value && typeof value === 'object') return value;
-      return new Date(String(value).replace(' ', 'T') + '+03:30');
+      if (value instanceof Date) return value;
+      if (value && typeof value === 'object') {
+        if (typeof value.match_timestamp === 'number' && value.match_timestamp > 0) {
+          return new Date(value.match_timestamp * 1000);
+        }
+        if (typeof value.match_datetime === 'string') {
+          value = value.match_datetime;
+        } else if (typeof value.created_at === 'string') {
+          value = value.created_at;
+        }
+      }
+      const normalized = String(value || '').trim().replace('T', ' ');
+      const parts = normalized.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/);
+      if (parts) {
+        const utcMs = Date.UTC(
+          Number(parts[1]),
+          Number(parts[2]) - 1,
+          Number(parts[3]),
+          Number(parts[4]),
+          Number(parts[5]),
+          Number(parts[6] || 0)
+        ) - (3.5 * 60 * 60 * 1000);
+        return new Date(utcMs);
+      }
+      return new Date(normalized);
     }
 
     function formatDateTime(dateValue) {
@@ -434,36 +631,68 @@
         const enough = (user.available_points || 0) >= (reward.points_cost || 0);
         const hasStock = reward.stock === null || Number(reward.stock) > 0;
         const redeemed = redeemedMap[reward.id];
+        const title = escapeHtml(reward.title || 'جایزه');
+        const description = escapeHtml(reward.description || 'بدون توضیح');
+        const image = escapeHtml(reward.image_url || '/assets/worldcup.jpeg');
+        const productUrl = escapeHtml(reward.product_url || '');
+        const discountLabel = rewardDiscountLabel(reward);
         return (
           '<article class="profile-reward-card">' +
-            '<img src="' + (reward.image_url || '/assets/worldcup.jpeg') + '" alt="' + (reward.title || 'جایزه').replace(/"/g, '&quot;') + '">' +
-            '<h4>' + (reward.title || 'جایزه') + '</h4>' +
-            '<p>' + (reward.description || 'بدون توضیح') + '</p>' +
-            '<div class="wc-chip">' + toFaDigits(reward.points_cost || 0) + ' امتیاز' + (reward.stock === null ? '' : ' | موجودی ' + toFaDigits(reward.stock)) + '</div>' +
+            '<div class="profile-reward-media">' +
+              '<div class="profile-reward-badge">' + discountLabel + '</div>' +
+              '<img src="' + image + '" alt="' + title + '">' +
+            '</div>' +
+            '<div class="profile-reward-body">' +
+              '<div class="profile-reward-subtitle">کد تخفیف و جایزه ویژه</div>' +
+              '<h4>' + title + '</h4>' +
+              '<p>' + description + '</p>' +
+              '<div class="profile-reward-meta">' +
+                '<span class="profile-reward-points">' + toFaDigits(reward.points_cost || 0) + ' امتیاز</span>' +
+                '<span class="profile-reward-stock">' + (reward.stock === null ? 'موجودی نامحدود' : 'موجودی ' + toFaDigits(reward.stock)) + '</span>' +
+              '</div>' +
             (redeemed
-              ? '<div class="reward-code-box">' + (redeemed.delivered_code || '—') + '</div><div class="reward-actions"><button class="wc-button secondary" type="button" onclick="showRewardPopupFromCard(' + reward.id + ')">نمایش کد</button>' + (redeemed.product_url ? '<a class="wc-button" href="' + redeemed.product_url + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div>'
+              ? '<div class="reward-code-box">' + escapeHtml(redeemed.delivered_code || '—') + '</div><div class="reward-actions"><button class="wc-button secondary" type="button" onclick="showRewardPopupFromCard(' + reward.id + ')">نمایش کد</button>' + (redeemed.product_url ? '<a class="wc-button" href="' + escapeHtml(redeemed.product_url) + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div>'
               : !hasStock
               ? '<span class="wc-badge danger">تمام شده</span>'
               : enough
               ? '<button class="wc-button" type="button" onclick="redeemReward(' + reward.id + ')">دریافت جایزه</button>'
               : '<div><span class="wc-badge danger">امتیاز شما کم است</span><div style="margin-top:0.6rem"><a class="wc-button secondary" href="/">پیش‌بینی بیشتر</a></div></div>') +
+            '</div>' +
           '</article>'
         );
       }).join('') : '<div class="wc-empty">هنوز جایزه‌ای فعال نشده است.</div>';
 
       document.getElementById('myRewardsRoot').innerHTML = redemptions.length ? redemptions.map(function (row) {
-        return '<div class="wc-chip" style="display:block"><strong style="color:var(--wc-navy)">' + (row.reward_title || 'جایزه') + '</strong><div style="margin-top:0.35rem;color:var(--wc-muted)">کد: <span dir="ltr">' + (row.delivered_code || '—') + '</span></div><div style="margin-top:0.25rem;color:var(--wc-muted)">زمان: ' + formatDateTime(row.created_at) + '</div><div class="reward-actions" style="margin-top:0.6rem"><button class="wc-button secondary" type="button" onclick="showRewardPopupByCode(\'' + (row.delivered_code || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.reward_title || 'جایزه').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.product_url || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')">نمایش کد</button>' + (row.product_url ? '<a class="wc-button" href="' + row.product_url + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div></div>';
+        const discount = parseInt((row.discount_percent || (row.reward_snapshot && row.reward_snapshot.discount_percent) || 0), 10) || 0;
+        const title = escapeHtml(row.reward_title || 'جایزه');
+        const code = escapeHtml(row.delivered_code || '—');
+        const image = escapeHtml((row.image_url || (row.reward_snapshot && row.reward_snapshot.image_url) || '/assets/worldcup.jpeg'));
+        const productUrl = escapeHtml(row.product_url || (row.reward_snapshot && row.reward_snapshot.product_url) || '');
+        return (
+          '<article class="profile-owned-reward">' +
+            '<img src="' + image + '" alt="' + title + '">' +
+            '<div>' +
+              '<h5>' + title + '</h5>' +
+              '<div class="profile-owned-reward-meta">' +
+                (discount > 0 ? '<span class="profile-rank-badge">٪' + toFaDigits(discount) + ' تخفیف</span>' : '<span class="profile-rank-badge">کد فعال</span>') +
+                '<span>زمان: ' + formatDateTime(row.created_at) + '</span>' +
+              '</div>' +
+              '<div class="profile-owned-reward-code">' + code + '</div>' +
+              '<div class="reward-actions" style="margin-top:0.7rem"><button class="wc-button secondary" type="button" onclick="showRewardPopupByCode(\'' + (row.delivered_code || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.reward_title || 'جایزه').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.product_url || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')">نمایش کد</button>' + (productUrl ? '<a class="wc-button" href="' + productUrl + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div>' +
+            '</div>' +
+          '</article>'
+        );
       }).join('') : '<div class="wc-empty">هنوز جایزه‌ای دریافت نکرده‌اید.</div>';
     }
 
     function renderLeaderboard(leaderboard, profileId) {
       const root = document.getElementById('leaderboardRoot');
-      root.innerHTML = leaderboard.slice(0, 5).map(function (user) {
+      root.innerHTML = leaderboard.slice(0, 5).map(function (user, index) {
         const me = user.id == profileId;
         return (
-          '<div class="leader-row" style="' + (me ? 'background:rgba(182,136,36,0.08);border-radius:16px;padding:0.7rem;' : '') + '">' +
-            '<div class="leader-name"><strong>' + (user.name || 'کاربر') + (me ? ' (شما)' : '') + '</strong></div>' +
-            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + '</div>' +
+          '<div class="leader-row' + (me ? ' me' : '') + '">' +
+            '<div class="leader-name"><strong>' + escapeHtml(user.name || 'کاربر') + (me ? ' (شما)' : '') + '</strong><span class="profile-rank-badge">رتبه ' + toFaDigits((user.rank || 0) || (index + 1)) + '</span></div>' +
+            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + ' امتیاز</div>' +
           '</div>'
         );
       }).join('') || '<div class="wc-empty">جدول امتیازات هنوز خالی است.</div>';

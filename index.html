@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>پیشبینی جام جهانی ۲۰۲۶</title>
+  <meta name="description" content="پیشبینی جام جهانی ۲۰۲۶ با جوایز، جدول امتیازات و پیش‌بینی زنده بازی‌ها.">
+  <link rel="icon" href="/favicon.php">
+  <link rel="canonical" href="/">
   <link rel="stylesheet" href="/assets/shared.css">
   <style>
     .home-filters,
@@ -84,7 +87,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.95rem;
-      border-radius: 22px;
+      border-radius: 16px;
       background: rgba(255,255,255,0.86);
       border: 1px solid rgba(145,164,184,0.18);
       box-shadow: 0 16px 34px rgba(16,36,63,0.08);
@@ -166,13 +169,12 @@
       font-size: 0.84rem;
     }
 
+    .home-promo-slot,
     .home-promo-link,
     .home-ad-link {
       display: block;
       overflow: hidden;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.62);
-      border: 1px solid rgba(145,164,184,0.18);
+      border-radius: 16px;
     }
 
     .home-promo-link img,
@@ -207,12 +209,27 @@
     .leader-name {
       display: flex;
       align-items: center;
-      gap: 0.45rem;
+      justify-content: space-between;
+      gap: 0.7rem;
     }
 
     .leader-name strong {
       font-size: 0.92rem;
       color: var(--wc-navy);
+    }
+
+    .leader-rank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 58px;
+      padding: 0.36rem 0.58rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      font-size: 0.74rem;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .leader-points {
@@ -265,7 +282,7 @@
 
     .home-hero .wc-hero-brand {
       width: clamp(88px, 12vw, 118px);
-      border-radius: 24px;
+      border-radius: 18px;
       align-self: center;
     }
 
@@ -412,17 +429,12 @@
       </section>
 
       <aside style="display:flex;flex-direction:column;gap:1rem">
-        <div class="wc-glass-panel home-promo">
-          <div class="wc-section-title">
-            <h3>بنر ویژه</h3>
-          </div>
-          <div id="promoBannerRoot" class="wc-empty">برای این جایگاه هنوز بنری ثبت نشده است.</div>
-        </div>
+        <div id="promoBannerRoot" class="home-promo-slot"></div>
 
         <div class="wc-glass-panel home-leaderboard">
           <div class="wc-section-title">
             <h3>نفرات برتر</h3>
-            <a class="home-link" href="/profile">حساب من</a>
+            <span class="wc-badge info">امتیاز</span>
           </div>
           <div id="leaderboardRoot" class="wc-loader">در حال بارگذاری...</div>
         </div>
@@ -454,12 +466,33 @@
     }
 
     function parseTehranDate(value) {
-      if (value && typeof value === 'object') return value;
-      return new Date(String(value).replace(' ', 'T') + '+03:30');
+      if (value instanceof Date) return value;
+      if (value && typeof value === 'object') {
+        if (typeof value.match_timestamp === 'number' && value.match_timestamp > 0) {
+          return new Date(value.match_timestamp * 1000);
+        }
+        if (typeof value.match_datetime === 'string') {
+          value = value.match_datetime;
+        }
+      }
+      const normalized = String(value || '').trim().replace('T', ' ');
+      const parts = normalized.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/);
+      if (parts) {
+        const utcMs = Date.UTC(
+          Number(parts[1]),
+          Number(parts[2]) - 1,
+          Number(parts[3]),
+          Number(parts[4]),
+          Number(parts[5]),
+          Number(parts[6] || 0)
+        ) - (3.5 * 60 * 60 * 1000);
+        return new Date(utcMs);
+      }
+      return new Date(normalized);
     }
 
     function matchDate(match) {
-      return parseTehranDate(match.match_datetime);
+      return parseTehranDate(match);
     }
 
     function formatDate(dateValue) {
@@ -485,9 +518,6 @@
     }
 
     function dateKey(dateValue) {
-      if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateValue)) {
-        return dateValue.slice(0, 10);
-      }
       const parts = new Intl.DateTimeFormat('en', {
         timeZone: 'Asia/Tehran',
         year: 'numeric',
@@ -541,7 +571,7 @@
 
     function buildHero() {
       settings = WC.getSettings();
-      document.getElementById('heroTitle').textContent = settings.site_name || 'پیشبینی جام جهانی ۲۰۲۶';
+      document.getElementById('heroTitle').textContent = WC.displaySiteName();
       document.getElementById('heroTagline').textContent = settings.site_tagline || 'پیش‌بینی زنده بازی‌ها و امتیازدهی خودکار';
       document.getElementById('heroLogo').src = settings.logo_url || '/assets/worldcup.jpeg';
       const hero = document.getElementById('homeHero');
@@ -593,14 +623,14 @@
     function renderPromoBanner() {
       const root = document.getElementById('promoBannerRoot');
       if (!settings.home_sidebar_banner_url) {
-        root.className = 'wc-empty';
-        root.textContent = 'برای این جایگاه هنوز بنری ثبت نشده است.';
+        root.className = 'home-promo-slot';
+        root.innerHTML = '';
         return;
       }
-      root.className = '';
+      root.className = 'home-promo-slot';
       root.innerHTML =
         '<a class="home-promo-link" href="' + (settings.home_sidebar_banner_link_url || settings.home_sidebar_banner_url) + '" target="_blank" rel="noopener">' +
-          '<img src="' + settings.home_sidebar_banner_url + '" alt="بنر ویژه">' +
+          '<img src="' + settings.home_sidebar_banner_url + '" alt="">' +
         '</a>';
     }
 
@@ -750,11 +780,11 @@
         return;
       }
       root.className = '';
-      root.innerHTML = leaderboard.slice(0, 5).map(function (user) {
+      root.innerHTML = leaderboard.slice(0, 5).map(function (user, index) {
         return (
           '<div class="leader-row">' +
-            '<div class="leader-name"><strong>' + (user.name || 'کاربر') + '</strong></div>' +
-            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + '</div>' +
+            '<div class="leader-name"><strong>' + (user.name || 'کاربر') + '</strong><span class="leader-rank">رتبه ' + toFaDigits(index + 1) + '</span></div>' +
+            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + ' امتیاز</div>' +
           '</div>'
         );
       }).join('');
