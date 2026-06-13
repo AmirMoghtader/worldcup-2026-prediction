@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جزئیات بازی</title>
   <meta name="description" content="جزئیات بازی و ثبت پیش‌بینی مسابقات جام جهانی ۲۰۲۶.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
   <style>
     .match-shell {
       display: grid;
@@ -335,7 +339,7 @@
         </div>
       </div>
       <div class="wc-hero-brand">
-        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+        <img alt="جام جهانی ۲۰۲۶" id="heroLogo" class="wc-deferred-media">
       </div>
     </div>
   </header>
@@ -468,7 +472,7 @@
       document.getElementById('team2Flag').textContent = matchData.team2_flag || '🏳️';
       document.getElementById('team1Name').textContent = matchData.team1;
       document.getElementById('team2Name').textContent = matchData.team2;
-      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      WC.setDeferredImage('heroLogo', WC.getSettings().logo_url || '/assets/worldcup.jpeg');
       document.getElementById('matchStage').textContent = stageLabel(matchData.stage) + (matchData.group_name ? ' | گروه ' + matchData.group_name : '');
       document.getElementById('matchDate').textContent = formatDateTime(matchData.match_datetime);
       document.getElementById('matchVenue').textContent = matchData.venue || 'محل برگزاری اعلام نشده';

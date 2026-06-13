@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حساب کاربری</title>
   <meta name="description" content="حساب کاربری، امتیازات و جوایز شما در سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
   <style>
     .profile-layout {
       display: grid;
@@ -158,7 +162,7 @@
 
     .profile-reward-card img {
       width: 100%;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 1 / 1;
       object-fit: contain;
       border-radius: 14px;
       background: rgba(16,36,63,0.05);
@@ -465,7 +469,7 @@
         <div class="profile-stats" id="heroStats"></div>
       </div>
       <div class="wc-hero-brand">
-        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+        <img alt="جام جهانی ۲۰۲۶" id="heroLogo" class="wc-deferred-media">
       </div>
     </div>
   </header>
@@ -484,7 +488,7 @@
             <div class="wc-loader">در حال بارگذاری...</div>
           </div>
         </div>
-        <div class="wc-glass-panel profile-card">
+        <div class="wc-glass-panel profile-card" id="rewardsSection">
           <div class="wc-section-title"><h2>جوایز قابل دریافت</h2></div>
           <div id="rewardsRoot" class="profile-rewards"></div>
         </div>
@@ -590,7 +594,7 @@
     function renderHero(profile, stats, rank) {
       document.getElementById('heroBlock').style.display = 'block';
       document.getElementById('profileLayout').style.display = 'grid';
-      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      WC.setDeferredImage('heroLogo', WC.getSettings().logo_url || '/assets/worldcup.jpeg');
       document.getElementById('avatarText').textContent = (profile.name || 'ک').charAt(0);
       document.getElementById('userName').textContent = profile.name || 'کاربر';
       document.getElementById('userPhone').textContent = profile.phone || '';
@@ -761,6 +765,9 @@
       renderLeaderboard(leaderboard, currentUser.id);
       renderHistory(profileRes.matches || []);
       renderRewards(rewardsRes.success ? rewardsRes : { rewards: [], user: currentUser, redemptions: [] });
+      if (window.location.hash === '#rewardsSection') {
+        document.getElementById('rewardsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
 
     async function redeemReward(id) {

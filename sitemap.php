@@ -12,6 +12,7 @@ $base = $scheme . '://' . $host;
 
 $urls = [
     ['loc' => $base . '/', 'priority' => '1.0', 'changefreq' => 'hourly'],
+    ['loc' => $base . '/rewards', 'priority' => '0.8', 'changefreq' => 'daily'],
     ['loc' => $base . '/knockout', 'priority' => '0.8', 'changefreq' => 'daily'],
     ['loc' => $base . '/profile', 'priority' => '0.6', 'changefreq' => 'daily'],
 ];

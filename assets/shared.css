@@ -3,7 +3,7 @@
   src: url('/assets/IRANSansX-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
@@ -11,7 +11,7 @@
   src: url('/assets/IRANSansX-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 @font-face {
@@ -19,7 +19,7 @@
   src: url('/assets/IRANSansX-Medium.ttf') format('truetype');
   font-weight: 500 900;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 
 :root {
@@ -59,6 +59,28 @@ body {
 body.wc-modal-open { overflow: hidden; }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
+
+.wc-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0.5), rgba(255,255,255,0.22));
+  background-size: 220% 100%;
+  animation: wc-shimmer 1.3s linear infinite;
+}
+
+@keyframes wc-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -20% 0; }
+}
+
+.wc-deferred-media {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.wc-deferred-media.is-ready {
+  opacity: 1;
+}
 
 .wc-page {
   width: min(1180px, calc(100% - 2rem));
@@ -366,6 +388,37 @@ button, input, select, textarea { font: inherit; }
   min-width: 0;
 }
 
+.wc-nav-inner.loading .wc-nav-links,
+.wc-nav-inner.loading .wc-nav-auth {
+  visibility: hidden;
+}
+
+.wc-nav-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.wc-nav-skeleton-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.wc-nav-skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.wc-nav-skeleton-line.lg {
+  width: 136px;
+}
+
+.wc-nav-skeleton-line.sm {
+  width: 92px;
+}
+
 .wc-brand-mark {
   width: 54px;
   height: 54px;
@@ -529,6 +582,30 @@ button, input, select, textarea { font: inherit; }
   gap: 1rem;
 }
 
+.wc-footer-inner.loading {
+  justify-content: space-between;
+}
+
+.wc-footer-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.wc-footer-skeleton-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.wc-footer-skeleton-actions {
+  width: 140px;
+  height: 14px;
+  border-radius: 999px;
+}
+
 .wc-footer-mark {
   width: 58px;
   height: 58px;
@@ -623,6 +700,20 @@ button, input, select, textarea { font: inherit; }
   border-radius: 18px;
   background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(236,242,248,0.92));
   box-shadow: inset 0 0 0 1px rgba(16,36,63,0.06);
+}
+
+.wc-modal-brand.loading {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.wc-modal-brand.loading::before {
+  content: '';
+  display: block;
+  width: 88px;
+  height: 88px;
+  border-radius: 18px;
 }
 
 .wc-modal-head h3 {

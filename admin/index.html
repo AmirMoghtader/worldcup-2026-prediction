@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>پنل ادمین</title>
   <meta name="description" content="پنل مدیریت سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
   <style>
     body {
       background:
@@ -508,7 +512,7 @@
   <div class="admin-shell">
     <aside class="admin-sidebar">
       <div class="admin-brand">
-        <div class="admin-brand-mark"><img src="/assets/worldcup.jpeg" alt="لوگو" id="adminBrandLogo"></div>
+        <div class="admin-brand-mark"><img alt="لوگو" id="adminBrandLogo" class="wc-deferred-media"></div>
         <div>
           <strong id="adminBrandName">پنل ادمین</strong>
           <span id="adminBrandSub">مدیریت کامل سایت و شرط‌ها</span>
@@ -723,14 +727,45 @@
               </div>
             </div>
             <div class="asset-preview hero" id="heroBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر هیرو"></div>
-            <div class="admin-note" style="margin-top:1rem">بنر جایگزین بخش خلاصه سریع در صفحه اصلی: سایز پیشنهادی `1200x1200`. این بنر کلیکی است و در ستون کنار جدول امتیازات نمایش داده می‌شود.</div>
+            <div class="admin-note" style="margin-top:1rem">بنر هیرو صفحه جوایز: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. به محض آپلود این بنر، هیروی صفحه جوایز فقط خود بنر را نشان می‌دهد و متن و اطلاعات دیفالت دیگر نمایش داده نمی‌شود.</div>
             <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>عکس بنر ستون کناری</label><input id="settingHomeSidebarBannerUrl" type="text"></div>
-              <div class="admin-field"><label>لینک بنر ستون کناری</label><input id="settingHomeSidebarBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+              <div class="admin-field"><label>بنر هیرو جوایز دسکتاپ</label><input id="settingRewardsHeroBannerUrl" type="text"></div>
+              <div class="admin-field"><label>بنر هیرو جوایز موبایل</label><input id="settingRewardsHeroBannerMobileUrl" type="text"></div>
+              <div class="admin-field"><label>ارتفاع بنر جوایز دسکتاپ</label><input id="settingRewardsHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
+              <div class="admin-field"><label>ارتفاع بنر جوایز موبایل</label><input id="settingRewardsHeroBannerHeightMobile" type="number" min="96" max="360"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>لینک کلیک بنر هیرو جوایز</label><input id="settingRewardsHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+              <div class="admin-note">اگر این فیلد خالی بماند، با کلیک روی بنر خود تصویر باز می‌شود.</div>
             </div>
             <div class="admin-form-grid" style="margin-top:1rem">
               <div class="admin-field">
-                <label>آپلود بنر ستون کناری</label>
+                <label>آپلود بنر جوایز دسکتاپ</label>
+                <div class="upload-row">
+                  <input id="rewardsHeroDesktopUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroDesktopUpload', 'settingRewardsHeroBannerUrl', 'hero')">آپلود</button>
+                </div>
+              </div>
+              <div class="admin-field">
+                <label>آپلود بنر جوایز موبایل</label>
+                <div class="upload-row">
+                  <input id="rewardsHeroMobileUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroMobileUpload', 'settingRewardsHeroBannerMobileUrl', 'hero')">آپلود</button>
+                </div>
+              </div>
+            </div>
+            <div class="asset-preview hero" id="rewardsHeroBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر هیرو جوایز"></div>
+            <div class="admin-note" style="margin-top:1rem">اسلایدر جوایز بالای نفرات برتر: به صورت خودکار از اولین جوایز فعال نمایش داده می‌شود. اینجا فقط تعداد اسلایدهای قابل نمایش را مشخص می‌کنید. بنر ویژه پایین نفرات برتر هم با سایز پیشنهادی `1200x1200` از همین بخش تنظیم می‌شود.</div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>تعداد جوایز اسلایدر</label><input id="settingHomeRewardSliderLimit" type="number" min="1" max="12"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>عکس بنر ویژه پایین نفرات برتر</label><input id="settingHomeSidebarBannerUrl" type="text"></div>
+              <div class="admin-field"><label>لینک بنر ویژه</label><input id="settingHomeSidebarBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field">
+                <label>آپلود بنر ویژه</label>
                 <div class="upload-row">
                   <input id="sidebarBannerUpload" type="file" accept="image/*">
                   <button class="admin-btn secondary" type="button" onclick="uploadImageToField('sidebarBannerUpload', 'settingHomeSidebarBannerUrl', 'sidebar')">آپلود</button>
@@ -738,6 +773,22 @@
               </div>
             </div>
             <div class="asset-preview sidebar" id="sidebarBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر ستون کناری"></div>
+            <div class="admin-note" style="margin-top:1rem">پاپ‌آپ ورودی سایت: بعد از ورود کاربر به صفحه اصلی نمایش داده می‌شود. سایز پیشنهادی عکس `1200x1500` یا نزدیک به آن است تا داخل مودال تمیز دیده شود.</div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>عکس پاپ‌آپ صفحه اصلی</label><input id="settingWelcomePopupImageUrl" type="text"></div>
+              <div class="admin-field"><label>متن دکمه پاپ‌آپ</label><input id="settingWelcomePopupButtonLabel" type="text" placeholder="شروع پیشبینی"></div>
+              <div class="admin-field"><label>لینک دکمه پاپ‌آپ</label><input id="settingWelcomePopupButtonUrl" type="text" placeholder="/"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field">
+                <label>آپلود عکس پاپ‌آپ</label>
+                <div class="upload-row">
+                  <input id="welcomePopupUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('welcomePopupUpload', 'settingWelcomePopupImageUrl', 'popup')">آپلود</button>
+                </div>
+              </div>
+            </div>
+            <div class="asset-preview sidebar" id="welcomePopupPreview" style="margin-top:1rem"><img alt="پیش‌نمایش پاپ‌آپ"></div>
             <div class="admin-note" style="margin-top:1rem">برای سینک خودکار نتیجه و لایو، می‌توانی از `Varzesh3` یا یک API JSON استفاده کنی. برای `Varzesh3` همین لینک جواب می‌دهد: `https://www.varzesh3.com/livescore` و هر ۵ دقیقه خوانده می‌شود. برای JSON هم اگر برای هر بازی `شناسه منبع` ثبت شود، سینک دقیق‌تر می‌شود.</div>
             <div class="admin-form-grid" style="margin-top:1rem">
               <div class="admin-field"><label>فعال‌سازی سینک نتایج</label><label><input id="settingLiveScoresEnabled" type="checkbox"> نتایج و لایو به صورت خودکار سینک شود</label></div>
@@ -1271,8 +1322,18 @@
       document.getElementById('settingHeroBannerMobileUrl').value = settings.hero_banner_mobile_url || '';
       document.getElementById('settingHeroBannerHeightDesktop').value = settings.hero_banner_height_desktop || 220;
       document.getElementById('settingHeroBannerHeightMobile').value = settings.hero_banner_height_mobile || 168;
+      document.getElementById('settingRewardsHeroBannerUrl').value = settings.rewards_hero_banner_url || '';
+      document.getElementById('settingRewardsHeroBannerLinkUrl').value = settings.rewards_hero_banner_link_url || '';
+      document.getElementById('settingRewardsHeroBannerPureMode').checked = !!settings.rewards_hero_banner_pure_mode;
+      document.getElementById('settingRewardsHeroBannerMobileUrl').value = settings.rewards_hero_banner_mobile_url || '';
+      document.getElementById('settingRewardsHeroBannerHeightDesktop').value = settings.rewards_hero_banner_height_desktop || 220;
+      document.getElementById('settingRewardsHeroBannerHeightMobile').value = settings.rewards_hero_banner_height_mobile || 168;
       document.getElementById('settingHomeSidebarBannerUrl').value = settings.home_sidebar_banner_url || '';
       document.getElementById('settingHomeSidebarBannerLinkUrl').value = settings.home_sidebar_banner_link_url || '';
+      document.getElementById('settingHomeRewardSliderLimit').value = settings.home_reward_slider_limit || 3;
+      document.getElementById('settingWelcomePopupImageUrl').value = settings.welcome_popup_image_url || '';
+      document.getElementById('settingWelcomePopupButtonLabel').value = settings.welcome_popup_button_label || 'شروع پیشبینی';
+      document.getElementById('settingWelcomePopupButtonUrl').value = settings.welcome_popup_button_url || '/';
       document.getElementById('settingLiveScoresEnabled').checked = !!settings.live_scores_enabled;
       document.getElementById('settingLiveScoresProvider').value = settings.live_scores_provider || 'varzesh3_html';
       document.getElementById('settingLiveScoresFeedUrl').value = settings.live_scores_feed_url || '';
@@ -1288,8 +1349,10 @@
       previewLogo('settingFooterLogoUrl', 'logoPreviewFooter');
       previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin');
       previewAsset('settingHeroBannerUrl', 'heroBannerPreview');
+      previewAsset('settingRewardsHeroBannerUrl', 'rewardsHeroBannerPreview');
       previewAsset('settingHomeSidebarBannerUrl', 'sidebarBannerPreview');
-      document.getElementById('adminBrandLogo').src = settings.admin_logo_url || settings.logo_url || '/assets/worldcup.jpeg';
+      previewAsset('settingWelcomePopupImageUrl', 'welcomePopupPreview');
+      WC.setDeferredImage('adminBrandLogo', settings.admin_logo_url || settings.logo_url || '/assets/worldcup.jpeg');
       document.getElementById('adminBrandName').textContent = WC.displaySiteName();
     }
 
@@ -1656,8 +1719,18 @@
         hero_banner_mobile_url: document.getElementById('settingHeroBannerMobileUrl').value.trim(),
         hero_banner_height_desktop: parseInt(document.getElementById('settingHeroBannerHeightDesktop').value || '220', 10),
         hero_banner_height_mobile: parseInt(document.getElementById('settingHeroBannerHeightMobile').value || '168', 10),
+        rewards_hero_banner_url: document.getElementById('settingRewardsHeroBannerUrl').value.trim(),
+        rewards_hero_banner_link_url: document.getElementById('settingRewardsHeroBannerLinkUrl').value.trim(),
+        rewards_hero_banner_pure_mode: document.getElementById('settingRewardsHeroBannerPureMode').checked ? 1 : 0,
+        rewards_hero_banner_mobile_url: document.getElementById('settingRewardsHeroBannerMobileUrl').value.trim(),
+        rewards_hero_banner_height_desktop: parseInt(document.getElementById('settingRewardsHeroBannerHeightDesktop').value || '220', 10),
+        rewards_hero_banner_height_mobile: parseInt(document.getElementById('settingRewardsHeroBannerHeightMobile').value || '168', 10),
         home_sidebar_banner_url: document.getElementById('settingHomeSidebarBannerUrl').value.trim(),
         home_sidebar_banner_link_url: document.getElementById('settingHomeSidebarBannerLinkUrl').value.trim(),
+        home_reward_slider_limit: parseInt(document.getElementById('settingHomeRewardSliderLimit').value || '3', 10),
+        welcome_popup_image_url: document.getElementById('settingWelcomePopupImageUrl').value.trim(),
+        welcome_popup_button_label: document.getElementById('settingWelcomePopupButtonLabel').value.trim(),
+        welcome_popup_button_url: document.getElementById('settingWelcomePopupButtonUrl').value.trim(),
         live_scores_enabled: document.getElementById('settingLiveScoresEnabled').checked ? 1 : 0,
         live_scores_provider: document.getElementById('settingLiveScoresProvider').value,
         live_scores_feed_url: document.getElementById('settingLiveScoresFeedUrl').value.trim(),
@@ -1848,7 +1921,9 @@
       [
         ['settingBrowserIconUrl', 'logoPreviewBrowser'],
         ['settingHeroBannerUrl', 'heroBannerPreview'],
+        ['settingRewardsHeroBannerUrl', 'rewardsHeroBannerPreview'],
         ['settingHomeSidebarBannerUrl', 'sidebarBannerPreview'],
+        ['settingWelcomePopupImageUrl', 'welcomePopupPreview'],
         ['rewardImageUrl', 'rewardImagePreview'],
         ['adImageUrl', 'adImagePreview']
       ].forEach(function (pair) {

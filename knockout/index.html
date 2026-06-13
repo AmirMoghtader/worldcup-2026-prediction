@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>مرحله حذفی</title>
   <meta name="description" content="نمودار مرحله حذفی جام جهانی ۲۰۲۶ و مسیر تیم‌ها.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="icon" href="/favicon.php">
   <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
   <style>
     .ko-shell {
       display: flex;
@@ -152,7 +156,7 @@
         <p>مسیر کامل مرحله حذفی از حالا آماده است و تا شروع رسمی این مرحله، همه باکس‌ها فقط در حالت نمایش قرار دارند.</p>
       </div>
       <div class="wc-hero-brand">
-        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+        <img alt="جام جهانی ۲۰۲۶" id="heroLogo" class="wc-deferred-media">
       </div>
     </div>
   </header>
@@ -251,7 +255,7 @@
     }
 
     function buildBoard() {
-      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      WC.setDeferredImage('heroLogo', WC.getSettings().logo_url || '/assets/worldcup.jpeg');
       document.getElementById('knockoutBoard').innerHTML = [
         renderRound('یک‌شانزدهم نهایی', placeholder.r32Left, 'ko-spacer-1', false, 'ltr'),
         renderRound('یک‌هشتم نهایی', placeholder.r16Left, 'ko-spacer-2', false, 'ltr'),

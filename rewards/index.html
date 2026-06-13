@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جوایز</title>
+  <meta name="description" content="جوایز رتبه‌ای، کدهای تخفیف و جوایز قابل دریافت کاربران در پیش‌بینی جام جهانی ۲۰۲۶.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="icon" href="/favicon.php">
+  <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
+  <style>
+    .rewards-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .rewards-page-hero {
+      position: relative;
+      --rewards-hero-height: 220px;
+      --rewards-hero-height-mobile: 168px;
+      --rewards-hero-banner: none;
+    }
+
+    .rewards-page-hero.with-banner {
+      min-height: var(--rewards-hero-height);
+      background:
+        linear-gradient(135deg, rgba(31,43,58,0.24), rgba(57,83,107,0.22)),
+        var(--rewards-hero-banner) center/cover no-repeat;
+    }
+
+    .rewards-page-hero.pure-banner {
+      background: var(--rewards-hero-banner) center/cover no-repeat;
+      min-height: var(--rewards-hero-height);
+      padding: 0;
+    }
+
+    .rewards-page-hero.pure-banner::before {
+      display: none;
+    }
+
+    .rewards-hero-banner-link {
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 0;
+    }
+
+    .rewards-hero-banner-link img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .rewards-page-hero .wc-page-hero-inner {
+      z-index: 1;
+    }
+
+    .rewards-page-hero.pure-banner .wc-page-hero-inner {
+      display: none;
+    }
+
+    .rewards-main,
+    .rewards-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .rewards-card {
+      padding: 1.2rem;
+    }
+
+    .rewards-hero-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .rewards-hero-copy .wc-chip {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.78);
+    }
+
+    .rewards-hero-copy .wc-chip strong {
+      color: #fff;
+    }
+
+    .rewards-podium {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .reward-tier-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(145,164,184,0.18);
+      background: rgba(255,255,255,0.88);
+      box-shadow: 0 18px 42px rgba(16,36,63,0.08);
+      min-width: 0;
+    }
+
+    .reward-tier-card.rank-1 {
+      grid-column: span 6;
+      background: linear-gradient(135deg, rgba(16,36,63,0.98), rgba(35,58,89,0.92));
+      border-color: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+
+    .reward-tier-card.rank-2,
+    .reward-tier-card.rank-3 {
+      grid-column: span 3;
+    }
+
+    .reward-tier-card.rank-4,
+    .reward-tier-card.rank-5 {
+      grid-column: span 6;
+    }
+
+    .reward-tier-media {
+      position: relative;
+      padding: 0.95rem 0.95rem 0;
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-media {
+      padding: 1.1rem 1.1rem 0;
+    }
+
+    .reward-tier-media img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      border-radius: 14px;
+      display: block;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .reward-tier-tag,
+    .reward-tier-discount {
+      position: absolute;
+      top: 1.15rem;
+      padding: 0.48rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .reward-tier-tag {
+      right: 1.15rem;
+      background: rgba(7,17,30,0.92);
+      color: #fff;
+    }
+
+    .reward-tier-discount {
+      left: 1.15rem;
+      background: rgba(255,255,255,0.94);
+      color: var(--wc-navy);
+      min-width: 60px;
+      text-align: center;
+      box-shadow: 0 12px 22px rgba(16,36,63,0.12);
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-discount {
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      box-shadow: none;
+    }
+
+    .reward-tier-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.78rem;
+      padding: 1rem;
+      flex: 1;
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-body {
+      padding: 1.1rem;
+    }
+
+    .reward-tier-kicker,
+    .reward-tier-title,
+    .reward-tier-desc {
+      margin: 0;
+    }
+
+    .reward-tier-kicker {
+      color: var(--wc-gold);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-kicker {
+      color: #f6d37c;
+    }
+
+    .reward-tier-title {
+      color: var(--wc-navy);
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-title {
+      color: #fff;
+      font-size: 1.28rem;
+    }
+
+    .reward-tier-desc {
+      color: var(--wc-muted);
+      font-size: 0.84rem;
+      line-height: 1.95;
+      min-height: 3.8em;
+    }
+
+    .reward-tier-card.rank-1 .reward-tier-desc {
+      color: rgba(255,255,255,0.75);
+    }
+
+    .reward-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .reward-meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.45rem 0.72rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-navy);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .reward-tier-card.rank-1 .reward-meta-item {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .reward-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: auto;
+    }
+
+    .reward-actions .wc-button {
+      flex: 1 1 160px;
+    }
+
+    .reward-inline-code {
+      padding: 0.82rem 0.9rem;
+      border-radius: 12px;
+      background: rgba(16,36,63,0.05);
+      color: var(--wc-navy);
+      font-weight: 900;
+      text-align: center;
+      direction: ltr;
+      letter-spacing: 0.08em;
+    }
+
+    .reward-tier-card.rank-1 .reward-inline-code {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .reward-claimed-at {
+      color: var(--wc-muted);
+      font-size: 0.76rem;
+      line-height: 1.8;
+    }
+
+    .reward-tier-card.rank-1 .reward-claimed-at {
+      color: rgba(255,255,255,0.72);
+    }
+
+    .rewards-wallet {
+      position: sticky;
+      top: calc(var(--wc-nav-h) + 1rem);
+    }
+
+    .rewards-wallet-head h2,
+    .rewards-wallet-head p,
+    .rewards-help h3,
+    .rewards-help p {
+      margin: 0;
+    }
+
+    .rewards-wallet-head {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+    }
+
+    .rewards-wallet-head h2,
+    .rewards-help h3 {
+      color: var(--wc-navy);
+      font-size: 1.05rem;
+    }
+
+    .rewards-wallet-head p,
+    .rewards-help p {
+      color: var(--wc-muted);
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+
+    .rewards-wallet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .rewards-wallet-stat {
+      padding: 0.9rem;
+      border-radius: 14px;
+      background: rgba(16,36,63,0.04);
+      border: 1px solid rgba(145,164,184,0.14);
+    }
+
+    .rewards-wallet-stat strong,
+    .rewards-wallet-stat span {
+      display: block;
+    }
+
+    .rewards-wallet-stat strong {
+      color: var(--wc-navy);
+      font-size: 1.25rem;
+      margin-bottom: 0.22rem;
+    }
+
+    .rewards-wallet-stat span {
+      color: var(--wc-muted);
+      font-size: 0.78rem;
+    }
+
+    .rewards-wallet-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .rewards-help-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .rewards-help-item {
+      padding: 0.85rem 0.9rem;
+      border-radius: 14px;
+      background: rgba(16,36,63,0.04);
+      border: 1px solid rgba(145,164,184,0.14);
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.9;
+    }
+
+    .rewards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .reward-grid-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(145,164,184,0.18);
+      box-shadow: 0 18px 42px rgba(16,36,63,0.08);
+    }
+
+    .reward-grid-media {
+      position: relative;
+      padding: 0.75rem 0.75rem 0;
+    }
+
+    .reward-grid-media img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      display: block;
+      border-radius: 14px;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .reward-grid-media .reward-tier-discount {
+      top: 1rem;
+      left: 1rem;
+      background: rgba(7,17,30,0.94);
+      color: #fff;
+      box-shadow: 0 12px 22px rgba(7,17,30,0.16);
+    }
+
+    .reward-grid-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.72rem;
+      padding: 1rem;
+      flex: 1;
+    }
+
+    .reward-grid-body h3,
+    .reward-grid-body p {
+      margin: 0;
+    }
+
+    .reward-grid-kicker {
+      color: var(--wc-gold);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    .reward-grid-body h3 {
+      color: var(--wc-navy);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .reward-grid-body p {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.95;
+      min-height: 4em;
+    }
+
+    .reward-pop {
+      position: fixed;
+      inset: 0;
+      z-index: 1800;
+      background: rgba(7,14,24,0.5);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .reward-pop.open {
+      display: flex;
+    }
+
+    .reward-pop-card {
+      width: min(520px, 100%);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(145,164,184,0.2);
+      box-shadow: 0 30px 70px rgba(6,12,24,0.24);
+      padding: 1.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reward-pop-card h3,
+    .reward-pop-card p {
+      margin: 0;
+    }
+
+    .reward-pop-card h3 {
+      color: var(--wc-navy);
+      font-size: 1.3rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .reward-pop-card p {
+      color: var(--wc-muted);
+      line-height: 1.9;
+    }
+
+    .reward-pop-close {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(145,164,184,0.24);
+      background: rgba(16,36,63,0.04);
+      color: var(--wc-muted);
+      cursor: pointer;
+    }
+
+    .reward-pop-code {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(182,136,36,0.12), rgba(16,36,63,0.05));
+      color: var(--wc-navy);
+      font-weight: 900;
+      font-size: 1.2rem;
+      text-align: center;
+      direction: ltr;
+      letter-spacing: 0.12em;
+    }
+
+    .reward-confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .reward-confetti span {
+      position: absolute;
+      top: -18px;
+      width: 10px;
+      height: 18px;
+      border-radius: 999px;
+      animation: confetti-fall 2200ms linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(420px) rotate(520deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 1160px) {
+      .rewards-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      .rewards-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .rewards-wallet {
+        position: static;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .rewards-podium {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .reward-tier-card.rank-1,
+      .reward-tier-card.rank-2,
+      .reward-tier-card.rank-3,
+      .reward-tier-card.rank-4,
+      .reward-tier-card.rank-5 {
+        grid-column: span 1;
+      }
+
+      .rewards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .rewards-page-hero.with-banner,
+      .rewards-page-hero.pure-banner {
+        min-height: var(--rewards-hero-height-mobile);
+      }
+
+      .rewards-wallet-grid,
+      .rewards-grid,
+      .rewards-podium {
+        grid-template-columns: 1fr;
+      }
+
+      .reward-tier-card.rank-1,
+      .reward-tier-card.rank-2,
+      .reward-tier-card.rank-3,
+      .reward-tier-card.rank-4,
+      .reward-tier-card.rank-5 {
+        grid-column: span 1;
+      }
+
+      .reward-actions .wc-button {
+        flex-basis: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wc-page">
+    <section class="wc-page-hero rewards-page-hero" id="rewardsHero">
+      <a class="rewards-hero-banner-link" id="rewardsHeroBannerLink" href="#" target="_blank" rel="noopener" style="display:none">
+        <img alt="بنر صفحه جوایز" id="rewardsHeroBannerImage" class="wc-deferred-media">
+      </a>
+      <div class="wc-page-hero-inner">
+        <div class="rewards-hero-copy">
+          <div class="wc-chip-row">
+            <span class="wc-chip"><strong>جوایز رتبه‌ای</strong> نفرات اول تا پنجم</span>
+            <span class="wc-chip"><strong>جوایز محصولی</strong> قابل دریافت با امتیاز</span>
+          </div>
+          <div class="wc-page-hero-copy">
+            <h1>ویترین جوایز کاربران</h1>
+            <p>تمام جوایز ویژه مسابقه در این صفحه جمع شده‌اند؛ پنج جایزه اول به‌صورت رتبه‌ای نمایش داده می‌شوند و بقیه جوایز را می‌توانید با امتیاز خود فعال کنید.</p>
+          </div>
+          <div class="wc-hero-stats" id="heroStats"></div>
+        </div>
+        <div class="wc-hero-brand">
+          <img id="heroLogo" class="wc-deferred-media" alt="World Cup">
+        </div>
+      </div>
+    </section>
+
+    <div class="rewards-layout">
+      <main class="rewards-main">
+        <section class="wc-glass-panel rewards-card" id="rankedSection">
+          <div class="wc-section-title">
+            <h2>جوایز نفرات برتر</h2>
+            <span class="wc-chip">رتبه‌های ۱ تا ۵</span>
+          </div>
+          <div id="topRewardsRoot" class="wc-loader">در حال بارگذاری جوایز...</div>
+        </section>
+
+        <section class="wc-glass-panel rewards-card" id="catalogSection">
+          <div class="wc-section-title">
+            <h2>باقی جوایز</h2>
+            <span class="wc-chip">نمایش محصولی</span>
+          </div>
+          <div id="otherRewardsRoot" class="wc-loader">در حال بارگذاری محصولات...</div>
+        </section>
+      </main>
+
+      <aside class="rewards-side">
+        <section class="wc-glass-panel rewards-card rewards-wallet" id="walletRoot">
+          <div class="wc-loader">در حال آماده‌سازی...</div>
+        </section>
+
+        <section class="wc-glass-panel rewards-card rewards-help">
+          <h3>نحوه دریافت</h3>
+          <p>اگر امتیاز کافی داشته باشید، جایزه بلافاصله برای شما فعال می‌شود و کد تخفیف یا لینک استفاده از آن را همان‌جا دریافت می‌کنید.</p>
+          <div class="rewards-help-list">
+            <div class="rewards-help-item">هر جایزه فقط یک بار برای هر کاربر قابل دریافت است.</div>
+            <div class="rewards-help-item">اگر امتیاز شما کافی نباشد، از همین صفحه می‌توانید به بخش پیش‌بینی برگردید و امتیاز بیشتری جمع کنید.</div>
+            <div class="rewards-help-item">برای مشاهده کدهای دریافت‌شده و تاریخچه کامل، حساب کاربری شما هم همیشه در دسترس است.</div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <div class="reward-pop" id="rewardPopup">
+    <div class="reward-pop-card">
+      <button class="reward-pop-close" type="button" onclick="closeRewardPopup()">×</button>
+      <div class="reward-confetti" id="rewardConfetti"></div>
+      <h3 id="rewardPopupTitle">جایزه شما آماده است</h3>
+      <p id="rewardPopupText">کد تخفیف یا جایزه شما ثبت شد و از همین بخش دوباره قابل مشاهده است.</p>
+      <div class="reward-pop-code" id="rewardPopupCode">—</div>
+      <div class="reward-actions">
+        <button class="wc-button secondary" type="button" onclick="copyRewardCode()">کپی کد</button>
+        <a class="wc-button" href="#" id="rewardPopupBuy" target="_blank" rel="noopener" style="display:none">خرید محصول</a>
+        <a class="wc-button secondary" href="/profile#rewardsSection">حساب کاربری</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: 'rewards' });
+
+    const rankLabels = ['جایزه نفر اول', 'جایزه نفر دوم', 'جایزه نفر سوم', 'جایزه نفر چهارم', 'جایزه نفر پنجم'];
+    let currentUser = null;
+    let lastRewardCode = '';
+    let redemptionMap = {};
+    let rewardsCache = [];
+    let redemptionsCache = [];
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function parseTehranDate(value) {
+      if (value instanceof Date) return value;
+      if (value && typeof value === 'object') {
+        if (typeof value.created_at === 'string') {
+          value = value.created_at;
+        }
+      }
+      const normalized = String(value || '').trim().replace('T', ' ');
+      const parts = normalized.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/);
+      if (parts) {
+        const utcMs = Date.UTC(
+          Number(parts[1]),
+          Number(parts[2]) - 1,
+          Number(parts[3]),
+          Number(parts[4]),
+          Number(parts[5]),
+          Number(parts[6] || 0)
+        ) - (3.5 * 60 * 60 * 1000);
+        return new Date(utcMs);
+      }
+      return new Date(normalized);
+    }
+
+    function formatDateTime(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function rewardDiscountLabel(reward) {
+      const percent = parseInt(reward.discount_percent || 0, 10) || 0;
+      return percent > 0 ? ('٪' + toFaDigits(percent)) : 'جایزه';
+    }
+
+    function getCurrentUserSummary(payloadUser, authUser) {
+      if (payloadUser) return payloadUser;
+      if (authUser && authUser.role !== 'admin') return authUser;
+      return null;
+    }
+
+    function buildHero(rewards, user, redemptions) {
+      const settings = WC.getSettings();
+      const hero = document.getElementById('rewardsHero');
+      const heroLink = document.getElementById('rewardsHeroBannerLink');
+      const heroImage = document.getElementById('rewardsHeroBannerImage');
+      WC.setDeferredImage('heroLogo', settings.logo_url || '/assets/worldcup.jpeg');
+      hero.style.setProperty('--rewards-hero-height', (settings.rewards_hero_banner_height_desktop || 220) + 'px');
+      hero.style.setProperty('--rewards-hero-height-mobile', (settings.rewards_hero_banner_height_mobile || 168) + 'px');
+      if (settings.rewards_hero_banner_url) {
+        const banner = window.innerWidth <= 680 && settings.rewards_hero_banner_mobile_url
+          ? settings.rewards_hero_banner_mobile_url
+          : settings.rewards_hero_banner_url;
+        hero.classList.add('with-banner');
+        hero.classList.add('pure-banner');
+        hero.style.setProperty('--rewards-hero-banner', 'url("' + String(banner).replace(/"/g, '%22') + '")');
+        WC.setDeferredImage(heroImage, banner);
+        heroLink.href = settings.rewards_hero_banner_link_url || banner;
+        heroLink.style.display = 'block';
+      } else {
+        hero.classList.remove('with-banner');
+        hero.classList.remove('pure-banner');
+        hero.style.removeProperty('--rewards-hero-banner');
+        heroLink.style.display = 'none';
+      }
+      const rankedCount = Math.min(rewards.length, 5);
+      const claimed = redemptions.length;
+      document.getElementById('heroStats').innerHTML = [
+        ['کل جوایز فعال', toFaDigits(rewards.length)],
+        ['جوایز رتبه‌ای', toFaDigits(rankedCount)],
+        ['باقی جوایز', toFaDigits(Math.max(rewards.length - 5, 0))],
+        ['جوایز دریافت‌شده', toFaDigits(claimed)],
+        ['امتیاز شما', toFaDigits((user && user.available_points) || 0)]
+      ].map(function (item) {
+        return '<div class="wc-hero-stat"><strong>' + item[1] + '</strong><span>' + item[0] + '</span></div>';
+      }).join('');
+    }
+
+    function renderWallet(user, redemptions) {
+      const root = document.getElementById('walletRoot');
+      if (user) {
+        root.innerHTML =
+          '<div class="rewards-wallet-head">' +
+            '<h2>کیف امتیاز شما</h2>' +
+            '<p>با امتیاز فعلی‌تان می‌توانید جوایز قابل دریافت را همین‌جا فعال کنید یا برای جزئیات بیشتر به حساب کاربری بروید.</p>' +
+          '</div>' +
+          '<div class="rewards-wallet-grid">' +
+            '<div class="rewards-wallet-stat"><strong>' + toFaDigits(user.available_points || 0) + '</strong><span>امتیاز قابل خرج</span></div>' +
+            '<div class="rewards-wallet-stat"><strong>' + toFaDigits(user.total_points || 0) + '</strong><span>کل امتیاز</span></div>' +
+            '<div class="rewards-wallet-stat"><strong>' + toFaDigits(user.redeemed_points || 0) + '</strong><span>امتیاز خرج‌شده</span></div>' +
+            '<div class="rewards-wallet-stat"><strong>' + toFaDigits(redemptions.length) + '</strong><span>جوایز گرفته‌شده</span></div>' +
+          '</div>' +
+          '<div class="rewards-wallet-actions">' +
+            '<a class="wc-button" href="/profile#rewardsSection">مشاهده حساب کاربری</a>' +
+            '<a class="wc-button secondary" href="/">پیش‌بینی بیشتر</a>' +
+          '</div>';
+        return;
+      }
+
+      const authUser = WC.getUser();
+      const isAdmin = authUser && authUser.role === 'admin';
+      root.innerHTML =
+        '<div class="rewards-wallet-head">' +
+          '<h2>' + (isAdmin ? 'ورود کاربری لازم است' : 'برای دریافت جایزه وارد شوید') + '</h2>' +
+          '<p>' + (isAdmin ? 'برای فعال‌سازی جوایز باید با حساب کاربری عادی وارد شوید.' : 'نمایش جوایز برای همه آزاد است اما دریافت کدها و خرید با امتیاز فقط بعد از ورود انجام می‌شود.') + '</p>' +
+        '</div>' +
+        '<div class="rewards-wallet-actions">' +
+          '<button class="wc-button" type="button" id="loginForRewardsBtn">ورود / ثبت‌نام</button>' +
+          '<a class="wc-button secondary" href="/">رفتن به پیش‌بینی‌ها</a>' +
+        '</div>';
+      const button = document.getElementById('loginForRewardsBtn');
+      if (button) {
+        button.addEventListener('click', promptRewardLogin);
+      }
+    }
+
+    function renderRewardMeta(reward) {
+      const points = '<span class="reward-meta-item">' + toFaDigits(reward.points_cost || 0) + ' امتیاز</span>';
+      const stockText = reward.stock === null ? 'نامحدود' : ('موجودی ' + toFaDigits(reward.stock || 0));
+      const stock = '<span class="reward-meta-item">' + stockText + '</span>';
+      return '<div class="reward-meta">' + points + stock + '</div>';
+    }
+
+    function renderRewardActions(reward, redemption, user) {
+      const productUrl = escapeHtml(reward.product_url || (redemption && redemption.product_url) || '');
+      const enough = user && Number(user.available_points || 0) >= Number(reward.points_cost || 0);
+      const hasStock = reward.stock === null || Number(reward.stock) > 0;
+
+      if (redemption) {
+        return (
+          '<div class="reward-inline-code">' + escapeHtml(redemption.delivered_code || '—') + '</div>' +
+          '<div class="reward-claimed-at">دریافت‌شده در ' + formatDateTime(redemption.created_at) + '</div>' +
+          '<div class="reward-actions">' +
+            '<button class="wc-button secondary" type="button" data-action="show-code" data-reward-id="' + reward.id + '">نمایش کد</button>' +
+            (productUrl ? '<a class="wc-button" href="' + productUrl + '" target="_blank" rel="noopener">خرید محصول</a>' : '') +
+          '</div>'
+        );
+      }
+
+      if (!user) {
+        return '<div class="reward-actions"><button class="wc-button" type="button" data-action="login">ورود برای دریافت</button></div>';
+      }
+
+      if (!hasStock) {
+        return '<div class="reward-actions"><span class="wc-badge danger">تمام شده</span></div>';
+      }
+
+      if (!enough) {
+        return (
+          '<div class="reward-actions">' +
+            '<span class="wc-badge danger">امتیاز شما کم است</span>' +
+            '<a class="wc-button secondary" href="/">پیش‌بینی بیشتر</a>' +
+          '</div>'
+        );
+      }
+
+      return '<div class="reward-actions"><button class="wc-button" type="button" data-action="redeem" data-reward-id="' + reward.id + '">دریافت جایزه</button></div>';
+    }
+
+    function renderTopRewards(rewards, user) {
+      const root = document.getElementById('topRewardsRoot');
+      const topRewards = rewards.slice(0, 5);
+      if (!topRewards.length) {
+        root.className = 'wc-empty';
+        root.innerHTML = 'هنوز جایزه‌ای برای نفرات برتر ثبت نشده است.';
+        return;
+      }
+
+      root.className = 'rewards-podium';
+      root.innerHTML = topRewards.map(function (reward, index) {
+        const title = escapeHtml(reward.title || 'جایزه');
+        const description = escapeHtml(reward.description || 'بدون توضیح');
+        const image = escapeHtml(reward.image_url || '/assets/worldcup.jpeg');
+        const redemption = redemptionMap[reward.id] || null;
+        return (
+          '<article class="reward-tier-card rank-' + (index + 1) + '">' +
+            '<div class="reward-tier-media">' +
+              '<span class="reward-tier-tag">' + rankLabels[index] + '</span>' +
+              '<span class="reward-tier-discount">' + rewardDiscountLabel(reward) + '</span>' +
+              '<img src="' + image + '" alt="' + title + '">' +
+            '</div>' +
+            '<div class="reward-tier-body">' +
+              '<p class="reward-tier-kicker">' + rankLabels[index] + '</p>' +
+              '<h3 class="reward-tier-title">' + title + '</h3>' +
+              '<p class="reward-tier-desc">' + description + '</p>' +
+              renderRewardMeta(reward) +
+              renderRewardActions(reward, redemption, user) +
+            '</div>' +
+          '</article>'
+        );
+      }).join('');
+    }
+
+    function renderOtherRewards(rewards, user) {
+      const root = document.getElementById('otherRewardsRoot');
+      const otherRewards = rewards.slice(5);
+      if (!otherRewards.length) {
+        root.className = 'wc-empty';
+        root.innerHTML = 'در حال حاضر همه جوایز در همین پنج رتبه اصلی قرار دارند.';
+        return;
+      }
+
+      root.className = 'rewards-grid';
+      root.innerHTML = otherRewards.map(function (reward) {
+        const title = escapeHtml(reward.title || 'جایزه');
+        const description = escapeHtml(reward.description || 'بدون توضیح');
+        const image = escapeHtml(reward.image_url || '/assets/worldcup.jpeg');
+        const redemption = redemptionMap[reward.id] || null;
+        return (
+          '<article class="reward-grid-card">' +
+            '<div class="reward-grid-media">' +
+              '<span class="reward-tier-discount">' + rewardDiscountLabel(reward) + '</span>' +
+              '<img src="' + image + '" alt="' + title + '">' +
+            '</div>' +
+            '<div class="reward-grid-body">' +
+              '<div class="reward-grid-kicker">جایزه قابل دریافت</div>' +
+              '<h3>' + title + '</h3>' +
+              '<p>' + description + '</p>' +
+              renderRewardMeta(reward) +
+              renderRewardActions(reward, redemption, user) +
+            '</div>' +
+          '</article>'
+        );
+      }).join('');
+    }
+
+    async function loadRewards() {
+      const [rewardsRes, meRes] = await Promise.all([
+        WC.apiFetch('rewards'),
+        WC.apiFetch('me')
+      ]);
+
+      const authUser = meRes.success ? (meRes.user || null) : null;
+      currentUser = getCurrentUserSummary(rewardsRes.user || null, authUser);
+      const rewards = rewardsRes.success ? (rewardsRes.rewards || []) : [];
+      const redemptions = rewardsRes.success ? (rewardsRes.redemptions || []) : [];
+      rewardsCache = rewards;
+      redemptionsCache = redemptions;
+      redemptionMap = redemptions.reduce(function (acc, row) {
+        acc[row.reward_id] = row;
+        return acc;
+      }, {});
+
+      buildHero(rewards, currentUser, redemptions);
+      renderWallet(currentUser, redemptions);
+      renderTopRewards(rewards, currentUser);
+      renderOtherRewards(rewards, currentUser);
+
+      if (window.location.hash === '#claim') {
+        document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function promptRewardLogin() {
+      WC.openLogin(function () {
+        loadRewards();
+        document.getElementById('catalogSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    async function redeemReward(id) {
+      const response = await WC.apiFetch('redeem_reward', { reward_id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'دریافت جایزه انجام نشد.', 'err');
+        if (response.error === 'کاربر یافت نشد.') {
+          promptRewardLogin();
+        }
+        return;
+      }
+      showRewardPopupByCode(
+        response.code || '',
+        response.already_redeemed ? 'این جایزه قبلا برای شما ثبت شده است' : 'تبریک، جایزه برای شما ثبت شد',
+        response.product_url || ''
+      );
+      loadRewards();
+    }
+
+    function burstConfetti() {
+      const root = document.getElementById('rewardConfetti');
+      root.innerHTML = '';
+      const colors = ['#d9a441', '#0b8c53', '#27496d', '#d64545', '#8fc1ff'];
+      for (let i = 0; i < 26; i += 1) {
+        const piece = document.createElement('span');
+        piece.style.left = Math.round(Math.random() * 100) + '%';
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = (Math.random() * 240) + 'ms';
+        piece.style.transform = 'translateY(0) rotate(' + Math.round(Math.random() * 180) + 'deg)';
+        root.appendChild(piece);
+      }
+    }
+
+    function showRewardPopupByCode(code, title, productUrl) {
+      lastRewardCode = code || '';
+      document.getElementById('rewardPopupTitle').textContent = title || 'جایزه شما آماده است';
+      document.getElementById('rewardPopupText').textContent = 'کد تخفیف یا هدیه شما ثبت شد و هر زمان بخواهید از همین صفحه و حساب کاربری قابل مشاهده است.';
+      document.getElementById('rewardPopupCode').textContent = code || '—';
+      const buyBtn = document.getElementById('rewardPopupBuy');
+      if (productUrl) {
+        buyBtn.style.display = 'inline-flex';
+        buyBtn.href = productUrl;
+      } else {
+        buyBtn.style.display = 'none';
+        buyBtn.removeAttribute('href');
+      }
+      document.getElementById('rewardPopup').classList.add('open');
+      burstConfetti();
+    }
+
+    function showRewardPopupFromCard(rewardId) {
+      const target = redemptionMap[rewardId];
+      if (target) {
+        showRewardPopupByCode(target.delivered_code || '', target.reward_title || 'جایزه شما آماده است', target.product_url || '');
+      }
+    }
+
+    function closeRewardPopup() {
+      document.getElementById('rewardPopup').classList.remove('open');
+      document.getElementById('rewardConfetti').innerHTML = '';
+    }
+
+    async function copyRewardCode() {
+      if (!lastRewardCode) return;
+      try {
+        await navigator.clipboard.writeText(lastRewardCode);
+        WC.toast('کد کپی شد.');
+      } catch (error) {
+        WC.toast('کپی کد انجام نشد.', 'err');
+      }
+    }
+
+    document.addEventListener('click', function (event) {
+      const trigger = event.target.closest('[data-action]');
+      if (!trigger) return;
+      const action = trigger.getAttribute('data-action');
+      const rewardId = parseInt(trigger.getAttribute('data-reward-id') || '0', 10) || 0;
+
+      if (action === 'login') {
+        promptRewardLogin();
+      } else if (action === 'redeem' && rewardId) {
+        redeemReward(rewardId);
+      } else if (action === 'show-code' && rewardId) {
+        showRewardPopupFromCard(rewardId);
+      }
+    });
+
+    window._wcOnAuth = function () {
+      loadRewards();
+    };
+
+    WC.refreshSettings().then(loadRewards);
+    window.addEventListener('resize', function () {
+      buildHero(rewardsCache, currentUser, redemptionsCache);
+    });
+
+    document.getElementById('rewardPopup').addEventListener('click', function (event) {
+      if (event.target === this) closeRewardPopup();
+    });
+  </script>
+</body>
+</html>

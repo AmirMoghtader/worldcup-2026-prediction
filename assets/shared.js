@@ -20,8 +20,18 @@
     hero_banner_mobile_url: '',
     hero_banner_height_desktop: 220,
     hero_banner_height_mobile: 168,
+    rewards_hero_banner_url: '',
+    rewards_hero_banner_link_url: '',
+    rewards_hero_banner_pure_mode: 0,
+    rewards_hero_banner_mobile_url: '',
+    rewards_hero_banner_height_desktop: 220,
+    rewards_hero_banner_height_mobile: 168,
     home_sidebar_banner_url: '',
     home_sidebar_banner_link_url: '',
+    home_reward_slider_limit: 3,
+    welcome_popup_image_url: '',
+    welcome_popup_button_label: 'شروع پیشبینی',
+    welcome_popup_button_url: '/',
     live_scores_enabled: 0,
     live_scores_provider: 'varzesh3_html',
     live_scores_feed_url: '',
@@ -37,6 +47,10 @@
   var _authCb = null;
   var _settingsPromise = null;
   var _loginState = { stage: 'phone', phone: '', isAdmin: false, hasUser: false };
+
+  function settingsReady() {
+    return !!_settings;
+  }
 
   function getSettings() {
     return Object.assign({}, DEFAULT_SETTINGS, _settings || {});
@@ -83,6 +97,19 @@
     return '<img class="' + className + '" src="' + escapeHtml(src) + '" alt="' + escapeHtml(alt || displaySiteName()) + '">';
   }
 
+  function setDeferredImage(target, src) {
+    var img = typeof target === 'string' ? document.getElementById(target) : target;
+    if (!img || !src) return;
+    img.classList.remove('is-ready');
+    img.onload = function () {
+      img.classList.add('is-ready');
+    };
+    img.src = src;
+    if (img.complete) {
+      img.classList.add('is-ready');
+    }
+  }
+
   function renderFooterCredit(value) {
     var text = String(value || DEFAULT_SETTINGS.footer_credit || '');
     var target = 'ویرا وب آریا';
@@ -106,6 +133,20 @@
       nav.className = 'wc-nav';
       document.body.insertBefore(nav, document.body.firstChild);
     }
+    if (!settingsReady()) {
+      nav.innerHTML =
+        '<div class="wc-nav-inner loading">' +
+          '<div class="wc-nav-skeleton">' +
+            '<span class="wc-brand-mark wc-skeleton"></span>' +
+            '<span class="wc-nav-skeleton-copy">' +
+              '<span class="wc-nav-skeleton-line wc-skeleton lg"></span>' +
+              '<span class="wc-nav-skeleton-line wc-skeleton sm"></span>' +
+            '</span>' +
+          '</div>' +
+          '<div class="wc-nav-panel"><ul class="wc-nav-links"></ul><div class="wc-nav-auth"></div></div>' +
+        '</div>';
+      return;
+    }
     var settings = getSettings();
     nav.innerHTML =
       '<div class="wc-nav-inner">' +
@@ -120,6 +161,7 @@
         '<div class="wc-nav-panel" id="wcNavPanel">' +
           '<ul class="wc-nav-links">' +
             '<li><a href="/" ' + ((cfg.activePage || '') === 'home' ? 'class="active"' : '') + '>بازی‌ها</a></li>' +
+            '<li><a href="/rewards" ' + ((cfg.activePage || '') === 'rewards' ? 'class="active"' : '') + '>جوایز</a></li>' +
             '<li><a href="/knockout" ' + ((cfg.activePage || '') === 'knockout' ? 'class="active"' : '') + '>حذفی</a></li>' +
           '</ul>' +
           '<div class="wc-nav-auth" id="wcNavAuth"></div>' +
@@ -145,6 +187,22 @@
   function renderFooter() {
     var footer = document.querySelector('.wc-footer');
     if (!footer) return;
+    if (!settingsReady()) {
+      footer.innerHTML =
+        '<div class="wc-footer-inner loading">' +
+          '<div class="wc-footer-skeleton">' +
+            '<div class="wc-footer-brand">' +
+              '<span class="wc-footer-mark wc-skeleton"></span>' +
+              '<div class="wc-footer-skeleton-copy">' +
+                '<div class="wc-nav-skeleton-line wc-skeleton lg"></div>' +
+                '<div class="wc-nav-skeleton-line wc-skeleton sm"></div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="wc-footer-skeleton-actions wc-skeleton"></div>' +
+          '</div>' +
+        '</div>';
+      return;
+    }
     var settings = getSettings();
     footer.innerHTML =
       '<div class="wc-footer-inner">' +
@@ -164,12 +222,15 @@
     var overlay = document.createElement('div');
     overlay.id = 'wcOverlay';
     overlay.className = 'wc-overlay';
+    var modalBrandHtml = settingsReady()
+      ? renderLogo('auth_logo_url', 'wc-modal-logo', displaySiteName())
+      : '<span class="wc-skeleton" style="display:block;width:88px;height:88px;border-radius:18px"></span>';
     overlay.innerHTML =
       '<div class="wc-modal-box" role="dialog" aria-modal="true">' +
         '<button class="wc-modal-close" id="wcModalClose" type="button" aria-label="بستن">×</button>' +
         '<div class="wc-modal-head">' +
-          '<div class="wc-modal-brand">' + renderLogo('auth_logo_url', 'wc-modal-logo', displaySiteName()) + '</div>' +
-          '<h3 id="wcModalTitle">' + escapeHtml(displaySiteName()) + '</h3>' +
+          '<div class="wc-modal-brand">' + modalBrandHtml + '</div>' +
+          '<h3 id="wcModalTitle">' + escapeHtml(settingsReady() ? displaySiteName() : '') + '</h3>' +
           '<p id="wcModalSubtitle">ورود کاربر یا ادمین از همین پنجره انجام می‌شود.</p>' +
         '</div>' +
         '<div class="wc-modal-body">' +
@@ -239,6 +300,7 @@
     ensureNav(window.__wcConfig || {});
     renderFooter();
     applySeo(window.__wcConfig || {});
+    document.documentElement.classList.remove('wc-boot-loading');
     var title = document.getElementById('wcModalTitle');
     if (title) title.textContent = displaySiteName();
     var subtitle = document.getElementById('wcModalSubtitle');
@@ -272,6 +334,9 @@
     if (page === 'home') {
       pageTitle = base + ' | پیش‌بینی با جایزه و جدول امتیازات';
       pageDescription = base + ' با پیش‌بینی زنده مسابقات، جوایز، جدول امتیازات و شرط‌های اختصاصی هر بازی.';
+    } else if (page === 'rewards') {
+      pageTitle = 'جوایز | ' + base;
+      pageDescription = 'جوایز رتبه‌ای، کدهای تخفیف و جوایز قابل دریافت کاربران در ' + base + '.';
     } else if (page === 'profile') {
       pageTitle = 'حساب کاربری | ' + base;
       pageDescription = 'حساب کاربری، امتیازها، تاریخچه پیش‌بینی‌ها و جوایز شما در ' + base + '.';
@@ -561,6 +626,10 @@
 
     getSettings: function () {
       return getSettings();
+    },
+
+    setDeferredImage: function (target, src) {
+      setDeferredImage(target, src);
     },
 
     displaySiteName: function () {

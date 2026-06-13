@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>نصب سیستم پیشبینی جام جهانی ۲۰۲۶</title>
 <meta name="description" content="نصب و راه‌اندازی سامانه پیش‌بینی جام جهانی ۲۰۲۶.">
+<link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="icon" href="/favicon.php">
 <style>
 @font-face{font-family:'IRANSansX';src:url('/assets/IRANSansX-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap}

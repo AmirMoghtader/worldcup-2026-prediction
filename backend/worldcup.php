@@ -22,8 +22,18 @@ function wc_default_settings_row(): array
         'hero_banner_mobile_url' => '',
         'hero_banner_height_desktop' => 220,
         'hero_banner_height_mobile' => 168,
+        'rewards_hero_banner_url' => '',
+        'rewards_hero_banner_link_url' => '',
+        'rewards_hero_banner_pure_mode' => 0,
+        'rewards_hero_banner_mobile_url' => '',
+        'rewards_hero_banner_height_desktop' => 220,
+        'rewards_hero_banner_height_mobile' => 168,
         'home_sidebar_banner_url' => '',
         'home_sidebar_banner_link_url' => '',
+        'home_reward_slider_limit' => 3,
+        'welcome_popup_image_url' => '',
+        'welcome_popup_button_label' => 'شروع پیشبینی',
+        'welcome_popup_button_url' => '/',
         'live_scores_enabled' => 0,
         'live_scores_provider' => 'varzesh3_html',
         'live_scores_feed_url' => '',
@@ -207,8 +217,18 @@ function wc_ensure_tables(PDO $pdo): void
         hero_banner_mobile_url VARCHAR(500) DEFAULT '',
         hero_banner_height_desktop INT NOT NULL DEFAULT 220,
         hero_banner_height_mobile INT NOT NULL DEFAULT 168,
+        rewards_hero_banner_url VARCHAR(500) DEFAULT '',
+        rewards_hero_banner_link_url VARCHAR(500) DEFAULT '',
+        rewards_hero_banner_pure_mode TINYINT(1) NOT NULL DEFAULT 0,
+        rewards_hero_banner_mobile_url VARCHAR(500) DEFAULT '',
+        rewards_hero_banner_height_desktop INT NOT NULL DEFAULT 220,
+        rewards_hero_banner_height_mobile INT NOT NULL DEFAULT 168,
         home_sidebar_banner_url VARCHAR(500) DEFAULT '',
         home_sidebar_banner_link_url VARCHAR(500) DEFAULT '',
+        home_reward_slider_limit INT NOT NULL DEFAULT 3,
+        welcome_popup_image_url VARCHAR(500) DEFAULT '',
+        welcome_popup_button_label VARCHAR(120) DEFAULT 'شروع پیشبینی',
+        welcome_popup_button_url VARCHAR(500) DEFAULT '/',
         live_scores_enabled TINYINT(1) NOT NULL DEFAULT 0,
         live_scores_provider VARCHAR(40) NOT NULL DEFAULT 'varzesh3_html',
         live_scores_feed_url VARCHAR(500) DEFAULT '',
@@ -296,8 +316,18 @@ function wc_ensure_tables(PDO $pdo): void
     wc_ensure_column($pdo, $settingsTable, 'hero_banner_mobile_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'hero_banner_height_desktop', 'INT NOT NULL DEFAULT 220');
     wc_ensure_column($pdo, $settingsTable, 'hero_banner_height_mobile', 'INT NOT NULL DEFAULT 168');
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_link_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_pure_mode', 'TINYINT(1) NOT NULL DEFAULT 0');
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_mobile_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_height_desktop', 'INT NOT NULL DEFAULT 220');
+    wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_height_mobile', 'INT NOT NULL DEFAULT 168');
     wc_ensure_column($pdo, $settingsTable, 'home_sidebar_banner_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'home_sidebar_banner_link_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'home_reward_slider_limit', 'INT NOT NULL DEFAULT 3');
+    wc_ensure_column($pdo, $settingsTable, 'welcome_popup_image_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'welcome_popup_button_label', "VARCHAR(120) DEFAULT 'شروع پیشبینی'");
+    wc_ensure_column($pdo, $settingsTable, 'welcome_popup_button_url', "VARCHAR(500) DEFAULT '/'");
     wc_ensure_column($pdo, $settingsTable, 'live_scores_enabled', 'TINYINT(1) NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, $settingsTable, 'live_scores_provider', "VARCHAR(40) NOT NULL DEFAULT 'varzesh3_html'");
     wc_ensure_column($pdo, $settingsTable, 'live_scores_feed_url', "VARCHAR(500) DEFAULT ''");
@@ -318,8 +348,8 @@ function wc_ensure_tables(PDO $pdo): void
     if (!$existing) {
         $pdo->prepare(
             "INSERT INTO {$settingsTable}
-            (id, site_name, brand_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, browser_icon_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, home_sidebar_banner_url, home_sidebar_banner_link_url, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
-            VALUES (1, :site_name, :brand_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :browser_icon_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
+            (id, site_name, brand_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, browser_icon_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, rewards_hero_banner_url, rewards_hero_banner_link_url, rewards_hero_banner_pure_mode, rewards_hero_banner_mobile_url, rewards_hero_banner_height_desktop, rewards_hero_banner_height_mobile, home_sidebar_banner_url, home_sidebar_banner_link_url, home_reward_slider_limit, welcome_popup_image_url, welcome_popup_button_label, welcome_popup_button_url, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
+            VALUES (1, :site_name, :brand_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :browser_icon_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :rewards_hero_banner_url, :rewards_hero_banner_link_url, :rewards_hero_banner_pure_mode, :rewards_hero_banner_mobile_url, :rewards_hero_banner_height_desktop, :rewards_hero_banner_height_mobile, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :home_reward_slider_limit, :welcome_popup_image_url, :welcome_popup_button_label, :welcome_popup_button_url, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
         )->execute($defaults);
     } else {
         $merged = array_merge($defaults, $existing);
@@ -341,8 +371,18 @@ function wc_ensure_tables(PDO $pdo): void
             'hero_banner_mobile_url' => $merged['hero_banner_mobile_url'],
             'hero_banner_height_desktop' => (int)$merged['hero_banner_height_desktop'],
             'hero_banner_height_mobile' => (int)$merged['hero_banner_height_mobile'],
+            'rewards_hero_banner_url' => $merged['rewards_hero_banner_url'],
+            'rewards_hero_banner_link_url' => $merged['rewards_hero_banner_link_url'],
+            'rewards_hero_banner_pure_mode' => (int)$merged['rewards_hero_banner_pure_mode'],
+            'rewards_hero_banner_mobile_url' => $merged['rewards_hero_banner_mobile_url'],
+            'rewards_hero_banner_height_desktop' => (int)$merged['rewards_hero_banner_height_desktop'],
+            'rewards_hero_banner_height_mobile' => (int)$merged['rewards_hero_banner_height_mobile'],
             'home_sidebar_banner_url' => $merged['home_sidebar_banner_url'],
             'home_sidebar_banner_link_url' => $merged['home_sidebar_banner_link_url'],
+            'home_reward_slider_limit' => (int)$merged['home_reward_slider_limit'],
+            'welcome_popup_image_url' => $merged['welcome_popup_image_url'],
+            'welcome_popup_button_label' => $merged['welcome_popup_button_label'],
+            'welcome_popup_button_url' => $merged['welcome_popup_button_url'],
             'live_scores_enabled' => (int)$merged['live_scores_enabled'],
             'live_scores_provider' => $merged['live_scores_provider'],
             'live_scores_feed_url' => $merged['live_scores_feed_url'],
@@ -371,8 +411,18 @@ function wc_ensure_tables(PDO $pdo): void
             hero_banner_mobile_url = :hero_banner_mobile_url,
             hero_banner_height_desktop = :hero_banner_height_desktop,
             hero_banner_height_mobile = :hero_banner_height_mobile,
+            rewards_hero_banner_url = :rewards_hero_banner_url,
+            rewards_hero_banner_link_url = :rewards_hero_banner_link_url,
+            rewards_hero_banner_pure_mode = :rewards_hero_banner_pure_mode,
+            rewards_hero_banner_mobile_url = :rewards_hero_banner_mobile_url,
+            rewards_hero_banner_height_desktop = :rewards_hero_banner_height_desktop,
+            rewards_hero_banner_height_mobile = :rewards_hero_banner_height_mobile,
             home_sidebar_banner_url = :home_sidebar_banner_url,
             home_sidebar_banner_link_url = :home_sidebar_banner_link_url,
+            home_reward_slider_limit = :home_reward_slider_limit,
+            welcome_popup_image_url = :welcome_popup_image_url,
+            welcome_popup_button_label = :welcome_popup_button_label,
+            welcome_popup_button_url = :welcome_popup_button_url,
             live_scores_enabled = :live_scores_enabled,
             live_scores_provider = :live_scores_provider,
             live_scores_feed_url = :live_scores_feed_url,

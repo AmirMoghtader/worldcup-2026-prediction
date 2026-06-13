@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>پیشبینی جام جهانی ۲۰۲۶</title>
   <meta name="description" content="پیشبینی جام جهانی ۲۰۲۶ با جوایز، جدول امتیازات و پیش‌بینی زنده بازی‌ها.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="icon" href="/favicon.php">
   <link rel="canonical" href="/">
   <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
   <style>
     .home-filters,
     .home-date-group,
@@ -175,6 +179,218 @@
       display: block;
       overflow: hidden;
       border-radius: 16px;
+    }
+
+    .home-reward-showcase {
+      position: relative;
+      min-height: 0;
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(145,164,184,0.16);
+      box-shadow: 0 18px 34px rgba(16,36,63,0.08);
+    }
+
+    .home-reward-showcase.is-loading,
+    .home-promo-slot.is-loading,
+    .home-popup-card.is-loading,
+    .home-hero.is-loading .wc-hero-brand {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-reward-showcase.is-loading::before,
+    .home-promo-slot.is-loading::before,
+    .home-popup-card.is-loading::before,
+    .home-hero.is-loading .wc-hero-brand::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, rgba(255,255,255,0.18), rgba(255,255,255,0.5), rgba(255,255,255,0.18));
+      background-size: 220% 100%;
+      animation: wc-shimmer 1.25s linear infinite;
+      z-index: 1;
+    }
+
+    .home-hero.is-loading .wc-page-hero-copy {
+      visibility: hidden;
+    }
+
+    .home-hero.is-loading .wc-hero-brand img {
+      opacity: 0;
+    }
+
+    .home-reward-slide {
+      display: block;
+      color: inherit;
+    }
+
+    .home-reward-media {
+      position: relative;
+      padding: 0.75rem;
+      background: linear-gradient(180deg, rgba(16,36,63,0.03), rgba(16,36,63,0.08));
+    }
+
+    .home-reward-media img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.9);
+    }
+
+    .home-reward-badge {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.8rem;
+      min-width: 68px;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: #08111d;
+      color: #fff;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 900;
+      box-shadow: 0 12px 24px rgba(8,17,29,0.18);
+    }
+
+    .home-reward-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      padding: 1rem;
+    }
+
+    .home-reward-body h4,
+    .home-reward-body p {
+      margin: 0;
+    }
+
+    .home-reward-body h4 {
+      color: var(--wc-navy);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    .home-reward-sub {
+      color: var(--wc-gold);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    .home-reward-body p {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.9;
+      min-height: 3.8em;
+    }
+
+    .home-reward-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .home-reward-points {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.46rem 0.7rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-navy);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .home-reward-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0 0 0.95rem;
+    }
+
+    .home-reward-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(145,164,184,0.4);
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .home-reward-dot.active {
+      width: 24px;
+      background: var(--wc-gold);
+    }
+
+    .home-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 1700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(7,14,24,0.52);
+      backdrop-filter: blur(10px);
+    }
+
+    .home-popup.open {
+      display: flex;
+    }
+
+    .home-popup-card {
+      position: relative;
+      width: min(440px, 100%);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(145,164,184,0.18);
+      box-shadow: 0 32px 72px rgba(7,14,24,0.22);
+      overflow: hidden;
+      padding: 0.9rem;
+    }
+
+    .home-popup-close {
+      position: absolute;
+      top: 0.9rem;
+      left: 0.9rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(145,164,184,0.22);
+      background: rgba(255,255,255,0.92);
+      color: var(--wc-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .home-popup-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: 16px;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .home-popup-actions {
+      display: flex;
+      justify-content: center;
+      padding: 1rem 0 0.15rem;
+    }
+
+    .home-popup-actions .wc-button {
+      border-radius: 12px;
+      padding: 0.82rem 1.4rem;
+      min-width: 180px;
     }
 
     .home-promo-link img,
@@ -388,9 +604,9 @@
   </style>
 </head>
 <body>
-  <header class="wc-page-hero home-hero" id="homeHero">
+  <header class="wc-page-hero home-hero is-loading" id="homeHero">
     <a class="home-hero-banner-link" id="heroBannerLink" href="#" target="_blank" rel="noopener" style="display:none">
-      <img src="/assets/worldcup.jpeg" alt="بنر اصلی" id="heroBannerImage">
+      <img alt="بنر اصلی" id="heroBannerImage" class="wc-deferred-media">
     </a>
     <div class="wc-page-hero-inner wc-page">
       <div class="wc-page-hero-copy">
@@ -403,7 +619,7 @@
         <div class="wc-hero-stats" id="heroStats"></div>
       </div>
       <div class="wc-hero-brand">
-        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+        <img alt="جام جهانی ۲۰۲۶" id="heroLogo" class="wc-deferred-media">
       </div>
     </div>
   </header>
@@ -429,7 +645,7 @@
       </section>
 
       <aside style="display:flex;flex-direction:column;gap:1rem">
-        <div id="promoBannerRoot" class="home-promo-slot"></div>
+        <div id="rewardShowcaseRoot" class="home-reward-showcase is-loading"></div>
 
         <div class="wc-glass-panel home-leaderboard">
           <div class="wc-section-title">
@@ -439,10 +655,21 @@
           <div id="leaderboardRoot" class="wc-loader">در حال بارگذاری...</div>
         </div>
 
+        <div id="promoBannerRoot" class="home-promo-slot is-loading"></div>
         <div id="adBannersRoot" class="home-ad-stack"></div>
       </aside>
     </div>
   </main>
+
+  <div class="home-popup" id="homePopup">
+    <div class="home-popup-card is-loading" id="homePopupCard">
+      <button class="home-popup-close" id="homePopupClose" type="button" aria-label="بستن">×</button>
+      <img alt="بنر پاپ‌آپ" id="homePopupImage" class="wc-deferred-media">
+      <div class="home-popup-actions">
+        <a class="wc-button" href="/" id="homePopupCta">شروع پیشبینی</a>
+      </div>
+    </div>
+  </div>
 
   <button class="wc-to-top" id="topBtn" type="button">↑</button>
 
@@ -453,16 +680,30 @@
     let matches = [];
     let leaderboard = [];
     let adBanners = [];
+    let rewards = [];
+    let rewardShowcase = [];
     let activeFilter = 'all';
     let settings = WC.getSettings();
     let dayFilter = 'todayplus';
     let isLoadingPage = false;
     let pageRefreshTimer = null;
+    let rewardCarouselIndex = 0;
+    let rewardCarouselTimer = null;
+    let popupShown = false;
 
     function toFaDigits(value) {
       return String(value).replace(/\d/g, function (digit) {
         return '۰۱۲۳۴۵۶۷۸۹'[digit];
       });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function parseTehranDate(value) {
@@ -573,7 +814,7 @@
       settings = WC.getSettings();
       document.getElementById('heroTitle').textContent = WC.displaySiteName();
       document.getElementById('heroTagline').textContent = settings.site_tagline || 'پیش‌بینی زنده بازی‌ها و امتیازدهی خودکار';
-      document.getElementById('heroLogo').src = settings.logo_url || '/assets/worldcup.jpeg';
+      WC.setDeferredImage('heroLogo', settings.logo_url || '/assets/worldcup.jpeg');
       const hero = document.getElementById('homeHero');
       const heroLink = document.getElementById('heroBannerLink');
       const heroImage = document.getElementById('heroBannerImage');
@@ -583,7 +824,7 @@
         hero.classList.add('with-banner');
         const banner = window.innerWidth <= 680 && settings.hero_banner_mobile_url ? settings.hero_banner_mobile_url : settings.hero_banner_url;
         hero.style.setProperty('--home-hero-banner', 'url("' + banner.replace(/"/g, '%22') + '")');
-        heroImage.src = banner;
+        WC.setDeferredImage(heroImage, banner);
         heroLink.href = settings.hero_banner_link_url || banner;
         hero.classList.add('pure-banner');
         heroLink.style.display = 'block';
@@ -593,6 +834,7 @@
         hero.style.removeProperty('--home-hero-banner');
         heroLink.style.display = 'none';
       }
+      hero.classList.remove('is-loading');
 
       const openMatches = matches.filter(function (match) { return match.is_prediction_open; }).length;
       const finished = matches.filter(function (match) { return match.status === 'finished'; }).length;
@@ -608,6 +850,105 @@
       ].map(function (item) {
         return '<div class="wc-hero-stat"><strong>' + item[1] + '</strong><span>' + item[0] + '</span></div>';
       }).join('');
+    }
+
+    function rewardDiscountLabel(reward) {
+      const percent = parseInt(reward.discount_percent || 0, 10) || 0;
+      return percent > 0 ? ('٪' + toFaDigits(percent)) : 'جایزه';
+    }
+
+    function clearRewardCarouselTimer() {
+      if (rewardCarouselTimer) {
+        window.clearInterval(rewardCarouselTimer);
+        rewardCarouselTimer = null;
+      }
+    }
+
+    function openRewardsGateway() {
+      const user = WC.getUser();
+      if (user && user.role !== 'admin') {
+        window.location.href = '/rewards#claim';
+        return;
+      }
+      WC.openLogin(function () {
+        window.location.href = '/rewards#claim';
+      });
+    }
+
+    function renderRewardShowcase() {
+      const root = document.getElementById('rewardShowcaseRoot');
+      if (!rewardShowcase.length) {
+        clearRewardCarouselTimer();
+        root.className = 'wc-empty';
+        root.innerHTML = 'هنوز جایزه‌ای برای نمایش انتخاب نشده است.';
+        return;
+      }
+      root.className = 'home-reward-showcase';
+      const current = rewardShowcase[rewardCarouselIndex % rewardShowcase.length];
+      root.innerHTML =
+        '<a class="home-reward-slide" href="/rewards#claim" data-reward-slide>' +
+          '<div class="home-reward-media">' +
+            '<div class="home-reward-badge">' + rewardDiscountLabel(current) + '</div>' +
+            '<img src="' + escapeHtml(current.image_url || '/assets/worldcup.jpeg') + '" alt="' + escapeHtml(current.title || 'جایزه') + '">' +
+          '</div>' +
+          '<div class="home-reward-body">' +
+            '<div class="home-reward-sub">جوایز ویژه کاربران</div>' +
+            '<h4>' + escapeHtml(current.title || 'جایزه') + '</h4>' +
+            '<p>' + escapeHtml(current.description || 'برای دریافت این جایزه وارد حساب کاربری شوید و با امتیاز خود آن را فعال کنید.') + '</p>' +
+            '<div class="home-reward-meta">' +
+              '<span class="home-reward-points">' + toFaDigits(current.points_cost || 0) + ' امتیاز</span>' +
+              '<span class="wc-badge info">مشاهده جایزه</span>' +
+            '</div>' +
+          '</div>' +
+        '</a>' +
+        '<div class="home-reward-dots">' +
+          rewardShowcase.map(function (_, index) {
+            return '<button class="home-reward-dot ' + (index === rewardCarouselIndex ? 'active' : '') + '" type="button" data-reward-dot="' + index + '" aria-label="اسلاید ' + (index + 1) + '"></button>';
+          }).join('') +
+        '</div>';
+      const slide = root.querySelector('[data-reward-slide]');
+      if (slide) {
+        slide.addEventListener('click', function (event) {
+          event.preventDefault();
+          openRewardsGateway();
+        });
+      }
+      root.querySelectorAll('[data-reward-dot]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          rewardCarouselIndex = parseInt(this.getAttribute('data-reward-dot') || '0', 10) || 0;
+          renderRewardShowcase();
+          startRewardCarousel();
+        });
+      });
+    }
+
+    function startRewardCarousel() {
+      clearRewardCarouselTimer();
+      if (rewardShowcase.length <= 1) return;
+      rewardCarouselTimer = window.setInterval(function () {
+        rewardCarouselIndex = (rewardCarouselIndex + 1) % rewardShowcase.length;
+        renderRewardShowcase();
+      }, 3500);
+    }
+
+    function showWelcomePopup() {
+      if (popupShown || !settings.welcome_popup_image_url) return;
+      popupShown = true;
+      const popup = document.getElementById('homePopup');
+      const card = document.getElementById('homePopupCard');
+      const image = document.getElementById('homePopupImage');
+      const cta = document.getElementById('homePopupCta');
+      WC.setDeferredImage(image, settings.welcome_popup_image_url);
+      cta.textContent = settings.welcome_popup_button_label || 'شروع پیشبینی';
+      cta.href = settings.welcome_popup_button_url || '/';
+      card.classList.remove('is-loading');
+      popup.classList.add('open');
+      document.body.classList.add('wc-modal-open');
+    }
+
+    function closeWelcomePopup() {
+      document.getElementById('homePopup').classList.remove('open');
+      document.body.classList.remove('wc-modal-open');
     }
 
     function buildDateFilters() {
@@ -794,24 +1135,31 @@
       if (isLoadingPage) return;
       isLoadingPage = true;
       try {
-        const [matchesRes, leaderboardRes, adsRes] = await Promise.all([
+        const [matchesRes, leaderboardRes, adsRes, rewardsRes] = await Promise.all([
           WC.apiFetch('matches'),
           WC.apiFetch('leaderboard', { limit: 20 }),
-          WC.apiFetch('ads', { placement: 'leaderboard_below' })
+          WC.apiFetch('ads', { placement: 'leaderboard_below' }),
+          WC.apiFetch('rewards')
         ]);
 
         settings = WC.getSettings();
         matches = matchesRes.success ? (matchesRes.matches || []) : [];
         leaderboard = leaderboardRes.success ? (leaderboardRes.leaderboard || []) : [];
         adBanners = adsRes.success ? (adsRes.ads || []) : [];
+        rewards = rewardsRes.success ? (rewardsRes.rewards || []) : [];
+        rewardShowcase = rewards.slice(0, Math.max(1, parseInt(settings.home_reward_slider_limit || 3, 10) || 3));
+        rewardCarouselIndex = rewardShowcase.length ? (rewardCarouselIndex % rewardShowcase.length) : 0;
 
         buildHero();
         buildDateFilters();
         buildFilters();
+        renderRewardShowcase();
+        startRewardCarousel();
         renderPromoBanner();
         renderAdBanners();
         renderSchedule();
         renderLeaderboard();
+        showWelcomePopup();
       } finally {
         isLoadingPage = false;
       }
@@ -820,6 +1168,10 @@
     document.getElementById('dayFilterSelect').addEventListener('change', function () {
       dayFilter = this.value;
       renderSchedule();
+    });
+    document.getElementById('homePopupClose').addEventListener('click', closeWelcomePopup);
+    document.getElementById('homePopup').addEventListener('click', function (event) {
+      if (event.target === this) closeWelcomePopup();
     });
     window.addEventListener('resize', buildHero);
 
