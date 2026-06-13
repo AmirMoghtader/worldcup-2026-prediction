@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پنل ادمین</title>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 24%),
+        linear-gradient(140deg, #11233d, #1b3558 45%, #1d446d 100%);
+      min-height: 100vh;
+    }
+
+    .admin-shell {
+      width: min(1280px, calc(100% - 1.5rem));
+      margin: calc(var(--wc-nav-h) + 1rem) auto 1.5rem;
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .admin-sidebar,
+    .admin-panel,
+    .admin-card,
+    .admin-stat {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 26px 60px rgba(7,15,27,0.16);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .admin-sidebar {
+      position: sticky;
+      top: calc(var(--wc-nav-h) + 1rem);
+      border-radius: 30px;
+      padding: 1rem;
+      color: rgba(255,255,255,0.86);
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .admin-brand-mark {
+      width: 64px;
+      height: 64px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.14);
+      padding: 0.45rem;
+    }
+
+    .admin-brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+    .admin-brand strong { display: block; color: #fff; }
+    .admin-brand span { color: rgba(255,255,255,0.6); font-size: 0.78rem; }
+
+    .admin-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .admin-nav button {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      padding: 0.82rem 0.95rem;
+      text-align: right;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .admin-nav button.active,
+    .admin-nav button:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.14);
+    }
+
+    .admin-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .admin-panel {
+      border-radius: 30px;
+      padding: 1.2rem;
+    }
+
+    .admin-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .admin-panel-head h1,
+    .admin-panel-head h2,
+    .admin-panel-head h3 {
+      margin: 0;
+      color: #fff;
+    }
+
+    .admin-panel-head p {
+      margin: 0.25rem 0 0;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.88rem;
+    }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .admin-stat {
+      border-radius: 24px;
+      padding: 1rem 1.1rem;
+      color: #fff;
+    }
+
+    .admin-stat strong {
+      display: block;
+      font-size: 1.7rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .admin-stat span {
+      color: rgba(255,255,255,0.74);
+      font-size: 0.82rem;
+    }
+
+    .admin-card {
+      border-radius: 26px;
+      padding: 1rem;
+      color: #13253e;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(255,255,255,0.6);
+      margin-bottom: 1rem;
+    }
+
+    .admin-card table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .admin-card th,
+    .admin-card td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid rgba(145,164,184,0.15);
+      vertical-align: top;
+      text-align: right;
+    }
+
+    .admin-card th {
+      color: var(--wc-muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .admin-card tr:last-child td { border-bottom: 0; }
+
+    .admin-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .admin-toolbar h3 {
+      margin: 0;
+      color: var(--wc-navy);
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .admin-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.48rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .admin-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.72rem 1rem;
+      border-radius: 16px;
+      border: 0;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--wc-navy), var(--wc-navy-soft));
+      color: #fff;
+    }
+
+    .admin-btn.secondary {
+      background: rgba(16,36,63,0.08);
+      color: var(--wc-navy);
+      border: 1px solid rgba(145,164,184,0.2);
+    }
+
+    .admin-btn.danger {
+      background: var(--wc-red);
+    }
+
+    .admin-btn.success {
+      background: var(--wc-green);
+    }
+
+    .admin-btn.small {
+      padding: 0.45rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.76rem;
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .admin-form-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .admin-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.42rem;
+    }
+
+    .admin-field label {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .admin-field input,
+    .admin-field select,
+    .admin-field textarea {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(145,164,184,0.28);
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.94);
+      color: var(--wc-text);
+      outline: none;
+    }
+
+    .admin-field textarea {
+      min-height: 124px;
+      resize: vertical;
+    }
+
+    .admin-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+      background: rgba(6,12,24,0.45);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .admin-modal.open { display: flex; }
+
+    .admin-modal-card {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.96);
+      padding: 1.2rem;
+      box-shadow: 0 30px 70px rgba(6,12,24,0.24);
+    }
+
+    .admin-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .admin-modal-head h3 {
+      margin: 0;
+      color: var(--wc-navy);
+    }
+
+    .admin-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(145,164,184,0.22);
+      background: rgba(16,36,63,0.04);
+      color: var(--wc-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .admin-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.65rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .manual-bet-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0.8rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(145,164,184,0.14);
+      align-items: center;
+    }
+
+    .manual-bet-row:last-child { border-bottom: 0; }
+
+    .logo-preview {
+      width: 96px;
+      height: 96px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(16,36,63,0.05);
+      padding: 0.5rem;
+      display: none;
+    }
+
+    .logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+
+    .admin-note {
+      padding: 0.9rem 1rem;
+      border-radius: 18px;
+      background: rgba(16,36,63,0.05);
+      color: var(--wc-muted);
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+
+    .reward-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .reward-card {
+      border-radius: 24px;
+      border: 1px solid rgba(145,164,184,0.18);
+      background: rgba(255,255,255,0.86);
+      box-shadow: 0 12px 28px rgba(16,36,63,0.06);
+      overflow: hidden;
+    }
+
+    .reward-card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .reward-card-body {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .reward-card-body h4 {
+      margin: 0;
+      color: var(--wc-navy);
+      font-size: 0.95rem;
+    }
+
+    .reward-card-body p {
+      margin: 0;
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.85;
+    }
+
+    .backup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .backup-box {
+      padding: 1rem;
+      border-radius: 24px;
+      background: rgba(16,36,63,0.04);
+      border: 1px solid rgba(145,164,184,0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .backup-box h4 {
+      margin: 0;
+      color: var(--wc-navy);
+    }
+
+    .backup-box p {
+      margin: 0;
+      color: var(--wc-muted);
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+
+    .upload-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .asset-preview {
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(145,164,184,0.18);
+      background: rgba(16,36,63,0.04);
+      display: none;
+    }
+
+    .asset-preview img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .asset-preview.hero img {
+      aspect-ratio: 16 / 4;
+    }
+
+    .asset-preview.sidebar img,
+    .asset-preview.ad img {
+      aspect-ratio: 1 / 1;
+    }
+
+    .asset-preview.reward img {
+      aspect-ratio: 16 / 10;
+    }
+
+    @media (max-width: 1020px) {
+      .admin-shell { grid-template-columns: 1fr; }
+      .admin-sidebar { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .admin-form-grid,
+      .admin-form-grid.three,
+      .manual-bet-row,
+      .backup-grid {
+        grid-template-columns: 1fr;
+      }
+      .admin-card table,
+      .admin-card thead,
+      .admin-card tbody,
+      .admin-card tr,
+      .admin-card td,
+      .admin-card th {
+        display: block;
+      }
+      .admin-card thead { display: none; }
+      .admin-card td {
+        padding: 0.6rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <div class="admin-brand-mark"><img src="/assets/worldcup.jpeg" alt="لوگو" id="adminBrandLogo"></div>
+        <div>
+          <strong id="adminBrandName">پنل ادمین</strong>
+          <span id="adminBrandSub">مدیریت کامل سایت و شرط‌ها</span>
+        </div>
+      </div>
+      <div class="admin-nav" id="adminNav">
+        <button class="active" data-section="dashboard">داشبورد</button>
+        <button data-section="matches">بازی‌ها</button>
+        <button data-section="bets">شرط‌های هر بازی</button>
+        <button data-section="defaults">شرط‌های پیش‌فرض</button>
+        <button data-section="users">کاربران</button>
+        <button data-section="rewards">جوایز</button>
+        <button data-section="ads">بنرها</button>
+        <button data-section="backup">بکاپ</button>
+        <button data-section="settings">تنظیمات</button>
+      </div>
+    </aside>
+
+    <section class="admin-main">
+      <div class="admin-panel">
+        <div class="admin-panel-head">
+          <div>
+            <h1 id="panelTitle">داشبورد</h1>
+            <p id="panelSub">مدیریت بازی‌ها، شرط‌ها، کاربران و برندینگ سایت از یک جا</p>
+          </div>
+          <div class="admin-actions">
+            <button class="admin-btn success" type="button" onclick="syncScores(true)">سینک نتایج</button>
+            <button class="admin-btn secondary" type="button" onclick="refreshCurrent()">به‌روزرسانی</button>
+          </div>
+        </div>
+
+        <div class="admin-section active" data-section="dashboard">
+          <div class="admin-stats" id="statsRoot"></div>
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>بازی‌های نزدیک</h3><span class="admin-pill">تا ۴۸ ساعت آینده</span></div>
+            <div id="upcomingRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>برترین کاربران</h3></div>
+            <div id="topUsersRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="matches">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>مدیریت بازی‌ها</h3>
+              <div class="admin-actions">
+                <button class="admin-btn" type="button" onclick="openMatchModal()">افزودن بازی</button>
+              </div>
+            </div>
+            <div id="matchesRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="bets">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>شرط‌های هر بازی</h3>
+              <div class="admin-actions">
+                <button class="admin-btn secondary" type="button" onclick="applyDefaultsToCurrentMatch()">اعمال پیش‌فرض‌ها به این بازی</button>
+                <button class="admin-btn" type="button" onclick="openBetModal()">افزودن شرط</button>
+              </div>
+            </div>
+            <div class="admin-form-grid" style="margin-bottom:1rem">
+              <div class="admin-field">
+                <label>انتخاب بازی</label>
+                <select id="betsMatchSelect"></select>
+              </div>
+            </div>
+            <div id="betsRoot" class="wc-loader">یک بازی انتخاب کنید.</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="defaults">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>شرط‌های پیش‌فرض</h3>
+              <div class="admin-actions">
+                <button class="admin-btn secondary" type="button" onclick="applyDefaultsToAllMatches()">اعمال به همه بازی‌ها</button>
+                <button class="admin-btn" type="button" onclick="openDefaultModal()">افزودن شرط پیش‌فرض</button>
+              </div>
+            </div>
+            <p style="color:var(--wc-muted);font-size:0.84rem;line-height:1.9">هر تغییری که اینجا ثبت می‌کنید، روی همه بازی‌های لینک‌شده به شرط پیش‌فرض اعمال می‌شود. اگر شرطی را داخل یک بازی ویرایش کنید، از پیش‌فرض جدا می‌شود و برای همان بازی اختصاصی باقی می‌ماند.</p>
+            <div id="defaultsRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="users">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>کاربران و جدول امتیاز</h3>
+              <div class="admin-actions">
+                <button class="admin-btn secondary" type="button" onclick="downloadUsersExport()">خروجی اکسل کاربران</button>
+              </div>
+            </div>
+            <div id="usersRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="rewards">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>جوایز و خرج امتیاز</h3>
+              <div class="admin-actions">
+                <button class="admin-btn" type="button" onclick="openRewardModal()">افزودن جایزه</button>
+              </div>
+            </div>
+            <div class="admin-note" style="margin-bottom:1rem">برای هر جایزه می‌توانید عکس، توضیح، کد تحویل و امتیاز لازم تعیین کنید. کاربر فقط وقتی بتواند خرید می‌کند که امتیاز در دسترس او کافی باشد. سایز پیشنهادی عکس جایزه `1200x900` است.</div>
+            <div id="rewardsRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>تاریخچه دریافت جوایز</h3></div>
+            <div id="rewardRedemptionsRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="ads">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>بنرهای تبلیغاتی زیر جدول امتیازات</h3>
+              <div class="admin-actions">
+                <button class="admin-btn" type="button" onclick="openAdModal()">افزودن بنر تبلیغاتی</button>
+              </div>
+            </div>
+            <div class="admin-note" style="margin-bottom:1rem">این بنرها زیر بخش نفرات برتر در صفحه اصلی نمایش داده می‌شوند. سایز پیشنهادی `1200x1200` است تا در دسکتاپ و موبایل تمیز و ریسپانسیو بماند.</div>
+            <div id="adsRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="backup">
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>بکاپ و بازگردانی</h3></div>
+            <div class="backup-grid">
+              <div class="backup-box">
+                <h4>خروجی بکاپ</h4>
+                <p>یک فایل بکاپ از دیتابیس همین پروژه بگیر. فرمت ZIP در صورت پشتیبانی سرور ساخته می‌شود و در غیر این صورت خروجی JSON دانلود می‌شود.</p>
+                <div class="admin-actions">
+                  <button class="admin-btn" type="button" onclick="downloadBackup('zip')">دانلود ZIP</button>
+                  <button class="admin-btn secondary" type="button" onclick="downloadBackup('json')">دانلود JSON</button>
+                </div>
+              </div>
+              <div class="backup-box">
+                <h4>بازگردانی بکاپ</h4>
+                <p>فایل بکاپ همین پروژه را انتخاب کن و بازگردانی را انجام بده. این عملیات داده‌های فعلی را جایگزین می‌کند.</p>
+                <input id="backupRestoreFile" type="file" accept=".json,application/json,.zip,application/zip">
+                <div class="admin-actions">
+                  <button class="admin-btn danger" type="button" onclick="restoreBackup()">بازگردانی بکاپ</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section" data-section="settings">
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>تنظیمات برندینگ و پیش‌بینی</h3></div>
+            <div class="admin-form-grid">
+              <div class="admin-field"><label>نام سایت</label><input id="settingSiteName" type="text"></div>
+              <div class="admin-field"><label>تگ‌لاین</label><input id="settingSiteTagline" type="text"></div>
+              <div class="admin-field"><label>قفل پیش‌بینی (دقیقه)</label><input id="settingLockMinutes" type="number" min="0"></div>
+              <div class="admin-field"><label>پنجره فعال‌سازی (ساعت)</label><input id="settingWindowHours" type="number" min="1" max="168"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>لوگوی اصلی</label><input id="settingLogoUrl" type="text" oninput="previewLogo('settingLogoUrl', 'logoPreviewMain')"></div>
+              <div class="admin-field"><label>لوگوی نوبار</label><input id="settingNavLogoUrl" type="text" oninput="previewLogo('settingNavLogoUrl', 'logoPreviewNav')"></div>
+              <div class="admin-field"><label>لوگوی مودال ورود</label><input id="settingAuthLogoUrl" type="text" oninput="previewLogo('settingAuthLogoUrl', 'logoPreviewAuth')"></div>
+              <div class="admin-field"><label>لوگوی فوتر</label><input id="settingFooterLogoUrl" type="text" oninput="previewLogo('settingFooterLogoUrl', 'logoPreviewFooter')"></div>
+              <div class="admin-field"><label>لوگوی پنل ادمین</label><input id="settingAdminLogoUrl" type="text" oninput="previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin')"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>متن فوتر</label><input id="settingFooterNote" type="text"></div>
+              <div class="admin-field"><label>اعتبارسنجی فوتر</label><input id="settingFooterCredit" type="text"></div>
+            </div>
+            <div class="admin-note" style="margin-top:1rem">راهنمای عکس‌ها: لوگوی اصلی بهتر است `512x512` باشد. لوگوی نوبار، ورود، فوتر و پنل بهتر است `256x256` و PNG شفاف باشند. بنر هیرو: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. اگر خالی بماند، هیروی شیشه‌ای پیش‌فرض سایت نمایش داده می‌شود.</div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>بنر هیرو دسکتاپ</label><input id="settingHeroBannerUrl" type="text"></div>
+              <div class="admin-field"><label>بنر هیرو موبایل</label><input id="settingHeroBannerMobileUrl" type="text"></div>
+              <div class="admin-field"><label>ارتفاع بنر دسکتاپ</label><input id="settingHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
+              <div class="admin-field"><label>ارتفاع بنر موبایل</label><input id="settingHeroBannerHeightMobile" type="number" min="96" max="360"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>لینک کلیک بنر هیرو</label><input id="settingHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+              <div class="admin-field"><label><input id="settingHeroBannerPureMode" type="checkbox"> وقتی بنر هیرو فعال است فقط خود بنر دیده شود و متن و لوگوی پیش‌فرض حذف شود</label></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field">
+                <label>آپلود بنر هیرو دسکتاپ</label>
+                <div class="upload-row">
+                  <input id="heroDesktopUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroDesktopUpload', 'settingHeroBannerUrl', 'hero')">آپلود</button>
+                </div>
+              </div>
+              <div class="admin-field">
+                <label>آپلود بنر هیرو موبایل</label>
+                <div class="upload-row">
+                  <input id="heroMobileUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroMobileUpload', 'settingHeroBannerMobileUrl', 'hero')">آپلود</button>
+                </div>
+              </div>
+            </div>
+            <div class="asset-preview hero" id="heroBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر هیرو"></div>
+            <div class="admin-note" style="margin-top:1rem">بنر جایگزین بخش خلاصه سریع در صفحه اصلی: سایز پیشنهادی `1200x1200`. این بنر کلیکی است و در ستون کنار جدول امتیازات نمایش داده می‌شود.</div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>عکس بنر ستون کناری</label><input id="settingHomeSidebarBannerUrl" type="text"></div>
+              <div class="admin-field"><label>لینک بنر ستون کناری</label><input id="settingHomeSidebarBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field">
+                <label>آپلود بنر ستون کناری</label>
+                <div class="upload-row">
+                  <input id="sidebarBannerUpload" type="file" accept="image/*">
+                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('sidebarBannerUpload', 'settingHomeSidebarBannerUrl', 'sidebar')">آپلود</button>
+                </div>
+              </div>
+            </div>
+            <div class="asset-preview sidebar" id="sidebarBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر ستون کناری"></div>
+            <div class="admin-note" style="margin-top:1rem">برای سینک خودکار نتیجه و لایو، می‌توانی از `Varzesh3` یا یک API JSON استفاده کنی. برای `Varzesh3` همین لینک جواب می‌دهد: `https://www.varzesh3.com/livescore` و هر ۵ دقیقه خوانده می‌شود. برای JSON هم اگر برای هر بازی `شناسه منبع` ثبت شود، سینک دقیق‌تر می‌شود.</div>
+            <div class="admin-form-grid" style="margin-top:1rem">
+              <div class="admin-field"><label>فعال‌سازی سینک نتایج</label><label><input id="settingLiveScoresEnabled" type="checkbox"> نتایج و لایو به صورت خودکار سینک شود</label></div>
+              <div class="admin-field"><label>منبع سینک</label><select id="settingLiveScoresProvider"><option value="varzesh3_html">Varzesh3 Livescore</option><option value="espn_scoreboard">ESPN Scoreboard JSON</option><option value="generic_json">JSON سفارشی</option></select></div>
+              <div class="admin-field"><label>URL فید نتایج</label><input id="settingLiveScoresFeedUrl" type="text" placeholder="https://www.varzesh3.com/livescore"></div>
+              <div class="admin-field"><label>بازه تازه‌سازی (دقیقه)</label><input id="settingLiveScoresRefreshMinutes" type="number" min="1" max="60"></div>
+              <div class="admin-field"><label>آخرین سینک</label><input id="settingLiveScoresLastSyncAt" type="text" readonly></div>
+            </div>
+            <div class="admin-actions" style="margin:1rem 0">
+              <div class="logo-preview" id="logoPreviewMain"><img alt=""></div>
+              <div class="logo-preview" id="logoPreviewNav"><img alt=""></div>
+              <div class="logo-preview" id="logoPreviewAuth"><img alt=""></div>
+              <div class="logo-preview" id="logoPreviewFooter"><img alt=""></div>
+              <div class="logo-preview" id="logoPreviewAdmin"><img alt=""></div>
+            </div>
+            <div class="admin-actions"><button class="admin-btn success" type="button" onclick="saveSettings()">ذخیره تنظیمات</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="admin-modal" id="matchModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="matchModalTitle">افزودن بازی</h3><button class="admin-close" type="button" onclick="closeModal('matchModal')">×</button></div>
+      <input type="hidden" id="matchId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>تیم اول</label><input id="matchTeam1" type="text"></div>
+        <div class="admin-field"><label>تیم دوم</label><input id="matchTeam2" type="text"></div>
+        <div class="admin-field"><label>پرچم تیم اول</label><input id="matchFlag1" type="text" placeholder="🇮🇷"></div>
+        <div class="admin-field"><label>پرچم تیم دوم</label><input id="matchFlag2" type="text" placeholder="🇧🇷"></div>
+      </div>
+      <div class="admin-form-grid three" style="margin-top:1rem">
+        <div class="admin-field"><label>گروه</label><input id="matchGroup" type="text" placeholder="A"></div>
+        <div class="admin-field"><label>مرحله</label><select id="matchStage"><option value="group">گروهی</option><option value="r32">مرحله ۳۲</option><option value="r16">مرحله ۱۶</option><option value="qf">یک‌چهارم</option><option value="sf">نیمه‌نهایی</option><option value="3rd">رده‌بندی</option><option value="final">فینال</option></select></div>
+        <div class="admin-field"><label>وضعیت</label><select id="matchStatus"><option value="upcoming">آینده</option><option value="live">زنده</option><option value="finished">پایان یافته</option></select></div>
+      </div>
+      <div class="admin-form-grid" style="margin-top:1rem">
+        <div class="admin-field"><label>تاریخ و زمان</label><input id="matchDatetime" type="datetime-local"></div>
+        <div class="admin-field"><label>محل برگزاری</label><input id="matchVenue" type="text"></div>
+      </div>
+      <div class="admin-field" style="margin-top:1rem"><label>شناسه منبع برای سینک خودکار</label><input id="matchExternalRef" type="text" placeholder="mex-vs-rsa-2026-06-11"></div>
+      <div class="admin-field" style="margin-top:1rem"><label><input id="matchIsOpen" type="checkbox" checked> پیش‌بینی این بازی باز باشد</label></div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('matchModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveMatch()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="betModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="betModalTitle">افزودن شرط</h3><button class="admin-close" type="button" onclick="closeModal('betModal')">×</button></div>
+      <input type="hidden" id="betId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>عنوان شرط</label><input id="betLabel" type="text"></div>
+        <div class="admin-field"><label>نوع شرط</label><select id="betType"><option value="winner">برنده</option><option value="total_goals">تعداد گل</option><option value="btts">هر دو تیم گل می‌زنند</option><option value="first_goal_team">اولین تیم گل‌زن</option><option value="first_half_goal">گل در نیمه اول</option><option value="penalty">پنالتی در بازی</option><option value="exact_score">نتیجه دقیق</option><option value="custom">سفارشی</option></select></div>
+        <div class="admin-field"><label>امتیاز</label><input id="betPoints" type="number" min="1" value="10"></div>
+        <div class="admin-field"><label>ترتیب نمایش</label><input id="betOrder" type="number" min="0" value="0"></div>
+      </div>
+      <div class="admin-field" style="margin-top:1rem"><label>گزینه‌ها (هر خط یک گزینه)</label><textarea id="betOptions"></textarea></div>
+      <div class="admin-form-grid" style="margin-top:1rem">
+        <div class="admin-field"><label><input id="betIsActive" type="checkbox" checked> فعال</label></div>
+        <div class="admin-field"><label><input id="betSync" type="checkbox"> پس از ذخیره همچنان با پیش‌فرض همگام بماند</label></div>
+      </div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('betModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveBet()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="defaultModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="defaultModalTitle">افزودن شرط پیش‌فرض</h3><button class="admin-close" type="button" onclick="closeModal('defaultModal')">×</button></div>
+      <input type="hidden" id="defaultId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>عنوان شرط</label><input id="defaultLabel" type="text"></div>
+        <div class="admin-field"><label>نوع شرط</label><select id="defaultType"><option value="winner">برنده</option><option value="total_goals">تعداد گل</option><option value="btts">هر دو تیم گل می‌زنند</option><option value="first_goal_team">اولین تیم گل‌زن</option><option value="first_half_goal">گل در نیمه اول</option><option value="penalty">پنالتی در بازی</option><option value="exact_score">نتیجه دقیق</option><option value="custom">سفارشی</option></select></div>
+        <div class="admin-field"><label>امتیاز</label><input id="defaultPoints" type="number" min="1" value="10"></div>
+        <div class="admin-field"><label>ترتیب نمایش</label><input id="defaultOrder" type="number" min="0" value="0"></div>
+      </div>
+      <div class="admin-field" style="margin-top:1rem"><label>گزینه‌ها (هر خط یک گزینه)</label><textarea id="defaultOptions"></textarea></div>
+      <div class="admin-field" style="margin-top:1rem"><label><input id="defaultIsActive" type="checkbox" checked> فعال</label></div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('defaultModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveDefaultBet()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="resultModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3>ثبت نتیجه بازی</h3><button class="admin-close" type="button" onclick="closeModal('resultModal')">×</button></div>
+      <input type="hidden" id="resultMatchId">
+      <div id="resultMatchName" class="admin-pill" style="margin-bottom:1rem"></div>
+      <div class="admin-form-grid three">
+        <div class="admin-field"><label id="resultScore1Label">گل تیم اول</label><input id="resultScore1" type="number" min="0" value="0"></div>
+        <div class="admin-field"><label id="resultScore2Label">گل تیم دوم</label><input id="resultScore2" type="number" min="0" value="0"></div>
+        <div class="admin-field"><label id="resultFirstGoalLabel">اولین تیم گل‌زن</label><select id="resultFirstGoal"><option value="">خودکار / نامشخص</option><option value="team1">تیم اول</option><option value="team2">تیم دوم</option><option value="none">بدون گل</option></select></div>
+      </div>
+      <div class="admin-form-grid" style="margin-top:1rem">
+        <div class="admin-field"><label>گل در نیمه اول</label><select id="resultFirstHalf"><option value="">نامشخص</option><option value="1">بله</option><option value="0">خیر</option></select></div>
+        <div class="admin-field"><label>پنالتی در بازی</label><select id="resultPenalty"><option value="">نامشخص</option><option value="1">بله</option><option value="0">خیر</option></select></div>
+      </div>
+      <div class="admin-card" style="margin-top:1rem;background:rgba(16,36,63,0.03)">
+        <div class="admin-toolbar"><h3>Fallback دستی برای شرط‌ها</h3><span class="admin-pill">اگر شرطی خودکار تشخیص داده نشود، از اینجا مشخص کنید.</span></div>
+        <div id="resultManualRoot"></div>
+      </div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('resultModal')">انصراف</button>
+        <button class="admin-btn success" type="button" onclick="saveResult()">ثبت نتیجه و محاسبه امتیاز</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="rewardModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="rewardModalTitle">افزودن جایزه</h3><button class="admin-close" type="button" onclick="closeModal('rewardModal')">×</button></div>
+      <input type="hidden" id="rewardId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>عنوان جایزه</label><input id="rewardTitle" type="text"></div>
+        <div class="admin-field"><label>عکس جایزه</label><input id="rewardImageUrl" type="text" placeholder="https://..."></div>
+        <div class="admin-field"><label>امتیاز لازم</label><input id="rewardPointsCost" type="number" min="1" value="40"></div>
+        <div class="admin-field"><label>موجودی</label><input id="rewardStock" type="number" min="0" placeholder="خالی = نامحدود"></div>
+        <div class="admin-field"><label>کد/خروجی تحویل به کاربر</label><input id="rewardCode" type="text" placeholder="OFF15-WC26"></div>
+        <div class="admin-field"><label>لینک خرید محصول</label><input id="rewardProductUrl" type="text" placeholder="https://example.com/product"></div>
+        <div class="admin-field"><label>ترتیب نمایش</label><input id="rewardSortOrder" type="number" min="0" value="0"></div>
+      </div>
+      <div class="admin-note" style="margin-top:1rem">سایز پیشنهادی عکس جایزه `1200x900` است تا در کارت‌های سایت بدون برش بد نمایش داده نشود.</div>
+      <div class="admin-field" style="margin-top:1rem">
+        <label>آپلود عکس جایزه</label>
+        <div class="upload-row">
+          <input id="rewardImageUpload" type="file" accept="image/*">
+          <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardImageUpload', 'rewardImageUrl', 'rewards')">آپلود</button>
+        </div>
+      </div>
+      <div class="asset-preview reward" id="rewardImagePreview" style="margin-top:1rem"><img alt="پیش‌نمایش جایزه"></div>
+      <div class="admin-field" style="margin-top:1rem"><label>توضیحات</label><textarea id="rewardDescription"></textarea></div>
+      <div class="admin-field" style="margin-top:1rem"><label><input id="rewardIsActive" type="checkbox" checked> فعال</label></div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('rewardModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveReward()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="adModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="adModalTitle">افزودن بنر تبلیغاتی</h3><button class="admin-close" type="button" onclick="closeModal('adModal')">×</button></div>
+      <input type="hidden" id="adId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>عنوان بنر</label><input id="adTitle" type="text"></div>
+        <div class="admin-field"><label>عکس بنر</label><input id="adImageUrl" type="text" placeholder="https://..."></div>
+        <div class="admin-field"><label>لینک کلیک</label><input id="adLinkUrl" type="text" placeholder="https://example.com"></div>
+        <div class="admin-field"><label>ترتیب نمایش</label><input id="adSortOrder" type="number" min="0" value="0"></div>
+      </div>
+      <div class="admin-note" style="margin-top:1rem">سایز پیشنهادی بنر تبلیغاتی `1200x1200` است. هر بنر فعال، زیر جدول امتیازات صفحه اصلی نمایش داده می‌شود.</div>
+      <div class="admin-field" style="margin-top:1rem">
+        <label>آپلود عکس بنر</label>
+        <div class="upload-row">
+          <input id="adImageUpload" type="file" accept="image/*">
+          <button class="admin-btn secondary" type="button" onclick="uploadImageToField('adImageUpload', 'adImageUrl', 'ads')">آپلود</button>
+        </div>
+      </div>
+      <div class="asset-preview ad" id="adImagePreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر"></div>
+      <div class="admin-field" style="margin-top:1rem"><label><input id="adIsActive" type="checkbox" checked> فعال</label></div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('adModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveAd()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({
+      activePage: 'admin',
+      skipFooter: true,
+      onAuth: function (user) {
+        if (!user || user.role !== 'admin') {
+          window.location.href = '/';
+          return;
+        }
+        boot();
+      }
+    });
+
+    let currentSection = 'dashboard';
+    let matchesCache = [];
+    let defaultBetsCache = [];
+    let currentMatchBets = [];
+    let rewardsCache = [];
+    let adsCache = [];
+    let booted = false;
+    let isRefreshingSection = false;
+    let adminRefreshTimer = null;
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) { return '۰۱۲۳۴۵۶۷۸۹'[digit]; });
+    }
+
+    function parseTehranDate(value) {
+      if (value && typeof value === 'object') return value;
+      return new Date(String(value).replace(' ', 'T') + '+03:30');
+    }
+
+    function formatDate(dateString) {
+      return parseTehranDate(dateString).toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function statusBadge(match) {
+      if (match.status === 'finished') return '<span class="wc-badge success">پایان یافته</span>';
+      if (match.status === 'live') return '<span class="wc-badge warning">زنده' + (match.live_minute ? ' | ' + toFaDigits(match.live_minute) + ' دقیقه' : '') + '</span>';
+      if (match.is_prediction_open) return '<span class="wc-badge success">باز برای پیش‌بینی</span>';
+      return '<span class="wc-badge danger">بسته</span>';
+    }
+
+    function optionsToLines(options) {
+      return (options || []).join('\n');
+    }
+
+    function linesToOptions(value) {
+      return value.split('\n').map(function (item) { return item.trim(); }).filter(Boolean);
+    }
+
+    function showSection(name) {
+      currentSection = name;
+      document.querySelectorAll('.admin-nav button').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-section') === name);
+      });
+      document.querySelectorAll('.admin-section').forEach(function (section) {
+        section.classList.toggle('active', section.getAttribute('data-section') === name);
+      });
+      document.getElementById('panelTitle').textContent = {
+        dashboard: 'داشبورد',
+        matches: 'بازی‌ها',
+        bets: 'شرط‌های هر بازی',
+        defaults: 'شرط‌های پیش‌فرض',
+        users: 'کاربران',
+        rewards: 'جوایز',
+        ads: 'بنرها',
+        backup: 'بکاپ',
+        settings: 'تنظیمات'
+      }[name];
+      refreshCurrent();
+    }
+
+    function refreshCurrent() {
+      const actions = {
+        dashboard: loadDashboard,
+        matches: loadMatches,
+        bets: loadBetsSection,
+        defaults: loadDefaults,
+        users: loadUsers,
+        rewards: loadRewards,
+        ads: loadAds,
+        backup: loadBackupSection,
+        settings: loadSettings
+      };
+      const action = actions[currentSection];
+      if (!action || isRefreshingSection) return;
+      isRefreshingSection = true;
+      Promise.resolve(action()).finally(function () {
+        isRefreshingSection = false;
+      });
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function fillMatchSelect(selectedId) {
+      const select = document.getElementById('betsMatchSelect');
+      select.innerHTML = '<option value="">انتخاب بازی</option>' + matchesCache.map(function (match) {
+        return '<option value="' + match.id + '">' + match.team1 + ' - ' + match.team2 + ' | ' + formatDate(match.match_datetime) + '</option>';
+      }).join('');
+      if (selectedId) select.value = String(selectedId);
+      select.onchange = loadCurrentMatchBets;
+    }
+
+    async function loadDashboard() {
+      const [statsRes, matchesRes, usersRes] = await Promise.all([
+        WC.apiFetch('admin_stats'),
+        WC.apiFetch('admin_matches'),
+        WC.apiFetch('leaderboard', { limit: 8 })
+      ]);
+      if (matchesRes.success) matchesCache = matchesRes.matches || [];
+
+      const stats = statsRes.success ? statsRes.stats : {};
+      document.getElementById('statsRoot').innerHTML = [
+        ['کاربران', stats.total_users || 0],
+        ['بازی‌ها', stats.total_matches || 0],
+        ['پیش‌بینی‌ها', stats.total_predictions || 0],
+        ['بازی‌های آینده', stats.upcoming_matches || 0],
+        ['بازی‌های زنده', stats.live_matches || 0],
+        ['جوایز فعال', stats.active_rewards || 0],
+        ['بازی‌های پایان‌یافته', stats.finished_matches || 0]
+      ].map(function (item) {
+        return '<div class="admin-stat"><strong>' + toFaDigits(item[1]) + '</strong><span>' + item[0] + '</span></div>';
+      }).join('');
+
+      const upcoming = matchesCache.filter(function (match) {
+        const diff = new Date(match.match_datetime).getTime() - Date.now();
+        return diff > 0 && diff <= 48 * 3600000;
+      });
+      document.getElementById('upcomingRoot').innerHTML = upcoming.length ? (
+        '<table><thead><tr><th>بازی</th><th>زمان</th><th>پیش‌بینی</th><th>عملیات</th></tr></thead><tbody>' +
+        upcoming.map(function (match) {
+          return '<tr><td>' + (match.team1_flag || '🏳️') + ' ' + match.team1 + ' - ' + match.team2 + ' ' + (match.team2_flag || '🏳️') + '</td><td>' + formatDate(match.match_datetime) + '</td><td>' + statusBadge(match) + '</td><td><button class="admin-btn small success" type="button" onclick="openResultModal(' + match.id + ')">نتیجه</button></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">بازی نزدیکی ثبت نشده است.</div>';
+
+      const leaderboard = usersRes.success ? (usersRes.leaderboard || []) : [];
+      document.getElementById('topUsersRoot').innerHTML = leaderboard.length ? leaderboard.map(function (user, index) {
+        return '<div class="leader-row"><div class="leader-rank ' + (index < 3 ? 'top' : '') + '">' + (index + 1) + '</div><div class="leader-name"><strong>' + (user.name || 'کاربر') + '</strong><span>' + (user.phone_masked || '') + '</span></div><div class="leader-points">' + toFaDigits(user.total_points || 0) + '</div></div>';
+      }).join('') : '<div class="wc-empty">هنوز امتیازی ثبت نشده است.</div>';
+    }
+
+    async function loadMatches() {
+      const response = await WC.apiFetch('admin_matches');
+      const root = document.getElementById('matchesRoot');
+      if (!response.success) {
+        root.innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری بازی‌ها') + '</div>';
+        return;
+      }
+      matchesCache = response.matches || [];
+      fillMatchSelect(document.getElementById('betsMatchSelect').value);
+      root.innerHTML = matchesCache.length ? (
+        '<table><thead><tr><th>بازی</th><th>تاریخ</th><th>مرحله</th><th>پیش‌بینی‌ها</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>' +
+        matchesCache.map(function (match) {
+          return '<tr><td>' + (match.team1_flag || '🏳️') + ' ' + match.team1 + ' - ' + match.team2 + ' ' + (match.team2_flag || '🏳️') + '</td><td>' + formatDate(match.match_datetime) + '</td><td>' + (match.group_name ? 'گروه ' + match.group_name : match.stage) + '</td><td>' + toFaDigits(match.pred_count || 0) + '</td><td>' + statusBadge(match) + '</td><td><div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openMatchModal(' + match.id + ')">ویرایش</button><button class="admin-btn success small" type="button" onclick="openResultModal(' + match.id + ')">نتیجه</button><button class="admin-btn danger small" type="button" onclick="deleteMatch(' + match.id + ')">حذف</button></div></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هیچ بازی‌ای ثبت نشده است.</div>';
+    }
+
+    async function loadBetsSection() {
+      if (!matchesCache.length) {
+        const matchesRes = await WC.apiFetch('admin_matches');
+        if (matchesRes.success) matchesCache = matchesRes.matches || [];
+      }
+      fillMatchSelect(document.getElementById('betsMatchSelect').value || (matchesCache[0] ? matchesCache[0].id : ''));
+      loadCurrentMatchBets();
+    }
+
+    async function loadCurrentMatchBets() {
+      const matchId = document.getElementById('betsMatchSelect').value;
+      const root = document.getElementById('betsRoot');
+      if (!matchId) {
+        root.innerHTML = '<div class="wc-empty">یک بازی انتخاب کنید.</div>';
+        return;
+      }
+      const response = await WC.apiFetch('admin_bets', { match_id: matchId });
+      if (!response.success) {
+        root.innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری شرط‌ها') + '</div>';
+        return;
+      }
+      currentMatchBets = response.bets || [];
+      root.innerHTML = currentMatchBets.length ? (
+        '<table><thead><tr><th>عنوان</th><th>نوع</th><th>امتیاز</th><th>ترتیب</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>' +
+        currentMatchBets.map(function (bet) {
+          return '<tr><td>' + bet.label + '<div style="margin-top:0.25rem;color:var(--wc-muted);font-size:0.74rem">' + (bet.sync_with_default == 1 ? 'لینک‌شده با پیش‌فرض' : 'اختصاصی این بازی') + '</div></td><td>' + bet.bet_type + '</td><td>' + toFaDigits(bet.points) + '</td><td>' + toFaDigits(bet.display_order || 0) + '</td><td>' + (bet.is_active ? '<span class="wc-badge success">فعال</span>' : '<span class="wc-badge danger">غیرفعال</span>') + '</td><td><div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openBetModal(' + bet.id + ')">ویرایش</button><button class="admin-btn danger small" type="button" onclick="deleteBet(' + bet.id + ')">حذف</button></div></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">برای این بازی هنوز شرطی تعریف نشده است.</div>';
+    }
+
+    async function loadDefaults() {
+      const response = await WC.apiFetch('admin_default_bets');
+      const root = document.getElementById('defaultsRoot');
+      if (!response.success) {
+        root.innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری شرط‌های پیش‌فرض') + '</div>';
+        return;
+      }
+      defaultBetsCache = response.default_bets || [];
+      root.innerHTML = defaultBetsCache.length ? (
+        '<table><thead><tr><th>عنوان</th><th>نوع</th><th>امتیاز</th><th>ترتیب</th><th>گزینه‌ها</th><th>عملیات</th></tr></thead><tbody>' +
+        defaultBetsCache.map(function (bet) {
+          return '<tr><td>' + bet.label + '</td><td>' + bet.bet_type + '</td><td>' + toFaDigits(bet.points) + '</td><td>' + toFaDigits(bet.display_order || 0) + '</td><td style="white-space:pre-line">' + (bet.options || []).join('\n') + '</td><td><div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openDefaultModal(' + bet.id + ')">ویرایش</button><button class="admin-btn danger small" type="button" onclick="deleteDefaultBet(' + bet.id + ')">حذف</button></div></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هنوز شرط پیش‌فرضی ثبت نشده است.</div>';
+    }
+
+    async function loadUsers() {
+      const [usersRes, leaderboardRes] = await Promise.all([
+        WC.apiFetch('admin_users'),
+        WC.apiFetch('leaderboard', { limit: 50 })
+      ]);
+      const root = document.getElementById('usersRoot');
+      if (!usersRes.success) {
+        root.innerHTML = '<div class="wc-empty">' + (usersRes.error || 'خطا در بارگذاری کاربران') + '</div>';
+        return;
+      }
+      const leaderboard = leaderboardRes.success ? (leaderboardRes.leaderboard || []) : [];
+      root.innerHTML = (
+        '<table><thead><tr><th>نام</th><th>موبایل</th><th>امتیاز کل</th><th>امتیاز قابل خرج</th><th>پیش‌بینی</th><th>صحیح</th><th>رتبه</th></tr></thead><tbody>' +
+        (usersRes.users || []).map(function (user) {
+          const rank = leaderboard.findIndex(function (item) { return item.id == user.id; });
+          return '<tr><td>' + (user.name || 'کاربر') + '</td><td dir="ltr">' + user.phone + '</td><td>' + toFaDigits(user.total_points || 0) + '</td><td>' + toFaDigits(user.available_points || 0) + '</td><td>' + toFaDigits(user.pred_count || 0) + '</td><td>' + toFaDigits(user.correct_count || 0) + '</td><td>' + (rank >= 0 ? toFaDigits(rank + 1) : '—') + '</td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      );
+    }
+
+    function downloadUsersExport() {
+      window.open('/backend/export_users.php', '_blank');
+    }
+
+    async function loadRewards() {
+      const response = await WC.apiFetch('admin_rewards');
+      if (!response.success) {
+        document.getElementById('rewardsRoot').innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری جوایز') + '</div>';
+        document.getElementById('rewardRedemptionsRoot').innerHTML = '';
+        return;
+      }
+      rewardsCache = response.rewards || [];
+      const redemptions = response.redemptions || [];
+
+      document.getElementById('rewardsRoot').innerHTML = rewardsCache.length ? (
+        '<div class="reward-grid">' +
+        rewardsCache.map(function (reward) {
+          const rewardTitle = reward.title || 'جایزه';
+          return (
+            '<article class="reward-card">' +
+              (reward.image_url ? '<img src="' + reward.image_url + '" alt="' + rewardTitle.replace(/"/g, '&quot;') + '">' : '<img src="/assets/worldcup.jpeg" alt="">') +
+              '<div class="reward-card-body">' +
+                '<div class="admin-actions" style="justify-content:space-between"><h4>' + rewardTitle + '</h4><span class="wc-badge ' + (reward.is_active ? 'success' : 'danger') + '">' + (reward.is_active ? 'فعال' : 'غیرفعال') + '</span></div>' +
+                '<p>' + (reward.description || 'بدون توضیح') + '</p>' +
+                '<div class="admin-pill">' + toFaDigits(reward.points_cost || 0) + ' امتیاز</div>' +
+                '<div class="admin-pill">موجودی: ' + (reward.stock === null ? 'نامحدود' : toFaDigits(reward.stock)) + '</div>' +
+                (reward.product_url ? '<a class="admin-btn secondary small" href="' + reward.product_url + '" target="_blank" rel="noopener">لینک خرید</a>' : '') +
+                '<div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openRewardModal(' + reward.id + ')">ویرایش</button><button class="admin-btn danger small" type="button" onclick="deleteReward(' + reward.id + ')">حذف</button></div>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('') +
+        '</div>'
+      ) : '<div class="wc-empty">هنوز جایزه‌ای ثبت نشده است.</div>';
+
+      document.getElementById('rewardRedemptionsRoot').innerHTML = redemptions.length ? (
+        '<table><thead><tr><th>کاربر</th><th>جایزه</th><th>امتیاز خرج شده</th><th>کد تحویل</th><th>زمان</th></tr></thead><tbody>' +
+        redemptions.map(function (row) {
+          return '<tr><td>' + (row.user_name || 'کاربر') + '<div style="color:var(--wc-muted);font-size:0.74rem" dir="ltr">' + (row.user_phone || '') + '</div></td><td>' + (row.reward_title || '—') + '</td><td>' + toFaDigits(row.points_spent || 0) + '</td><td dir="ltr">' + (row.delivered_code || '—') + '</td><td>' + formatDate(row.created_at) + '</td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هنوز جایزه‌ای توسط کاربران دریافت نشده است.</div>';
+    }
+
+    async function loadAds() {
+      const response = await WC.apiFetch('admin_ads');
+      const root = document.getElementById('adsRoot');
+      if (!response.success) {
+        root.innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری بنرها') + '</div>';
+        return;
+      }
+      adsCache = response.ads || [];
+      root.innerHTML = adsCache.length ? (
+        '<div class="reward-grid">' +
+        adsCache.map(function (ad) {
+          return (
+            '<article class="reward-card">' +
+              '<img src="' + (ad.image_url || '/assets/worldcup.jpeg') + '" alt="' + (ad.title || 'بنر').replace(/"/g, '&quot;') + '">' +
+              '<div class="reward-card-body">' +
+                '<div class="admin-actions" style="justify-content:space-between"><h4>' + (ad.title || 'بنر تبلیغاتی') + '</h4><span class="wc-badge ' + (ad.is_active ? 'success' : 'danger') + '">' + (ad.is_active ? 'فعال' : 'غیرفعال') + '</span></div>' +
+                '<div class="admin-pill">ترتیب: ' + toFaDigits(ad.sort_order || 0) + '</div>' +
+                (ad.link_url ? '<a class="admin-btn secondary small" href="' + ad.link_url + '" target="_blank" rel="noopener">باز کردن لینک</a>' : '<div class="admin-pill">بدون لینک</div>') +
+                '<div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openAdModal(' + ad.id + ')">ویرایش</button><button class="admin-btn danger small" type="button" onclick="deleteAd(' + ad.id + ')">حذف</button></div>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('') +
+        '</div>'
+      ) : '<div class="wc-empty">هنوز بنر تبلیغاتی ثبت نشده است.</div>';
+    }
+
+    function loadBackupSection() {
+      return true;
+    }
+
+    async function loadSettings() {
+      const response = await WC.apiFetch('admin_settings');
+      if (!response.success || !response.settings) return;
+      const settings = response.settings;
+      document.getElementById('settingSiteName').value = settings.site_name || '';
+      document.getElementById('settingSiteTagline').value = settings.site_tagline || '';
+      document.getElementById('settingLockMinutes').value = settings.prediction_lock_minutes || 10;
+      document.getElementById('settingWindowHours').value = settings.prediction_window_hours || 48;
+      document.getElementById('settingLogoUrl').value = settings.logo_url || '';
+      document.getElementById('settingNavLogoUrl').value = settings.nav_logo_url || '';
+      document.getElementById('settingAuthLogoUrl').value = settings.auth_logo_url || '';
+      document.getElementById('settingFooterLogoUrl').value = settings.footer_logo_url || '';
+      document.getElementById('settingAdminLogoUrl').value = settings.admin_logo_url || '';
+      document.getElementById('settingHeroBannerUrl').value = settings.hero_banner_url || '';
+      document.getElementById('settingHeroBannerLinkUrl').value = settings.hero_banner_link_url || '';
+      document.getElementById('settingHeroBannerPureMode').checked = !!settings.hero_banner_pure_mode;
+      document.getElementById('settingHeroBannerMobileUrl').value = settings.hero_banner_mobile_url || '';
+      document.getElementById('settingHeroBannerHeightDesktop').value = settings.hero_banner_height_desktop || 220;
+      document.getElementById('settingHeroBannerHeightMobile').value = settings.hero_banner_height_mobile || 168;
+      document.getElementById('settingHomeSidebarBannerUrl').value = settings.home_sidebar_banner_url || '';
+      document.getElementById('settingHomeSidebarBannerLinkUrl').value = settings.home_sidebar_banner_link_url || '';
+      document.getElementById('settingLiveScoresEnabled').checked = !!settings.live_scores_enabled;
+      document.getElementById('settingLiveScoresProvider').value = settings.live_scores_provider || 'varzesh3_html';
+      document.getElementById('settingLiveScoresFeedUrl').value = settings.live_scores_feed_url || '';
+      updateLiveFeedPlaceholder();
+      document.getElementById('settingLiveScoresRefreshMinutes').value = settings.live_scores_refresh_minutes || 5;
+      document.getElementById('settingLiveScoresLastSyncAt').value = settings.live_scores_last_sync_at || 'هنوز انجام نشده';
+      document.getElementById('settingFooterNote').value = settings.footer_note || '';
+      document.getElementById('settingFooterCredit').value = settings.footer_credit || '';
+      previewLogo('settingLogoUrl', 'logoPreviewMain');
+      previewLogo('settingNavLogoUrl', 'logoPreviewNav');
+      previewLogo('settingAuthLogoUrl', 'logoPreviewAuth');
+      previewLogo('settingFooterLogoUrl', 'logoPreviewFooter');
+      previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin');
+      previewAsset('settingHeroBannerUrl', 'heroBannerPreview');
+      previewAsset('settingHomeSidebarBannerUrl', 'sidebarBannerPreview');
+      document.getElementById('adminBrandLogo').src = settings.admin_logo_url || settings.logo_url || '/assets/worldcup.jpeg';
+      document.getElementById('adminBrandName').textContent = settings.site_name || 'پنل ادمین';
+    }
+
+    function updateLiveFeedPlaceholder() {
+      const provider = document.getElementById('settingLiveScoresProvider').value;
+      const input = document.getElementById('settingLiveScoresFeedUrl');
+      input.placeholder = provider === 'varzesh3_html'
+        ? 'https://www.varzesh3.com/livescore'
+        : (provider === 'espn_scoreboard'
+          ? 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard'
+          : 'https://example.com/worldcup-feed.json');
+    }
+
+    function previewLogo(inputId, previewId) {
+      const url = document.getElementById(inputId).value.trim();
+      const box = document.getElementById(previewId);
+      const img = box.querySelector('img');
+      if (!url) {
+        box.style.display = 'none';
+        img.src = '';
+        return;
+      }
+      img.src = url;
+      box.style.display = 'block';
+      img.onerror = function () { box.style.display = 'none'; };
+    }
+
+    function previewAsset(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      const box = document.getElementById(previewId);
+      if (!input || !box) return;
+      const img = box.querySelector('img');
+      const url = input.value.trim();
+      if (!url) {
+        box.style.display = 'none';
+        img.src = '';
+        return;
+      }
+      img.src = url;
+      box.style.display = 'block';
+      img.onerror = function () { box.style.display = 'none'; };
+    }
+
+    async function uploadImageToField(fileInputId, targetInputId, folder) {
+      const fileInput = document.getElementById(fileInputId);
+      const target = document.getElementById(targetInputId);
+      if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+        WC.toast('ابتدا فایل تصویر را انتخاب کنید.', 'err');
+        return;
+      }
+      const form = new FormData();
+      form.append('image', fileInput.files[0]);
+      form.append('folder', folder || 'uploads');
+      const response = await fetch('/backend/upload_image.php', { method: 'POST', body: form });
+      const data = await response.json();
+      if (!data.success || !data.url) {
+        WC.toast(data.error || 'آپلود انجام نشد.', 'err');
+        return;
+      }
+      target.value = data.url;
+      fileInput.value = '';
+      target.dispatchEvent(new Event('input'));
+      WC.toast('عکس آپلود شد.');
+    }
+
+    function openMatchModal(id) {
+      document.getElementById('matchModalTitle').textContent = id ? 'ویرایش بازی' : 'افزودن بازی';
+      document.getElementById('matchId').value = '';
+      ['matchTeam1', 'matchTeam2', 'matchFlag1', 'matchFlag2', 'matchGroup', 'matchVenue', 'matchDatetime', 'matchExternalRef'].forEach(function (field) {
+        document.getElementById(field).value = '';
+      });
+      document.getElementById('matchStage').value = 'group';
+      document.getElementById('matchStatus').value = 'upcoming';
+      document.getElementById('matchIsOpen').checked = true;
+
+      if (id) {
+        const match = matchesCache.find(function (item) { return item.id == id; });
+        if (match) {
+          document.getElementById('matchId').value = match.id;
+          document.getElementById('matchTeam1').value = match.team1 || '';
+          document.getElementById('matchTeam2').value = match.team2 || '';
+          document.getElementById('matchFlag1').value = match.team1_flag || '';
+          document.getElementById('matchFlag2').value = match.team2_flag || '';
+          document.getElementById('matchGroup').value = match.group_name || '';
+          document.getElementById('matchStage').value = match.stage || 'group';
+          document.getElementById('matchStatus').value = match.status || 'upcoming';
+          document.getElementById('matchVenue').value = match.venue || '';
+          document.getElementById('matchExternalRef').value = match.external_ref || '';
+          document.getElementById('matchIsOpen').checked = !!match.is_open;
+          document.getElementById('matchDatetime').value = (match.match_datetime || '').replace(' ', 'T').slice(0, 16);
+        }
+      }
+      openModal('matchModal');
+    }
+
+    async function saveMatch() {
+      const payload = {
+        id: parseInt(document.getElementById('matchId').value || '0', 10) || undefined,
+        team1: document.getElementById('matchTeam1').value.trim(),
+        team2: document.getElementById('matchTeam2').value.trim(),
+        team1_flag: document.getElementById('matchFlag1').value.trim(),
+        team2_flag: document.getElementById('matchFlag2').value.trim(),
+        group_name: document.getElementById('matchGroup').value.trim(),
+        stage: document.getElementById('matchStage').value,
+        status: document.getElementById('matchStatus').value,
+        match_datetime: document.getElementById('matchDatetime').value,
+        venue: document.getElementById('matchVenue').value.trim(),
+        external_ref: document.getElementById('matchExternalRef').value.trim(),
+        is_open: document.getElementById('matchIsOpen').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_match' : 'admin_add_match', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره بازی', 'err');
+        return;
+      }
+      closeModal('matchModal');
+      WC.toast('بازی ذخیره شد.');
+      await loadMatches();
+      if (currentSection === 'bets') loadBetsSection();
+    }
+
+    async function deleteMatch(id) {
+      if (!confirm('این بازی حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_match', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در حذف بازی', 'err');
+        return;
+      }
+      WC.toast('بازی حذف شد.');
+      loadMatches();
+    }
+
+    function openBetModal(id) {
+      const currentMatchId = parseInt(document.getElementById('betsMatchSelect').value || '0', 10);
+      if (!currentMatchId) {
+        WC.toast('اول یک بازی انتخاب کنید.', 'err');
+        return;
+      }
+      document.getElementById('betModalTitle').textContent = id ? 'ویرایش شرط' : 'افزودن شرط';
+      document.getElementById('betId').value = '';
+      document.getElementById('betLabel').value = '';
+      document.getElementById('betType').value = 'winner';
+      document.getElementById('betPoints').value = 10;
+      document.getElementById('betOrder').value = 0;
+      document.getElementById('betOptions').value = '';
+      document.getElementById('betIsActive').checked = true;
+      document.getElementById('betSync').checked = false;
+
+      if (id) {
+        const bet = currentMatchBets.find(function (item) { return item.id == id; });
+        if (bet) {
+          document.getElementById('betId').value = bet.id;
+          document.getElementById('betLabel').value = bet.label || '';
+          document.getElementById('betType').value = bet.bet_type || 'custom';
+          document.getElementById('betPoints').value = bet.points || 10;
+          document.getElementById('betOrder').value = bet.display_order || 0;
+          document.getElementById('betOptions').value = optionsToLines(bet.options || []);
+          document.getElementById('betIsActive').checked = !!bet.is_active;
+          document.getElementById('betSync').checked = !!bet.sync_with_default;
+        }
+      }
+
+      openModal('betModal');
+    }
+
+    async function saveBet() {
+      const payload = {
+        id: parseInt(document.getElementById('betId').value || '0', 10) || undefined,
+        match_id: parseInt(document.getElementById('betsMatchSelect').value, 10),
+        label: document.getElementById('betLabel').value.trim(),
+        bet_type: document.getElementById('betType').value,
+        points: parseInt(document.getElementById('betPoints').value || '10', 10),
+        display_order: parseInt(document.getElementById('betOrder').value || '0', 10),
+        options: linesToOptions(document.getElementById('betOptions').value),
+        is_active: document.getElementById('betIsActive').checked ? 1 : 0,
+        sync_with_default: document.getElementById('betSync').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_bet' : 'admin_add_bet', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره شرط', 'err');
+        return;
+      }
+      closeModal('betModal');
+      WC.toast('شرط ذخیره شد.');
+      loadCurrentMatchBets();
+    }
+
+    async function deleteBet(id) {
+      if (!confirm('این شرط حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_bet', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در حذف شرط', 'err');
+        return;
+      }
+      WC.toast('شرط حذف شد.');
+      loadCurrentMatchBets();
+    }
+
+    function openDefaultModal(id) {
+      document.getElementById('defaultModalTitle').textContent = id ? 'ویرایش شرط پیش‌فرض' : 'افزودن شرط پیش‌فرض';
+      document.getElementById('defaultId').value = '';
+      document.getElementById('defaultLabel').value = '';
+      document.getElementById('defaultType').value = 'winner';
+      document.getElementById('defaultPoints').value = 10;
+      document.getElementById('defaultOrder').value = 0;
+      document.getElementById('defaultOptions').value = '';
+      document.getElementById('defaultIsActive').checked = true;
+
+      if (id) {
+        const bet = defaultBetsCache.find(function (item) { return item.id == id; });
+        if (bet) {
+          document.getElementById('defaultId').value = bet.id;
+          document.getElementById('defaultLabel').value = bet.label || '';
+          document.getElementById('defaultType').value = bet.bet_type || 'custom';
+          document.getElementById('defaultPoints').value = bet.points || 10;
+          document.getElementById('defaultOrder').value = bet.display_order || 0;
+          document.getElementById('defaultOptions').value = optionsToLines(bet.options || []);
+          document.getElementById('defaultIsActive').checked = !!bet.is_active;
+        }
+      }
+      openModal('defaultModal');
+    }
+
+    async function saveDefaultBet() {
+      const payload = {
+        id: parseInt(document.getElementById('defaultId').value || '0', 10) || undefined,
+        label: document.getElementById('defaultLabel').value.trim(),
+        bet_type: document.getElementById('defaultType').value,
+        points: parseInt(document.getElementById('defaultPoints').value || '10', 10),
+        display_order: parseInt(document.getElementById('defaultOrder').value || '0', 10),
+        options: linesToOptions(document.getElementById('defaultOptions').value),
+        is_active: document.getElementById('defaultIsActive').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_default_bet' : 'admin_add_default_bet', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره شرط پیش‌فرض', 'err');
+        return;
+      }
+      closeModal('defaultModal');
+      WC.toast('شرط پیش‌فرض ذخیره شد و روی بازی‌های لینک‌شده اعمال شد.');
+      loadDefaults();
+      if (currentSection === 'bets') loadCurrentMatchBets();
+    }
+
+    async function deleteDefaultBet(id) {
+      if (!confirm('این شرط پیش‌فرض حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_default_bet', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در حذف شرط پیش‌فرض', 'err');
+        return;
+      }
+      WC.toast('شرط پیش‌فرض حذف شد.');
+      loadDefaults();
+      if (currentSection === 'bets') loadCurrentMatchBets();
+    }
+
+    async function applyDefaultsToCurrentMatch() {
+      const matchId = document.getElementById('betsMatchSelect').value;
+      if (!matchId) {
+        WC.toast('یک بازی انتخاب کنید.', 'err');
+        return;
+      }
+      const response = await WC.apiFetch('admin_copy_default_bets', { match_id: parseInt(matchId, 10) }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در اعمال پیش‌فرض‌ها', 'err');
+        return;
+      }
+      WC.toast('پیش‌فرض‌ها روی این بازی همگام شد.');
+      loadCurrentMatchBets();
+    }
+
+    async function applyDefaultsToAllMatches() {
+      const response = await WC.apiFetch('admin_copy_default_bets', { all_matches: 1 }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در اعمال پیش‌فرض‌ها', 'err');
+        return;
+      }
+      WC.toast('پیش‌فرض‌ها روی همه بازی‌ها اعمال شد.');
+      loadDefaults();
+      if (currentSection === 'bets') loadCurrentMatchBets();
+    }
+
+    async function openResultModal(matchId) {
+      const detail = await WC.apiFetch('match_detail', { id: matchId });
+      if (!detail.success) {
+        WC.toast(detail.error || 'خطا در بارگذاری بازی', 'err');
+        return;
+      }
+      const match = detail.match;
+      const bets = detail.bets || [];
+      const resultData = match.result_data || {};
+
+      document.getElementById('resultMatchId').value = match.id;
+      document.getElementById('resultMatchName').textContent = match.team1 + ' - ' + match.team2;
+      document.getElementById('resultScore1Label').textContent = 'گل ' + match.team1;
+      document.getElementById('resultScore2Label').textContent = 'گل ' + match.team2;
+      document.getElementById('resultFirstGoalLabel').textContent = 'اولین تیم گل‌زن';
+      document.getElementById('resultFirstGoal').innerHTML =
+        '<option value="">خودکار / نامشخص</option>' +
+        '<option value="team1">' + match.team1 + '</option>' +
+        '<option value="team2">' + match.team2 + '</option>' +
+        '<option value="none">بدون گل</option>';
+      document.getElementById('resultScore1').value = match.score_team1 || 0;
+      document.getElementById('resultScore2').value = match.score_team2 || 0;
+      const firstGoalValue = resultData.first_goal_team === match.team1
+        ? 'team1'
+        : (resultData.first_goal_team === match.team2 ? 'team2' : (resultData.first_goal_team || ''));
+      document.getElementById('resultFirstGoal').value = firstGoalValue;
+      document.getElementById('resultFirstHalf').value = resultData.first_half_goal === undefined ? '' : String(resultData.first_half_goal);
+      document.getElementById('resultPenalty').value = resultData.penalty === undefined ? '' : String(resultData.penalty);
+      document.getElementById('resultManualRoot').innerHTML = bets.map(function (bet) {
+        const options = bet.options || [];
+        return '<div class="manual-bet-row"><div><strong style="color:var(--wc-navy)">' + bet.label + '</strong><div style="color:var(--wc-muted);font-size:0.75rem;margin-top:0.15rem">نوع: ' + bet.bet_type + '</div></div><select data-manual-bet="' + bet.id + '"><option value="">محاسبه خودکار</option>' + options.map(function (option) { return '<option value="' + option.replace(/"/g, '&quot;') + '">' + option + '</option>'; }).join('') + '</select></div>';
+      }).join('') || '<div class="wc-empty">شرطی برای این بازی ثبت نشده است.</div>';
+      openModal('resultModal');
+    }
+
+    async function saveResult() {
+      const betResults = {};
+      document.querySelectorAll('[data-manual-bet]').forEach(function (select) {
+        if (select.value) betResults[select.getAttribute('data-manual-bet')] = select.value;
+      });
+      const payload = {
+        match_id: parseInt(document.getElementById('resultMatchId').value, 10),
+        score_team1: parseInt(document.getElementById('resultScore1').value || '0', 10),
+        score_team2: parseInt(document.getElementById('resultScore2').value || '0', 10),
+        result_data: {
+          first_goal_team: document.getElementById('resultFirstGoal').value,
+          first_half_goal: document.getElementById('resultFirstHalf').value,
+          penalty: document.getElementById('resultPenalty').value
+        },
+        bet_results: betResults
+      };
+      const response = await WC.apiFetch('admin_set_result', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ثبت نتیجه', 'err');
+        return;
+      }
+      closeModal('resultModal');
+      if (response.manual_required && response.manual_required.length) {
+        WC.toast('نتیجه ثبت شد، اما بعضی شرط‌های سفارشی هنوز نیاز به تعیین دستی دارند.', 'info');
+      } else {
+        WC.toast('نتیجه ثبت شد و امتیازات محاسبه شد.');
+      }
+      refreshCurrent();
+    }
+
+    async function saveSettings() {
+      const payload = {
+        site_name: document.getElementById('settingSiteName').value.trim(),
+        site_tagline: document.getElementById('settingSiteTagline').value.trim(),
+        prediction_lock_minutes: parseInt(document.getElementById('settingLockMinutes').value || '10', 10),
+        prediction_window_hours: parseInt(document.getElementById('settingWindowHours').value || '48', 10),
+        logo_url: document.getElementById('settingLogoUrl').value.trim(),
+        nav_logo_url: document.getElementById('settingNavLogoUrl').value.trim(),
+        auth_logo_url: document.getElementById('settingAuthLogoUrl').value.trim(),
+        footer_logo_url: document.getElementById('settingFooterLogoUrl').value.trim(),
+        admin_logo_url: document.getElementById('settingAdminLogoUrl').value.trim(),
+        hero_banner_url: document.getElementById('settingHeroBannerUrl').value.trim(),
+        hero_banner_link_url: document.getElementById('settingHeroBannerLinkUrl').value.trim(),
+        hero_banner_pure_mode: document.getElementById('settingHeroBannerPureMode').checked ? 1 : 0,
+        hero_banner_mobile_url: document.getElementById('settingHeroBannerMobileUrl').value.trim(),
+        hero_banner_height_desktop: parseInt(document.getElementById('settingHeroBannerHeightDesktop').value || '220', 10),
+        hero_banner_height_mobile: parseInt(document.getElementById('settingHeroBannerHeightMobile').value || '168', 10),
+        home_sidebar_banner_url: document.getElementById('settingHomeSidebarBannerUrl').value.trim(),
+        home_sidebar_banner_link_url: document.getElementById('settingHomeSidebarBannerLinkUrl').value.trim(),
+        live_scores_enabled: document.getElementById('settingLiveScoresEnabled').checked ? 1 : 0,
+        live_scores_provider: document.getElementById('settingLiveScoresProvider').value,
+        live_scores_feed_url: document.getElementById('settingLiveScoresFeedUrl').value.trim(),
+        live_scores_refresh_minutes: parseInt(document.getElementById('settingLiveScoresRefreshMinutes').value || '5', 10),
+        footer_note: document.getElementById('settingFooterNote').value.trim(),
+        footer_credit: document.getElementById('settingFooterCredit').value.trim()
+      };
+      const response = await WC.apiFetch('admin_settings', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره تنظیمات', 'err');
+        return;
+      }
+      WC.toast('تنظیمات ذخیره شد.');
+      await WC.refreshSettings();
+      loadSettings();
+    }
+
+    function openRewardModal(id) {
+      document.getElementById('rewardModalTitle').textContent = id ? 'ویرایش جایزه' : 'افزودن جایزه';
+      document.getElementById('rewardId').value = '';
+      document.getElementById('rewardTitle').value = '';
+      document.getElementById('rewardImageUrl').value = '';
+      document.getElementById('rewardPointsCost').value = 40;
+      document.getElementById('rewardStock').value = '';
+      document.getElementById('rewardCode').value = '';
+      document.getElementById('rewardProductUrl').value = '';
+      document.getElementById('rewardSortOrder').value = 0;
+      document.getElementById('rewardDescription').value = '';
+      document.getElementById('rewardIsActive').checked = true;
+
+      if (id) {
+        const reward = rewardsCache.find(function (item) { return item.id == id; });
+        if (reward) {
+          document.getElementById('rewardId').value = reward.id;
+          document.getElementById('rewardTitle').value = reward.title || '';
+          document.getElementById('rewardImageUrl').value = reward.image_url || '';
+          document.getElementById('rewardPointsCost').value = reward.points_cost || 10;
+          document.getElementById('rewardStock').value = reward.stock === null ? '' : reward.stock;
+          document.getElementById('rewardCode').value = reward.reward_code || '';
+          document.getElementById('rewardProductUrl').value = reward.product_url || '';
+          document.getElementById('rewardSortOrder').value = reward.sort_order || 0;
+          document.getElementById('rewardDescription').value = reward.description || '';
+          document.getElementById('rewardIsActive').checked = !!reward.is_active;
+        }
+      }
+      previewAsset('rewardImageUrl', 'rewardImagePreview');
+      openModal('rewardModal');
+    }
+
+    async function saveReward() {
+      const payload = {
+        id: parseInt(document.getElementById('rewardId').value || '0', 10) || undefined,
+        title: document.getElementById('rewardTitle').value.trim(),
+        image_url: document.getElementById('rewardImageUrl').value.trim(),
+        points_cost: parseInt(document.getElementById('rewardPointsCost').value || '10', 10),
+        stock: document.getElementById('rewardStock').value.trim(),
+        reward_code: document.getElementById('rewardCode').value.trim(),
+        product_url: document.getElementById('rewardProductUrl').value.trim(),
+        sort_order: parseInt(document.getElementById('rewardSortOrder').value || '0', 10),
+        description: document.getElementById('rewardDescription').value.trim(),
+        is_active: document.getElementById('rewardIsActive').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_reward' : 'admin_add_reward', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره جایزه', 'err');
+        return;
+      }
+      closeModal('rewardModal');
+      WC.toast('جایزه ذخیره شد.');
+      loadRewards();
+    }
+
+    async function deleteReward(id) {
+      if (!confirm('این جایزه حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_reward', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در حذف جایزه', 'err');
+        return;
+      }
+      WC.toast('جایزه حذف شد.');
+      loadRewards();
+    }
+
+    function openAdModal(id) {
+      document.getElementById('adModalTitle').textContent = id ? 'ویرایش بنر تبلیغاتی' : 'افزودن بنر تبلیغاتی';
+      document.getElementById('adId').value = '';
+      document.getElementById('adTitle').value = '';
+      document.getElementById('adImageUrl').value = '';
+      document.getElementById('adLinkUrl').value = '';
+      document.getElementById('adSortOrder').value = 0;
+      document.getElementById('adIsActive').checked = true;
+      if (id) {
+        const ad = adsCache.find(function (item) { return item.id == id; });
+        if (ad) {
+          document.getElementById('adId').value = ad.id;
+          document.getElementById('adTitle').value = ad.title || '';
+          document.getElementById('adImageUrl').value = ad.image_url || '';
+          document.getElementById('adLinkUrl').value = ad.link_url || '';
+          document.getElementById('adSortOrder').value = ad.sort_order || 0;
+          document.getElementById('adIsActive').checked = !!ad.is_active;
+        }
+      }
+      previewAsset('adImageUrl', 'adImagePreview');
+      openModal('adModal');
+    }
+
+    async function saveAd() {
+      const payload = {
+        id: parseInt(document.getElementById('adId').value || '0', 10) || undefined,
+        title: document.getElementById('adTitle').value.trim(),
+        image_url: document.getElementById('adImageUrl').value.trim(),
+        link_url: document.getElementById('adLinkUrl').value.trim(),
+        placement: 'leaderboard_below',
+        sort_order: parseInt(document.getElementById('adSortOrder').value || '0', 10),
+        is_active: document.getElementById('adIsActive').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_ad' : 'admin_add_ad', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ذخیره بنر', 'err');
+        return;
+      }
+      closeModal('adModal');
+      WC.toast('بنر تبلیغاتی ذخیره شد.');
+      loadAds();
+    }
+
+    async function deleteAd(id) {
+      if (!confirm('این بنر حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_ad', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در حذف بنر', 'err');
+        return;
+      }
+      WC.toast('بنر حذف شد.');
+      loadAds();
+    }
+
+    function downloadBackup(format) {
+      window.open('/backend/backup.php?format=' + encodeURIComponent(format || 'zip'), '_blank');
+    }
+
+    async function restoreBackup() {
+      const input = document.getElementById('backupRestoreFile');
+      if (!input.files || !input.files[0]) {
+        WC.toast('ابتدا فایل بکاپ را انتخاب کنید.', 'err');
+        return;
+      }
+      if (!confirm('بازگردانی بکاپ، داده‌های فعلی را جایگزین می‌کند. ادامه می‌دهید؟')) return;
+      const form = new FormData();
+      form.append('backup', input.files[0]);
+      const response = await fetch('/backend/restore.php', { method: 'POST', body: form });
+      const data = await response.json();
+      if (!data.success) {
+        WC.toast(data.error || 'بازگردانی انجام نشد.', 'err');
+        return;
+      }
+      WC.toast('بکاپ با موفقیت بازگردانی شد.');
+      input.value = '';
+      refreshCurrent();
+    }
+
+    async function syncScores(force) {
+      const response = await WC.apiFetch('admin_sync_scores', { force: force ? 1 : 0 }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'سینک نتیجه انجام نشد.', 'err');
+        return;
+      }
+      WC.toast((response.synced ? toFaDigits(response.synced) + ' بازی به‌روزرسانی شد.' : 'سینک انجام شد و تغییری پیدا نشد.'), 'info');
+      if (currentSection === 'settings') loadSettings();
+      refreshCurrent();
+    }
+
+    function boot() {
+      if (booted) {
+        refreshCurrent();
+        return;
+      }
+      booted = true;
+      document.querySelectorAll('.admin-nav button').forEach(function (button) {
+        button.addEventListener('click', function () {
+          showSection(this.getAttribute('data-section'));
+        });
+      });
+      document.getElementById('settingLiveScoresProvider').addEventListener('change', updateLiveFeedPlaceholder);
+      [
+        ['settingHeroBannerUrl', 'heroBannerPreview'],
+        ['settingHomeSidebarBannerUrl', 'sidebarBannerPreview'],
+        ['rewardImageUrl', 'rewardImagePreview'],
+        ['adImageUrl', 'adImagePreview']
+      ].forEach(function (pair) {
+        const input = document.getElementById(pair[0]);
+        if (input) {
+          input.addEventListener('input', function () {
+            previewAsset(pair[0], pair[1]);
+          });
+        }
+      });
+      document.querySelectorAll('.admin-modal').forEach(function (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) modal.classList.remove('open');
+        });
+      });
+      loadSettings();
+      loadDashboard();
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) refreshCurrent();
+      });
+      adminRefreshTimer = window.setInterval(function () {
+        if (!document.hidden) refreshCurrent();
+      }, 90000);
+    }
+  </script>
+</body>
+</html>

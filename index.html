@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پیشبینی جام جهانی ۲۰۲۶</title>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .home-filters,
+    .home-date-group,
+    .home-card,
+    .home-promo,
+    .home-leaderboard {
+      padding: 1.1rem;
+    }
+
+    .home-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .home-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .home-filter-tools {
+      display: grid;
+      grid-template-columns: minmax(0, 260px);
+      gap: 0.75rem;
+      margin-bottom: 0.95rem;
+      align-items: end;
+    }
+
+    .home-filter-tools label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      color: var(--wc-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .home-filter-tools input,
+    .home-filter-tools select {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(145,164,184,0.24);
+      background: rgba(255,255,255,0.9);
+      padding: 0.78rem 0.9rem;
+      color: var(--wc-text);
+      outline: none;
+    }
+
+    .home-date-group {
+      padding: 1.2rem;
+    }
+
+    .home-date-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .home-date-head h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--wc-navy);
+    }
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .home-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(145,164,184,0.18);
+      box-shadow: 0 16px 34px rgba(16,36,63,0.08);
+    }
+
+    .home-card-top,
+    .home-card-bottom,
+    .home-team-row {
+      display: grid;
+    }
+
+    .home-card-top {
+      grid-template-columns: auto auto;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .home-team-row {
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .home-team {
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      align-items: center;
+      text-align: center;
+    }
+
+    .home-team strong {
+      font-size: 1rem;
+      color: var(--wc-navy);
+    }
+
+    .home-team span {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .home-vs {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: rgba(16,36,63,0.06);
+      display: grid;
+      place-items: center;
+      color: var(--wc-muted);
+      font-weight: 900;
+    }
+
+    .home-card-bottom {
+      gap: 0.45rem;
+      color: var(--wc-muted);
+      font-size: 0.82rem;
+    }
+
+    .home-card-bottom strong {
+      color: var(--wc-navy);
+      font-size: 0.98rem;
+    }
+
+    .home-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--wc-navy);
+      font-weight: 700;
+      font-size: 0.84rem;
+    }
+
+    .home-promo-link,
+    .home-ad-link {
+      display: block;
+      overflow: hidden;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(145,164,184,0.18);
+    }
+
+    .home-promo-link img,
+    .home-ad-link img {
+      display: block;
+      width: 100%;
+      object-fit: cover;
+    }
+
+    .home-promo-link img {
+      aspect-ratio: 1 / 1;
+    }
+
+    .home-ad-link img {
+      aspect-ratio: 1 / 1;
+    }
+
+    .leader-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(145,164,184,0.16);
+    }
+
+    .leader-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .leader-name {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .leader-name strong {
+      font-size: 0.92rem;
+      color: var(--wc-navy);
+    }
+
+    .leader-points {
+      color: var(--wc-gold);
+      font-weight: 900;
+    }
+
+    .home-ad-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .home-countdown {
+      color: var(--wc-gold);
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .home-hero {
+      width: min(1180px, calc(100% - 1rem));
+      padding: 1rem 1.1rem;
+      min-height: var(--home-hero-height, 220px);
+    }
+
+    .home-hero .wc-page {
+      padding: 0;
+    }
+
+    .home-hero .wc-page-hero-inner {
+      gap: 1.25rem;
+      align-items: stretch;
+    }
+
+    .home-hero .wc-page-hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.9rem;
+    }
+
+    .home-hero .wc-page-hero-copy h1 {
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+    }
+
+    .home-hero .wc-page-hero-copy p {
+      margin: 0;
+      max-width: 720px;
+    }
+
+    .home-hero .wc-hero-brand {
+      width: clamp(88px, 12vw, 118px);
+      border-radius: 24px;
+      align-self: center;
+    }
+
+    .home-hero .wc-hero-stats {
+      margin-top: 0;
+    }
+
+    .home-hero.with-banner {
+      background:
+        linear-gradient(135deg, rgba(16,25,38,0.72), rgba(21,36,56,0.58)),
+        var(--home-hero-banner, linear-gradient(135deg, rgba(31,43,58,0.94), rgba(57,83,107,0.82)));
+      background-size: cover;
+      background-position: center;
+    }
+
+    .home-hero-banner-link {
+      display: none;
+      width: 100%;
+      min-height: inherit;
+    }
+
+    .home-hero-banner-link img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+    }
+
+    .home-hero.pure-banner {
+      padding: 0;
+      min-height: auto;
+      overflow: hidden;
+    }
+
+    .home-hero.pure-banner .wc-page-hero-inner {
+      display: none;
+    }
+
+    .home-hero.pure-banner .home-hero-banner-link {
+      display: block;
+    }
+
+    @media (max-width: 980px) {
+      .home-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .home-filters,
+      .home-date-group,
+      .home-card,
+      .home-promo,
+      .home-leaderboard {
+        padding: 0.95rem;
+      }
+
+      .home-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .home-filter-tools {
+        grid-template-columns: 1fr;
+      }
+
+      .home-team-row {
+        grid-template-columns: 1fr;
+      }
+
+      .home-vs {
+        margin: 0 auto;
+      }
+
+      .home-card-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .home-card-actions .wc-button,
+      .home-card-actions .wc-badge {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .home-hero {
+        width: min(100%, calc(100% - 1rem));
+        padding: 0.9rem;
+        min-height: var(--home-hero-height-mobile, 168px);
+      }
+
+      .home-hero .wc-chip-row {
+        gap: 0.45rem;
+      }
+
+      .home-hero .wc-page-hero-copy h1 {
+        font-size: 1.45rem;
+        line-height: 1.25;
+      }
+
+      .home-hero .wc-page-hero-copy p {
+        font-size: 0.84rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="wc-page-hero home-hero" id="homeHero">
+    <a class="home-hero-banner-link" id="heroBannerLink" href="#" target="_blank" rel="noopener" style="display:none">
+      <img src="/assets/worldcup.jpeg" alt="بنر اصلی" id="heroBannerImage">
+    </a>
+    <div class="wc-page-hero-inner wc-page">
+      <div class="wc-page-hero-copy">
+        <div class="wc-chip-row">
+          <span class="wc-chip">جام جهانی ۲۰۲۶</span>
+          <span class="wc-chip">میزبان: آمریکا، مکزیک، کانادا</span>
+        </div>
+        <h1 id="heroTitle">برنامه و پیش‌بینی مسابقات</h1>
+        <p id="heroTagline">در حال بارگذاری تنظیمات سایت...</p>
+        <div class="wc-hero-stats" id="heroStats"></div>
+      </div>
+      <div class="wc-hero-brand">
+        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+      </div>
+    </div>
+  </header>
+
+  <main class="wc-page">
+    <div class="home-layout">
+      <section class="home-main">
+        <div class="wc-glass-panel home-filters">
+          <div class="wc-section-title">
+            <h2>فیلتر بازی‌ها</h2>
+            <span class="wc-badge info" id="matchesBadge">۰ بازی</span>
+          </div>
+          <div class="home-filter-tools">
+            <label>فیلتر روز
+              <select id="dayFilterSelect">
+                <option value="todayplus">امروز به بعد</option>
+              </select>
+            </label>
+          </div>
+          <div class="wc-chip-row" id="filterRow"></div>
+        </div>
+        <div id="scheduleRoot" class="wc-loader">در حال بارگذاری برنامه مسابقات...</div>
+      </section>
+
+      <aside style="display:flex;flex-direction:column;gap:1rem">
+        <div class="wc-glass-panel home-promo">
+          <div class="wc-section-title">
+            <h3>بنر ویژه</h3>
+          </div>
+          <div id="promoBannerRoot" class="wc-empty">برای این جایگاه هنوز بنری ثبت نشده است.</div>
+        </div>
+
+        <div class="wc-glass-panel home-leaderboard">
+          <div class="wc-section-title">
+            <h3>نفرات برتر</h3>
+            <a class="home-link" href="/profile">حساب من</a>
+          </div>
+          <div id="leaderboardRoot" class="wc-loader">در حال بارگذاری...</div>
+        </div>
+
+        <div id="adBannersRoot" class="home-ad-stack"></div>
+      </aside>
+    </div>
+  </main>
+
+  <button class="wc-to-top" id="topBtn" type="button">↑</button>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: 'home' });
+
+    let matches = [];
+    let leaderboard = [];
+    let adBanners = [];
+    let activeFilter = 'all';
+    let settings = WC.getSettings();
+    let dayFilter = 'todayplus';
+    let isLoadingPage = false;
+    let pageRefreshTimer = null;
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function parseTehranDate(value) {
+      if (value && typeof value === 'object') return value;
+      return new Date(String(value).replace(' ', 'T') + '+03:30');
+    }
+
+    function matchDate(match) {
+      return parseTehranDate(match.match_datetime);
+    }
+
+    function formatDate(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleDateString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    function formatDateTime(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function dateKey(dateValue) {
+      if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}/.test(dateValue)) {
+        return dateValue.slice(0, 10);
+      }
+      const parts = new Intl.DateTimeFormat('en', {
+        timeZone: 'Asia/Tehran',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(parseTehranDate(dateValue));
+      const map = {};
+      parts.forEach(function (part) {
+        map[part.type] = part.value;
+      });
+      return map.year + '-' + map.month + '-' + map.day;
+    }
+
+    function countdownText(match) {
+      const diff = ((match.match_timestamp || 0) * 1000) - Date.now();
+      if (diff <= 0 || match.status !== 'upcoming') return '';
+      const totalMinutes = Math.floor(diff / 60000);
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+      if (days > 0) {
+        return 'شروع تا ' + toFaDigits(days) + ' روز و ' + toFaDigits(hours) + ' ساعت دیگر';
+      }
+      if (hours > 0) {
+        return 'شروع تا ' + toFaDigits(hours) + ' ساعت و ' + toFaDigits(minutes) + ' دقیقه دیگر';
+      }
+      return 'شروع تا ' + toFaDigits(Math.max(minutes, 0)) + ' دقیقه دیگر';
+    }
+
+    function relativeStatus(match) {
+      const now = Date.now();
+      const start = (match.match_timestamp || 0) * 1000;
+      const diff = start - now;
+      if (match.status === 'finished') {
+        return { label: 'پایان یافته', badge: 'success' };
+      }
+      if (match.status === 'live') {
+        return { label: match.live_minute ? ('زنده | ' + toFaDigits(match.live_minute) + ' دقیقه') : 'زنده', badge: 'warning' };
+      }
+      if (diff <= 0) {
+        return { label: 'در حال برگزاری', badge: 'warning' };
+      }
+      if (!match.is_prediction_open && diff > (settings.prediction_window_hours || 48) * 3600000) {
+        return { label: 'پیش‌بینی بعداً باز می‌شود', badge: 'info' };
+      }
+      if (!match.is_prediction_open) {
+        return { label: 'پیش‌بینی بسته شده', badge: 'danger' };
+      }
+      return { label: 'پیش‌بینی باز است', badge: 'success' };
+    }
+
+    function buildHero() {
+      settings = WC.getSettings();
+      document.getElementById('heroTitle').textContent = settings.site_name || 'پیشبینی جام جهانی ۲۰۲۶';
+      document.getElementById('heroTagline').textContent = settings.site_tagline || 'پیش‌بینی زنده بازی‌ها و امتیازدهی خودکار';
+      document.getElementById('heroLogo').src = settings.logo_url || '/assets/worldcup.jpeg';
+      const hero = document.getElementById('homeHero');
+      const heroLink = document.getElementById('heroBannerLink');
+      const heroImage = document.getElementById('heroBannerImage');
+      hero.style.setProperty('--home-hero-height', (settings.hero_banner_height_desktop || 220) + 'px');
+      hero.style.setProperty('--home-hero-height-mobile', (settings.hero_banner_height_mobile || 168) + 'px');
+      if (settings.hero_banner_url) {
+        hero.classList.add('with-banner');
+        const banner = window.innerWidth <= 680 && settings.hero_banner_mobile_url ? settings.hero_banner_mobile_url : settings.hero_banner_url;
+        hero.style.setProperty('--home-hero-banner', 'url("' + banner.replace(/"/g, '%22') + '")');
+        heroImage.src = banner;
+        heroLink.href = settings.hero_banner_link_url || banner;
+        hero.classList.add('pure-banner');
+        heroLink.style.display = 'block';
+      } else {
+        hero.classList.remove('with-banner');
+        hero.classList.remove('pure-banner');
+        hero.style.removeProperty('--home-hero-banner');
+        heroLink.style.display = 'none';
+      }
+
+      const openMatches = matches.filter(function (match) { return match.is_prediction_open; }).length;
+      const finished = matches.filter(function (match) { return match.status === 'finished'; }).length;
+      const liveMatches = matches.filter(function (match) { return match.status === 'live'; }).length;
+      const iranMatches = matches.filter(function (match) { return match.team1.indexOf('ایران') !== -1 || match.team2.indexOf('ایران') !== -1; }).length;
+
+      document.getElementById('heroStats').innerHTML = [
+        ['کل بازی‌ها', toFaDigits(matches.length)],
+        ['باز برای پیش‌بینی', toFaDigits(openMatches)],
+        ['زنده الآن', toFaDigits(liveMatches)],
+        ['بازی‌های ایران', toFaDigits(iranMatches)],
+        ['نتیجه‌دار', toFaDigits(finished)]
+      ].map(function (item) {
+        return '<div class="wc-hero-stat"><strong>' + item[1] + '</strong><span>' + item[0] + '</span></div>';
+      }).join('');
+    }
+
+    function buildDateFilters() {
+      const select = document.getElementById('dayFilterSelect');
+      const days = Array.from(new Set(matches.map(function (match) { return dateKey(match.match_datetime); }))).sort();
+      select.innerHTML = '<option value="todayplus">امروز به بعد</option><option value="">همه روزها</option>' + days.map(function (day) {
+        const label = formatDate(day + ' 00:00:00');
+        return '<option value="' + day + '"' + (dayFilter === day ? ' selected' : '') + '>' + label + '</option>';
+      }).join('');
+      select.value = dayFilter;
+    }
+
+    function renderPromoBanner() {
+      const root = document.getElementById('promoBannerRoot');
+      if (!settings.home_sidebar_banner_url) {
+        root.className = 'wc-empty';
+        root.textContent = 'برای این جایگاه هنوز بنری ثبت نشده است.';
+        return;
+      }
+      root.className = '';
+      root.innerHTML =
+        '<a class="home-promo-link" href="' + (settings.home_sidebar_banner_link_url || settings.home_sidebar_banner_url) + '" target="_blank" rel="noopener">' +
+          '<img src="' + settings.home_sidebar_banner_url + '" alt="بنر ویژه">' +
+        '</a>';
+    }
+
+    function renderAdBanners() {
+      const root = document.getElementById('adBannersRoot');
+      if (!adBanners.length) {
+        root.innerHTML = '';
+        return;
+      }
+      root.innerHTML = adBanners.map(function (ad) {
+        return (
+          '<div class="wc-glass-panel home-promo home-ad-card">' +
+            '<a class="home-ad-link" href="' + (ad.link_url || ad.image_url) + '" target="_blank" rel="noopener">' +
+              '<img src="' + ad.image_url + '" alt="' + (ad.title || 'بنر تبلیغاتی').replace(/"/g, '&quot;') + '">' +
+            '</a>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function buildFilters() {
+      const groups = Array.from(new Set(matches.map(function (match) { return match.group_name; }).filter(Boolean))).sort();
+      const filters = [{ id: 'all', label: 'همه بازی‌ها' }, { id: 'iran', label: 'بازی‌های ایران' }]
+        .concat(groups.map(function (group) {
+          return { id: 'group:' + group, label: 'گروه ' + group };
+        }));
+
+      document.getElementById('matchesBadge').textContent = toFaDigits(matches.length) + ' بازی';
+      document.getElementById('filterRow').innerHTML = filters.map(function (filter) {
+        return '<button type="button" class="wc-chip ' + (filter.id === activeFilter ? 'active' : '') + '" data-filter="' + filter.id + '">' + filter.label + '</button>';
+      }).join('');
+      document.querySelectorAll('[data-filter]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          activeFilter = this.getAttribute('data-filter');
+          buildFilters();
+          renderSchedule();
+        });
+      });
+    }
+
+    function filterMatches() {
+      const todayKey = dateKey(new Date());
+      return matches.filter(function (match) {
+        const matchDay = dateKey(matchDate(match));
+        if (activeFilter === 'iran' && match.team1.indexOf('ایران') === -1 && match.team2.indexOf('ایران') === -1) {
+          return false;
+        }
+        if (activeFilter.indexOf('group:') === 0) {
+          const group = activeFilter.split(':')[1];
+          if (match.group_name !== group) return false;
+        }
+        if (dayFilter === 'todayplus' && matchDay < todayKey) {
+          return false;
+        }
+        if (dayFilter && dayFilter !== 'todayplus' && matchDay !== dayFilter) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function matchAction(match) {
+      if (match.status === 'finished') {
+        return '<span class="wc-badge success">نتیجه ثبت شده</span>';
+      }
+      if (match.status === 'live') {
+        return '<span class="wc-badge warning">در حال برگزاری</span>';
+      }
+      if (match.is_prediction_open) {
+        return '<a class="wc-button" href="/match?id=' + match.id + '&auth=1">پیش‌بینی بازی</a>';
+      }
+      const start = (match.match_timestamp || 0) * 1000;
+      if (start > Date.now() + (settings.prediction_window_hours || 48) * 3600000) {
+        return '<span class="wc-badge info">پیش‌بینی هنوز فعال نیست</span>';
+      }
+      return '<span class="wc-badge danger">پیش‌بینی بسته است</span>';
+    }
+
+    function renderSchedule() {
+      const root = document.getElementById('scheduleRoot');
+      const filtered = filterMatches();
+      if (!filtered.length) {
+        root.className = 'wc-glass-panel wc-empty';
+        root.innerHTML = 'برای این فیلتر بازی‌ای پیدا نشد.';
+        return;
+      }
+
+      const grouped = filtered.reduce(function (acc, match) {
+        const key = dateKey(matchDate(match));
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(match);
+        return acc;
+      }, {});
+
+      root.className = '';
+      root.innerHTML = Object.keys(grouped).sort().map(function (dateKey) {
+        const dayMatches = grouped[dateKey];
+        return (
+          '<div class="wc-glass-panel home-date-group">' +
+            '<div class="home-date-head">' +
+              '<h3>' + formatDate(matchDate(dayMatches[0])) + '</h3>' +
+              '<span class="wc-badge info">' + toFaDigits(dayMatches.length) + ' بازی</span>' +
+            '</div>' +
+            '<div class="home-grid">' +
+              dayMatches.map(function (match) {
+                const state = relativeStatus(match);
+                const when = matchDate(match);
+                const scoreLine = (match.status === 'finished' || match.status === 'live')
+                  ? '<div class="wc-score-pill">' + toFaDigits(match.score_team1 != null ? match.score_team1 : 0) + ' - ' + toFaDigits(match.score_team2 != null ? match.score_team2 : 0) + '</div>'
+                  : '<div class="home-vs">VS</div>';
+                return (
+                  '<article class="home-card">' +
+                    '<div class="home-card-top">' +
+                      '<span class="wc-badge info">' + (match.group_name ? 'گروه ' + match.group_name : 'مرحله ' + match.stage) + '</span>' +
+                      '<span class="wc-badge ' + state.badge + '">' + state.label + '</span>' +
+                    '</div>' +
+                    '<div class="home-team-row">' +
+                      '<div class="home-team"><span>' + (match.team1_flag || '🏳️') + '</span><strong>' + match.team1 + '</strong></div>' +
+                      scoreLine +
+                      '<div class="home-team"><span>' + (match.team2_flag || '🏳️') + '</span><strong>' + match.team2 + '</strong></div>' +
+                    '</div>' +
+                    '<div class="home-card-bottom">' +
+                      '<strong>' + formatDateTime(when) + '</strong>' +
+                      (countdownText(match) ? '<span class="home-countdown">' + countdownText(match) + '</span>' : '') +
+                      '<span>محل برگزاری: ' + (match.venue || 'اعلام نشده') + '</span>' +
+                      (match.status === 'live' ? '<span>وضعیت زنده: ' + (match.live_status_text || (match.live_minute ? toFaDigits(match.live_minute) + ' دقیقه' : 'در حال برگزاری')) + '</span>' : '') +
+                      '<span>پیش‌بینی ثبت‌شده شما: ' + toFaDigits(match.user_predictions || 0) + '</span>' +
+                    '</div>' +
+                    '<div class="home-card-actions">' +
+                      '<a class="home-link" href="/match?id=' + match.id + '">جزئیات بازی</a>' +
+                      matchAction(match) +
+                    '</div>' +
+                  '</article>'
+                );
+              }).join('') +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function renderLeaderboard() {
+      const root = document.getElementById('leaderboardRoot');
+      if (!leaderboard.length) {
+        root.className = 'wc-empty';
+        root.innerHTML = 'هنوز امتیازی ثبت نشده است.';
+        return;
+      }
+      root.className = '';
+      root.innerHTML = leaderboard.slice(0, 5).map(function (user) {
+        return (
+          '<div class="leader-row">' +
+            '<div class="leader-name"><strong>' + (user.name || 'کاربر') + '</strong></div>' +
+            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    async function loadPage() {
+      if (isLoadingPage) return;
+      isLoadingPage = true;
+      try {
+        const [matchesRes, leaderboardRes, adsRes] = await Promise.all([
+          WC.apiFetch('matches'),
+          WC.apiFetch('leaderboard', { limit: 20 }),
+          WC.apiFetch('ads', { placement: 'leaderboard_below' })
+        ]);
+
+        settings = WC.getSettings();
+        matches = matchesRes.success ? (matchesRes.matches || []) : [];
+        leaderboard = leaderboardRes.success ? (leaderboardRes.leaderboard || []) : [];
+        adBanners = adsRes.success ? (adsRes.ads || []) : [];
+
+        buildHero();
+        buildDateFilters();
+        buildFilters();
+        renderPromoBanner();
+        renderAdBanners();
+        renderSchedule();
+        renderLeaderboard();
+      } finally {
+        isLoadingPage = false;
+      }
+    }
+
+    document.getElementById('dayFilterSelect').addEventListener('change', function () {
+      dayFilter = this.value;
+      renderSchedule();
+    });
+    window.addEventListener('resize', buildHero);
+
+    window.addEventListener('scroll', function () {
+      document.getElementById('topBtn').classList.toggle('show', window.scrollY > 500);
+    });
+    document.getElementById('topBtn').addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) loadPage();
+    });
+
+    WC.refreshSettings().then(function () {
+      loadPage();
+      pageRefreshTimer = window.setInterval(function () {
+        if (!document.hidden) loadPage();
+      }, 60000);
+    });
+  </script>
+</body>
+</html>

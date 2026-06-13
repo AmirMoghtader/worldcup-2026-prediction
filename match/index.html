@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>جزئیات بازی</title>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .match-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .match-side,
+    .match-main,
+    .match-meta-card,
+    .match-bet,
+    .match-submit-bar {
+      padding: 1.1rem;
+    }
+
+    .match-board {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin: 1rem 0;
+    }
+
+    .match-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      text-align: center;
+    }
+
+    .match-team .flag {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .match-team strong {
+      color: #fff;
+      font-size: 1.15rem;
+      line-height: 1.4;
+    }
+
+    .match-score {
+      min-width: 112px;
+      min-height: 112px;
+      padding: 1rem;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 1.95rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .match-status-line {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .match-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .match-meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      color: var(--wc-muted);
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+
+    .match-meta-list strong {
+      display: block;
+      color: var(--wc-navy);
+      margin-bottom: 0.1rem;
+    }
+
+    .match-bets {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .match-bet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.8rem;
+    }
+
+    .match-bet-head h3 {
+      margin: 0;
+      color: var(--wc-navy);
+      font-size: 0.96rem;
+    }
+
+    .match-bet-head p {
+      margin: 0.25rem 0 0;
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+    }
+
+    .bet-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .bet-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.9rem 1rem;
+      border-radius: 18px;
+      border: 1px solid rgba(145,164,184,0.24);
+      background: rgba(255,255,255,0.82);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .bet-option:hover { border-color: rgba(16,36,63,0.24); }
+    .bet-option.selected { border-color: rgba(16,36,63,0.42); background: rgba(237,244,250,0.96); }
+    .bet-option.correct { border-color: rgba(11,140,83,0.28); background: rgba(11,140,83,0.09); }
+    .bet-option.wrong { border-color: rgba(214,69,69,0.24); background: rgba(214,69,69,0.09); }
+    .bet-option.disabled { cursor: default; }
+
+    .bet-option-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+    }
+
+    .bet-option-copy strong {
+      color: var(--wc-text);
+      font-size: 0.9rem;
+    }
+
+    .bet-option-copy small {
+      color: var(--wc-muted);
+      font-size: 0.74rem;
+    }
+
+    .bet-option-mark {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(145,164,184,0.42);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .bet-option.selected .bet-option-mark { border-color: var(--wc-navy); background: var(--wc-navy); }
+    .bet-option.correct .bet-option-mark { border-color: var(--wc-green); background: var(--wc-green); }
+    .bet-option.wrong .bet-option-mark { border-color: var(--wc-red); background: var(--wc-red); }
+
+    .exact-score-card {
+      border-radius: 22px;
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(145,164,184,0.2);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .exact-score-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .exact-score-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      text-align: center;
+    }
+
+    .exact-score-team .flag {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .exact-score-select {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(145,164,184,0.28);
+      padding: 0.75rem 0.9rem;
+      background: #fff;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .exact-score-divider {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      font-weight: 900;
+    }
+
+    .exact-score-help {
+      color: var(--wc-muted);
+      font-size: 0.78rem;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .match-note {
+      padding: 0.95rem 1rem;
+      border-radius: 18px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      font-size: 0.84rem;
+      line-height: 1.9;
+    }
+
+    .match-submit-bar {
+      position: sticky;
+      bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(145,164,184,0.2);
+      box-shadow: 0 18px 38px rgba(16,36,63,0.12);
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .match-submit-bar strong {
+      display: block;
+      color: var(--wc-navy);
+    }
+
+    .match-submit-bar span {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+    }
+
+    .match-countdown {
+      color: var(--wc-gold);
+      font-weight: 900;
+      font-size: 0.82rem;
+    }
+
+    @media (max-width: 980px) {
+      .match-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .match-board {
+        grid-template-columns: 1fr;
+      }
+
+      .match-score {
+        margin: 0 auto;
+        min-width: 96px;
+        min-height: 96px;
+        font-size: 1.6rem;
+      }
+
+      .exact-score-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .exact-score-divider {
+        margin: 0 auto;
+      }
+
+      .match-submit-bar {
+        bottom: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="wc-page-hero">
+    <div class="wc-page-hero-inner wc-page">
+      <div class="wc-page-hero-copy">
+        <div class="wc-chip-row" style="margin-bottom:0.8rem">
+          <a href="/" class="wc-chip">بازگشت به بازی‌ها</a>
+          <span class="wc-chip" id="matchStage">در حال بارگذاری...</span>
+        </div>
+        <div class="match-board">
+          <div class="match-team">
+            <span class="flag" id="team1Flag">🏳️</span>
+            <strong id="team1Name">تیم اول</strong>
+          </div>
+          <div class="match-score" id="matchScore">VS</div>
+          <div class="match-team">
+            <span class="flag" id="team2Flag">🏳️</span>
+            <strong id="team2Name">تیم دوم</strong>
+          </div>
+        </div>
+        <div class="match-status-line">
+          <span class="wc-chip" id="matchDate">—</span>
+          <span class="wc-chip" id="matchVenue">—</span>
+          <span class="wc-chip match-countdown" id="matchCountdown">—</span>
+          <span class="wc-chip" id="predictionStatus">—</span>
+        </div>
+      </div>
+      <div class="wc-hero-brand">
+        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+      </div>
+    </div>
+  </header>
+
+  <main class="wc-page">
+    <div class="match-shell">
+      <section class="match-main">
+        <div class="wc-glass-panel" style="padding:1.15rem">
+          <div class="wc-section-title">
+            <h2>شرط‌های این بازی</h2>
+            <span class="wc-badge info" id="betsCount">۰ شرط</span>
+          </div>
+          <div id="authNotice" class="match-note" style="display:none"></div>
+          <div id="betsRoot" class="match-bets">
+            <div class="wc-loader">در حال بارگذاری شرط‌ها...</div>
+          </div>
+          <div id="submitWrap" style="display:none"></div>
+        </div>
+      </section>
+
+      <aside class="match-side">
+        <div class="wc-glass-panel match-meta-card">
+          <div class="wc-section-title"><h3>اطلاعات بازی</h3></div>
+          <div class="match-meta-list" id="metaRoot"></div>
+        </div>
+        <div class="wc-glass-panel match-meta-card">
+          <div class="wc-section-title"><h3>وضعیت پیش‌بینی</h3></div>
+          <div class="match-note" id="lockExplain">در حال بارگذاری...</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: '' });
+
+    const matchId = new URLSearchParams(location.search).get('id');
+    const shouldPromptAuth = new URLSearchParams(location.search).get('auth') === '1';
+    let matchData = null;
+    let bets = [];
+    let userPredictions = {};
+    let pendingSelections = {};
+    let currentUser = null;
+    let isLoadingMatch = false;
+    let matchRefreshTimer = null;
+    let countdownTimer = null;
+    let authPrompted = false;
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function parseTehranDate(value) {
+      if (value && typeof value === 'object') return value;
+      return new Date(String(value).replace(' ', 'T') + '+03:30');
+    }
+
+    function formatDateTime(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function stageLabel(stage) {
+      const map = { group: 'مرحله گروهی', r32: 'مرحله ۳۲ تیم', r16: 'مرحله ۱۶ تیم', qf: 'یک‌چهارم نهایی', sf: 'نیمه‌نهایی', final: 'فینال', '3rd': 'رده‌بندی' };
+      return map[stage] || stage || 'بازی';
+    }
+
+    function countdownText() {
+      if (!matchData || matchData.status !== 'upcoming') return 'شروع شده یا پایان یافته';
+      const diff = ((matchData.match_timestamp || 0) * 1000) - Date.now();
+      if (diff <= 0) return 'شروع شده یا پایان یافته';
+      const totalMinutes = Math.floor(diff / 60000);
+      const days = Math.floor(totalMinutes / 1440);
+      const hours = Math.floor((totalMinutes % 1440) / 60);
+      const minutes = totalMinutes % 60;
+      if (days > 0) return 'تا شروع: ' + toFaDigits(days) + ' روز و ' + toFaDigits(hours) + ' ساعت';
+      if (hours > 0) return 'تا شروع: ' + toFaDigits(hours) + ' ساعت و ' + toFaDigits(minutes) + ' دقیقه';
+      return 'تا شروع: ' + toFaDigits(Math.max(minutes, 0)) + ' دقیقه';
+    }
+
+    function predictionCopy() {
+      if (!matchData) return '';
+      if (matchData.status === 'finished') return 'این بازی پایان یافته و امتیازها محاسبه شده‌اند.';
+      if (matchData.status === 'live') return 'این بازی در حال برگزاری است و ثبت پیش‌بینی بسته شده. نتیجه و دقیقه بازی به‌صورت زنده به‌روزرسانی می‌شود.';
+      if (matchData.is_prediction_open) {
+        return 'پیش‌بینی این بازی باز است و تا ' + toFaDigits(matchData.lock_minutes || 10) + ' دقیقه قبل از شروع بسته می‌شود.';
+      }
+      const start = (matchData.match_timestamp || 0) * 1000;
+      const now = Date.now();
+      if (start > now + (matchData.prediction_window_hours || 48) * 3600000) {
+        return 'پیش‌بینی این بازی فقط در ' + toFaDigits(matchData.prediction_window_hours || 48) + ' ساعت مانده به مسابقه فعال می‌شود.';
+      }
+      return 'زمان پیش‌بینی این بازی به پایان رسیده است.';
+    }
+
+    function renderMeta() {
+      document.getElementById('team1Flag').textContent = matchData.team1_flag || '🏳️';
+      document.getElementById('team2Flag').textContent = matchData.team2_flag || '🏳️';
+      document.getElementById('team1Name').textContent = matchData.team1;
+      document.getElementById('team2Name').textContent = matchData.team2;
+      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      document.getElementById('matchStage').textContent = stageLabel(matchData.stage) + (matchData.group_name ? ' | گروه ' + matchData.group_name : '');
+      document.getElementById('matchDate').textContent = formatDateTime(matchData.match_datetime);
+      document.getElementById('matchVenue').textContent = matchData.venue || 'محل برگزاری اعلام نشده';
+      document.getElementById('matchCountdown').textContent = countdownText();
+      document.title = matchData.team1 + ' - ' + matchData.team2 + ' | ' + (WC.getSettings().site_name || 'جام جهانی ۲۰۲۶');
+
+      if (matchData.status === 'finished' || matchData.status === 'live') {
+        document.getElementById('matchScore').textContent = toFaDigits(matchData.score_team1 != null ? matchData.score_team1 : 0) + ' - ' + toFaDigits(matchData.score_team2 != null ? matchData.score_team2 : 0);
+        document.getElementById('predictionStatus').textContent = matchData.status === 'live'
+          ? (matchData.live_status_text || (matchData.live_minute ? 'دقیقه ' + toFaDigits(matchData.live_minute) : 'زنده'))
+          : 'بازی پایان یافته';
+      } else {
+        document.getElementById('matchScore').textContent = 'VS';
+        document.getElementById('predictionStatus').textContent = matchData.is_prediction_open ? 'پیش‌بینی باز' : 'پیش‌بینی بسته';
+      }
+
+      document.getElementById('lockExplain').textContent = predictionCopy();
+      document.getElementById('metaRoot').innerHTML = [
+        ['مرحله', stageLabel(matchData.stage)],
+        ['گروه', matchData.group_name || '—'],
+        ['شمارش معکوس', countdownText()],
+        ['وضعیت زنده', matchData.status === 'live' ? (matchData.live_status_text || (matchData.live_minute ? toFaDigits(matchData.live_minute) + ' دقیقه' : 'زنده')) : '—'],
+        ['قفل پیش‌بینی', toFaDigits(matchData.lock_minutes || 10) + ' دقیقه قبل از شروع'],
+        ['پنجره ثبت', toFaDigits(matchData.prediction_window_hours || 48) + ' ساعت مانده به شروع']
+      ].map(function (row) {
+        return '<div><strong>' + row[0] + '</strong><span>' + row[1] + '</span></div>';
+      }).join('');
+    }
+
+    function renderAuthNotice() {
+      const notice = document.getElementById('authNotice');
+      if (currentUser || matchData.status === 'finished' || !matchData.is_prediction_open) {
+        notice.style.display = 'none';
+        return;
+      }
+      notice.style.display = 'block';
+      notice.innerHTML = 'برای ثبت پیش‌بینی وارد حساب کاربری شوید. <button type="button" class="wc-button secondary" onclick="WC.openLogin(onLoginSuccess)">ورود / ثبت‌نام</button>';
+    }
+
+    function optionValue(betId) {
+      const saved = userPredictions[betId];
+      return pendingSelections[betId] || (saved ? saved.selected_option : '');
+    }
+
+    function getOptionTitle(bet, option) {
+      const team1 = matchData.team1;
+      const team2 = matchData.team2;
+      if (bet.bet_type === 'winner') {
+        if (option.indexOf('تیم اول') !== -1) return 'برد ' + team1;
+        if (option.indexOf('تیم دوم') !== -1) return 'برد ' + team2;
+      }
+      if (bet.bet_type === 'first_goal_team' || bet.bet_type === 'first_scorer') {
+        if (option === 'تیم اول') return 'گل اول: ' + team1;
+        if (option === 'تیم دوم') return 'گل اول: ' + team2;
+      }
+      return option.replace(/تیم اول/g, team1).replace(/تیم دوم/g, team2);
+    }
+
+    function optionClass(option, bet, savedPrediction, selectedOption) {
+      const correct = bet.correct_option;
+      if (matchData.status === 'finished' && correct) {
+        if (option === correct) return 'bet-option correct disabled';
+        if (savedPrediction && option === savedPrediction.selected_option) return 'bet-option wrong disabled';
+        return 'bet-option disabled';
+      }
+      if (selectedOption === option) return 'bet-option selected';
+      if (!matchData.is_prediction_open || !currentUser) return 'bet-option disabled';
+      return 'bet-option';
+    }
+
+    function renderOptionList(bet) {
+      const saved = userPredictions[bet.id] || null;
+      const selected = optionValue(bet.id);
+      return '<div class="bet-options">' + (bet.options || []).map(function (option) {
+        const klass = optionClass(option, bet, saved, selected);
+        const click = klass.indexOf('disabled') === -1 ? 'onclick="selectOption(' + bet.id + ', \'' + option.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')"' : '';
+        const mark = (klass.indexOf('correct') !== -1) ? '✓' : ((klass.indexOf('wrong') !== -1) ? '×' : '');
+        return '<div class="' + klass + '" ' + click + '><div class="bet-option-copy"><strong>' + getOptionTitle(bet, option) + '</strong></div><span class="bet-option-mark">' + mark + '</span></div>';
+      }).join('') + '</div>';
+    }
+
+    function renderExactScore(bet) {
+      const saved = userPredictions[bet.id] || null;
+      const currentValue = optionValue(bet.id);
+      const parts = currentValue && /^\d{1,2}-\d{1,2}$/.test(currentValue) ? currentValue.split('-') : ['', ''];
+      const disabled = !currentUser || !matchData.is_prediction_open || matchData.status === 'finished';
+      const makeOptions = function (selected) {
+        let html = '<option value="">انتخاب</option>';
+        for (let i = 0; i <= 10; i += 1) {
+          html += '<option value="' + i + '"' + (String(i) === String(selected) ? ' selected' : '') + '>' + toFaDigits(i) + '</option>';
+        }
+        return html;
+      };
+
+      let resultBadge = '<span class="wc-badge warning">' + toFaDigits(bet.points) + ' امتیاز</span>';
+      if (saved && matchData.status === 'finished') {
+        resultBadge = saved.is_correct == 1
+          ? '<span class="wc-badge success">+' + toFaDigits(saved.points_earned) + ' امتیاز</span>'
+          : '<span class="wc-badge danger">پیش‌بینی شما اشتباه بود</span>';
+      } else if (saved) {
+        resultBadge = '<span class="wc-badge success">پیش‌بینی ثبت شده: ' + saved.selected_option + '</span>';
+      }
+
+      return (
+        '<div class="exact-score-card">' +
+          '<div class="match-bet-head" style="margin:0"><div><h3>نتیجه دقیق ' + matchData.team1 + ' - ' + matchData.team2 + '</h3><p>امتیاز این شرط فقط در صورت درست بودن هر دو عدد کامل ثبت می‌شود.</p></div><div class="wc-chip-row">' + resultBadge + (matchData.status === 'finished' && bet.correct_option ? '<span class="wc-badge info">نتیجه صحیح: ' + bet.correct_option + '</span>' : '') + '</div></div>' +
+          '<div class="exact-score-grid">' +
+            '<div class="exact-score-team"><span class="flag">' + (matchData.team1_flag || '🏳️') + '</span><strong>' + matchData.team1 + '</strong><select class="exact-score-select" id="score1-' + bet.id + '" ' + (disabled ? 'disabled' : '') + ' onchange="updateExactScore(' + bet.id + ')">' + makeOptions(parts[0]) + '</select></div>' +
+            '<div class="exact-score-divider">-</div>' +
+            '<div class="exact-score-team"><span class="flag">' + (matchData.team2_flag || '🏳️') + '</span><strong>' + matchData.team2 + '</strong><select class="exact-score-select" id="score2-' + bet.id + '" ' + (disabled ? 'disabled' : '') + ' onchange="updateExactScore(' + bet.id + ')">' + makeOptions(parts[1]) + '</select></div>' +
+          '</div>' +
+          '<div class="exact-score-help">برای پوشش نتیجه‌هایی مثل صفر-صفر، بازه انتخاب از ۰ تا ۱۰ در نظر گرفته شده است.</div>' +
+        '</div>'
+      );
+    }
+
+    function renderBetCard(bet) {
+      const saved = userPredictions[bet.id] || null;
+      const badges = [];
+      if (saved && matchData.status === 'finished') {
+        if (saved.is_correct == 1) badges.push('<span class="wc-badge success">+' + toFaDigits(saved.points_earned) + ' امتیاز</span>');
+        else if (saved.is_correct == 0) badges.push('<span class="wc-badge danger">پاسخ شما اشتباه بود</span>');
+      } else if (saved && !pendingSelections[bet.id]) {
+        badges.push('<span class="wc-badge success">ثبت شده: ' + getOptionTitle(bet, saved.selected_option) + '</span>');
+      } else {
+        badges.push('<span class="wc-badge warning">' + toFaDigits(bet.points) + ' امتیاز</span>');
+      }
+      if (matchData.status === 'finished' && bet.correct_option) {
+        badges.push('<span class="wc-badge info">نتیجه صحیح: ' + getOptionTitle(bet, bet.correct_option) + '</span>');
+      }
+
+      if (bet.bet_type === 'exact_score') {
+        return '<article class="wc-glass-panel match-bet">' + renderExactScore(bet) + '</article>';
+      }
+
+      return (
+        '<article class="wc-glass-panel match-bet">' +
+          '<div class="match-bet-head">' +
+            '<div><h3>' + bet.label + '</h3><p>' + (bet.bet_type === 'winner' ? 'با اسم واقعی تیم‌ها انتخاب کن.' : 'پیش‌بینی خودت را انتخاب کن.') + '</p></div>' +
+            '<div class="wc-chip-row">' + badges.join('') + '</div>' +
+          '</div>' +
+          renderOptionList(bet) +
+        '</article>'
+      );
+    }
+
+    function renderSubmitBar() {
+      const wrap = document.getElementById('submitWrap');
+      if (!currentUser || !matchData.is_prediction_open || matchData.status === 'finished') {
+        wrap.style.display = 'none';
+        wrap.innerHTML = '';
+        return;
+      }
+      const count = Object.keys(pendingSelections).length;
+      wrap.style.display = 'block';
+      wrap.innerHTML =
+        '<div class="match-submit-bar">' +
+          '<div><strong>' + (count ? toFaDigits(count) + ' پیش‌بینی آماده ثبت' : 'شرط‌های دلخواهت را انتخاب کن') + '</strong><span>هر تعداد شرط که بخواهی انتخاب کن و در پایان یک‌جا ثبت کن.</span></div>' +
+          '<button type="button" class="wc-button" ' + (count ? '' : 'disabled') + ' onclick="submitAllPredictions()">' + (count ? 'ثبت همه پیش‌بینی‌ها' : 'ابتدا انتخاب کن') + '</button>' +
+        '</div>';
+    }
+
+    function renderBets() {
+      const root = document.getElementById('betsRoot');
+      document.getElementById('betsCount').textContent = toFaDigits(bets.length) + ' شرط';
+      if (!bets.length) {
+        root.innerHTML = '<div class="wc-empty">برای این بازی هنوز شرطی تعریف نشده است.</div>';
+        renderSubmitBar();
+        return;
+      }
+      root.innerHTML = bets.map(renderBetCard).join('');
+      renderSubmitBar();
+    }
+
+    function selectOption(betId, option) {
+      if (!currentUser) {
+        WC.openLogin(onLoginSuccess);
+        return;
+      }
+      if (!matchData.is_prediction_open) return;
+      pendingSelections[betId] = option;
+      renderBets();
+    }
+
+    function updateExactScore(betId) {
+      const one = document.getElementById('score1-' + betId).value;
+      const two = document.getElementById('score2-' + betId).value;
+      if (!currentUser) {
+        WC.openLogin(onLoginSuccess);
+        return;
+      }
+      if (!matchData.is_prediction_open) return;
+      if (one === '' || two === '') {
+        delete pendingSelections[betId];
+      } else {
+        pendingSelections[betId] = one + '-' + two;
+      }
+      renderSubmitBar();
+    }
+
+    async function submitAllPredictions() {
+      const payload = Object.keys(pendingSelections).map(function (betId) {
+        return { bet_id: parseInt(betId, 10), selected_option: pendingSelections[betId] };
+      });
+      if (!payload.length) return;
+      const response = await WC.apiFetch('predict_batch', { predictions: payload }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'خطا در ثبت پیش‌بینی‌ها', 'err');
+        return;
+      }
+      pendingSelections = {};
+      WC.toast('همه پیش‌بینی‌های انتخاب‌شده ثبت شدند.');
+      await loadMatch();
+    }
+
+    async function loadMatch() {
+      if (isLoadingMatch) return;
+      isLoadingMatch = true;
+      try {
+        const response = await WC.apiFetch('match_detail', { id: matchId });
+        if (!response.success) {
+          document.querySelector('.match-main').innerHTML = '<div class="wc-glass-panel wc-empty">' + (response.error || 'بازی یافت نشد.') + '</div>';
+          return;
+        }
+        matchData = response.match;
+        bets = response.bets || [];
+        userPredictions = response.user_predictions || {};
+      currentUser = WC.getUser() && WC.getUser().role !== 'admin' ? WC.getUser() : null;
+      renderMeta();
+      renderAuthNotice();
+      renderBets();
+      if (!countdownTimer) {
+        countdownTimer = window.setInterval(function () {
+          if (matchData) {
+            document.getElementById('matchCountdown').textContent = countdownText();
+          }
+        }, 30000);
+      }
+      if (shouldPromptAuth && !authPrompted && !currentUser && matchData.status === 'upcoming') {
+        authPrompted = true;
+        WC.openLogin(onLoginSuccess);
+      }
+    } finally {
+      isLoadingMatch = false;
+    }
+    }
+
+    function onLoginSuccess(user) {
+      currentUser = user;
+      renderAuthNotice();
+      loadMatch();
+    }
+
+    window._wcOnAuth = function (user) {
+      currentUser = user && user.role !== 'admin' ? user : null;
+      if (matchData) {
+        renderAuthNotice();
+        renderSubmitBar();
+      }
+    };
+  </script>
+  <script>
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) loadMatch();
+    });
+
+    WC.refreshSettings().then(function () {
+      loadMatch();
+      matchRefreshTimer = window.setInterval(function () {
+        if (!document.hidden) loadMatch();
+      }, 45000);
+    });
+  </script>
+</body>
+</html>

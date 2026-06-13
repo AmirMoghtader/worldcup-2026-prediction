@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حساب کاربری</title>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .profile-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .profile-main,
+    .profile-side,
+    .profile-history-card,
+    .profile-side-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .profile-card {
+      padding: 1.2rem;
+    }
+
+    .profile-hero-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: 900;
+    }
+
+    .profile-hero-head h1 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.8rem;
+    }
+
+    .profile-hero-head p {
+      margin: 0.35rem 0 0;
+      color: rgba(255,255,255,0.72);
+      font-size: 0.9rem;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .profile-stat {
+      padding: 0.95rem 1rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .profile-stat strong {
+      display: block;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 0.2rem;
+    }
+
+    .profile-stat span {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.8rem;
+    }
+
+    .history-match {
+      padding: 1rem;
+      border-radius: 20px;
+      border: 1px solid rgba(145,164,184,0.18);
+      background: rgba(255,255,255,0.74);
+    }
+
+    .history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.85rem;
+    }
+
+    .history-head strong {
+      color: var(--wc-navy);
+    }
+
+    .history-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 0.8rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(145,164,184,0.14);
+      align-items: center;
+    }
+
+    .history-row:last-child { border-bottom: 0; }
+
+    .history-row small {
+      color: var(--wc-muted);
+      display: block;
+      margin-top: 0.18rem;
+      font-size: 0.75rem;
+    }
+
+    .history-points {
+      font-weight: 900;
+      color: var(--wc-gold);
+    }
+
+    .profile-rank-list .leader-row:first-child {
+      padding-top: 0;
+    }
+
+    .profile-rewards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .profile-reward-card {
+      padding: 1rem;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(145,164,184,0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .profile-reward-card img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 18px;
+      background: rgba(16,36,63,0.05);
+    }
+
+    .profile-reward-card h4,
+    .profile-reward-card p {
+      margin: 0;
+    }
+
+    .profile-reward-card h4 {
+      color: var(--wc-navy);
+      font-size: 0.95rem;
+    }
+
+    .profile-reward-card p {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.9;
+    }
+
+    .reward-code-box {
+      padding: 0.8rem 0.9rem;
+      border-radius: 16px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-navy);
+      font-weight: 900;
+      text-align: center;
+      direction: ltr;
+      letter-spacing: 0.08em;
+    }
+
+    .reward-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .reward-pop {
+      position: fixed;
+      inset: 0;
+      z-index: 1800;
+      background: rgba(7,14,24,0.5);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .reward-pop.open {
+      display: flex;
+    }
+
+    .reward-pop-card {
+      width: min(520px, 100%);
+      border-radius: 30px;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(145,164,184,0.2);
+      box-shadow: 0 30px 70px rgba(6,12,24,0.24);
+      padding: 1.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reward-pop-card h3,
+    .reward-pop-card p {
+      margin: 0;
+    }
+
+    .reward-pop-card h3 {
+      color: var(--wc-navy);
+      font-size: 1.3rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .reward-pop-card p {
+      color: var(--wc-muted);
+      line-height: 1.9;
+    }
+
+    .reward-pop-close {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(145,164,184,0.24);
+      background: rgba(16,36,63,0.04);
+      color: var(--wc-muted);
+      cursor: pointer;
+    }
+
+    .reward-pop-code {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(182,136,36,0.12), rgba(16,36,63,0.05));
+      color: var(--wc-navy);
+      font-weight: 900;
+      font-size: 1.2rem;
+      text-align: center;
+      direction: ltr;
+      letter-spacing: 0.12em;
+    }
+
+    .reward-confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .reward-confetti span {
+      position: absolute;
+      top: -18px;
+      width: 10px;
+      height: 18px;
+      border-radius: 999px;
+      animation: confetti-fall 2200ms linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(420px) rotate(520deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .profile-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .history-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="wc-page-hero" id="heroBlock" style="display:none">
+    <div class="wc-page wc-page-hero-inner">
+      <div class="wc-page-hero-copy">
+        <div class="profile-hero-head">
+          <div class="profile-avatar" id="avatarText">ک</div>
+          <div>
+            <h1 id="userName">کاربر</h1>
+            <p id="userPhone">—</p>
+          </div>
+        </div>
+        <div class="profile-stats" id="heroStats"></div>
+      </div>
+      <div class="wc-hero-brand">
+        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+      </div>
+    </div>
+  </header>
+
+  <main class="wc-page">
+    <div id="authWall" class="wc-glass-panel wc-empty" style="margin-top:calc(var(--wc-nav-h) + 1.25rem);display:none">
+      برای مشاهده حساب کاربری ابتدا وارد شوید.
+      <div style="margin-top:1rem"><button class="wc-button" type="button" onclick="WC.openLogin(onLoginSuccess)">ورود / ثبت‌نام</button></div>
+    </div>
+
+    <div id="profileLayout" class="profile-layout" style="display:none">
+      <section class="profile-main">
+        <div class="wc-glass-panel profile-card">
+          <div class="wc-section-title"><h2>تاریخچه پیش‌بینی‌ها</h2></div>
+          <div id="historyRoot" class="profile-history-card">
+            <div class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+        <div class="wc-glass-panel profile-card">
+          <div class="wc-section-title"><h2>جوایز قابل دریافت</h2></div>
+          <div id="rewardsRoot" class="profile-rewards"></div>
+        </div>
+      </section>
+
+      <aside class="profile-side">
+        <div class="wc-glass-panel profile-card">
+          <div class="wc-section-title"><h3>وضعیت شما</h3></div>
+          <div class="profile-side-card" id="quickFacts"></div>
+        </div>
+        <div class="wc-glass-panel profile-card">
+          <div class="wc-section-title"><h3>جوایز دریافت‌شده</h3></div>
+          <div id="myRewardsRoot" class="profile-side-card"></div>
+        </div>
+        <div class="wc-glass-panel profile-card">
+          <div class="wc-section-title"><h3>جدول امتیازات</h3></div>
+          <div class="profile-rank-list" id="leaderboardRoot"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <div class="reward-pop" id="rewardPopup">
+    <div class="reward-pop-card">
+      <button class="reward-pop-close" type="button" onclick="closeRewardPopup()">×</button>
+      <div class="reward-confetti" id="rewardConfetti"></div>
+      <h3 id="rewardPopupTitle">جایزه شما آماده است</h3>
+      <p id="rewardPopupText">کد شما ثبت شد.</p>
+      <div class="reward-pop-code" id="rewardPopupCode">—</div>
+      <div class="reward-actions">
+        <button class="wc-button secondary" type="button" onclick="copyRewardCode()">کپی کد</button>
+        <a class="wc-button" href="#" id="rewardPopupBuy" target="_blank" rel="noopener" style="display:none">خرید محصول</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: 'profile' });
+
+    let currentUser = null;
+    let lastRewardCode = '';
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function parseTehranDate(value) {
+      if (value && typeof value === 'object') return value;
+      return new Date(String(value).replace(' ', 'T') + '+03:30');
+    }
+
+    function formatDateTime(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function renderHero(profile, stats, rank) {
+      document.getElementById('heroBlock').style.display = 'block';
+      document.getElementById('profileLayout').style.display = 'grid';
+      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      document.getElementById('avatarText').textContent = (profile.name || 'ک').charAt(0);
+      document.getElementById('userName').textContent = profile.name || 'کاربر';
+      document.getElementById('userPhone').textContent = profile.phone || '';
+      document.getElementById('heroStats').innerHTML = [
+        ['کل امتیاز', toFaDigits(profile.total_points || 0)],
+        ['امتیاز قابل خرج', toFaDigits(profile.available_points || 0)],
+        ['کل پیش‌بینی', toFaDigits(stats.total_predictions || 0)],
+        ['پیش‌بینی صحیح', toFaDigits(stats.correct_predictions || 0)],
+        ['رتبه', rank ? toFaDigits(rank) : '—']
+      ].map(function (item) {
+        return '<div class="profile-stat"><strong>' + item[1] + '</strong><span>' + item[0] + '</span></div>';
+      }).join('');
+    }
+
+    function renderFacts(profile, stats, rank) {
+      document.getElementById('quickFacts').innerHTML = [
+        ['رتبه فعلی', rank ? toFaDigits(rank) : '—'],
+        ['امتیاز محاسبه‌شده', toFaDigits(stats.total_points_earned || 0)],
+        ['امتیاز خرج‌شده', toFaDigits(profile.redeemed_points || 0)],
+        ['امتیاز در دسترس', toFaDigits(profile.available_points || 0)],
+        ['عضویت', formatDateTime(profile.created_at)],
+        ['نرخ موفقیت', stats.total_predictions ? toFaDigits(Math.round(((stats.correct_predictions || 0) / stats.total_predictions) * 100)) + '٪' : '۰٪']
+      ].map(function (item) {
+        return '<div class="wc-chip"><strong style="color:var(--wc-navy)">' + item[0] + ':</strong> <span>' + item[1] + '</span></div>';
+      }).join('');
+    }
+
+    function renderRewards(payload) {
+      const rewards = payload.rewards || [];
+      const user = payload.user || currentUser || {};
+      const redemptions = payload.redemptions || [];
+      window.__profileRewardsCache = redemptions;
+      const redeemedMap = redemptions.reduce(function (acc, row) {
+        acc[row.reward_id] = row;
+        return acc;
+      }, {});
+      document.getElementById('rewardsRoot').innerHTML = rewards.length ? rewards.map(function (reward) {
+        const enough = (user.available_points || 0) >= (reward.points_cost || 0);
+        const hasStock = reward.stock === null || Number(reward.stock) > 0;
+        const redeemed = redeemedMap[reward.id];
+        return (
+          '<article class="profile-reward-card">' +
+            '<img src="' + (reward.image_url || '/assets/worldcup.jpeg') + '" alt="' + (reward.title || 'جایزه').replace(/"/g, '&quot;') + '">' +
+            '<h4>' + (reward.title || 'جایزه') + '</h4>' +
+            '<p>' + (reward.description || 'بدون توضیح') + '</p>' +
+            '<div class="wc-chip">' + toFaDigits(reward.points_cost || 0) + ' امتیاز' + (reward.stock === null ? '' : ' | موجودی ' + toFaDigits(reward.stock)) + '</div>' +
+            (redeemed
+              ? '<div class="reward-code-box">' + (redeemed.delivered_code || '—') + '</div><div class="reward-actions"><button class="wc-button secondary" type="button" onclick="showRewardPopupFromCard(' + reward.id + ')">نمایش کد</button>' + (redeemed.product_url ? '<a class="wc-button" href="' + redeemed.product_url + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div>'
+              : !hasStock
+              ? '<span class="wc-badge danger">تمام شده</span>'
+              : enough
+              ? '<button class="wc-button" type="button" onclick="redeemReward(' + reward.id + ')">دریافت جایزه</button>'
+              : '<div><span class="wc-badge danger">امتیاز شما کم است</span><div style="margin-top:0.6rem"><a class="wc-button secondary" href="/">پیش‌بینی بیشتر</a></div></div>') +
+          '</article>'
+        );
+      }).join('') : '<div class="wc-empty">هنوز جایزه‌ای فعال نشده است.</div>';
+
+      document.getElementById('myRewardsRoot').innerHTML = redemptions.length ? redemptions.map(function (row) {
+        return '<div class="wc-chip" style="display:block"><strong style="color:var(--wc-navy)">' + (row.reward_title || 'جایزه') + '</strong><div style="margin-top:0.35rem;color:var(--wc-muted)">کد: <span dir="ltr">' + (row.delivered_code || '—') + '</span></div><div style="margin-top:0.25rem;color:var(--wc-muted)">زمان: ' + formatDateTime(row.created_at) + '</div><div class="reward-actions" style="margin-top:0.6rem"><button class="wc-button secondary" type="button" onclick="showRewardPopupByCode(\'' + (row.delivered_code || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.reward_title || 'جایزه').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\', \'' + (row.product_url || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')">نمایش کد</button>' + (row.product_url ? '<a class="wc-button" href="' + row.product_url + '" target="_blank" rel="noopener">خرید محصول</a>' : '') + '</div></div>';
+      }).join('') : '<div class="wc-empty">هنوز جایزه‌ای دریافت نکرده‌اید.</div>';
+    }
+
+    function renderLeaderboard(leaderboard, profileId) {
+      const root = document.getElementById('leaderboardRoot');
+      root.innerHTML = leaderboard.slice(0, 5).map(function (user) {
+        const me = user.id == profileId;
+        return (
+          '<div class="leader-row" style="' + (me ? 'background:rgba(182,136,36,0.08);border-radius:16px;padding:0.7rem;' : '') + '">' +
+            '<div class="leader-name"><strong>' + (user.name || 'کاربر') + (me ? ' (شما)' : '') + '</strong></div>' +
+            '<div class="leader-points">' + toFaDigits(user.total_points || 0) + '</div>' +
+          '</div>'
+        );
+      }).join('') || '<div class="wc-empty">جدول امتیازات هنوز خالی است.</div>';
+    }
+
+    function renderHistory(matches) {
+      const root = document.getElementById('historyRoot');
+      if (!matches.length) {
+        root.innerHTML = '<div class="wc-empty">هنوز پیش‌بینی‌ای ثبت نکرده‌اید.</div>';
+        return;
+      }
+      root.innerHTML = matches.map(function (match) {
+        const total = (match.predictions || []).reduce(function (sum, item) {
+          return sum + (parseInt(item.points_earned, 10) || 0);
+        }, 0);
+        return (
+          '<article class="history-match">' +
+            '<div class="history-head">' +
+              '<div><strong>' + (match.team1_flag || '🏳️') + ' ' + match.team1 + ' - ' + match.team2 + ' ' + (match.team2_flag || '🏳️') + '</strong><div style="color:var(--wc-muted);font-size:0.78rem;margin-top:0.2rem">' + formatDateTime(match.match_datetime) + '</div></div>' +
+              '<div class="wc-chip">' + (match.status === 'finished' ? 'امتیاز این بازی: ' + toFaDigits(total) : 'در انتظار نتیجه') + '</div>' +
+            '</div>' +
+            (match.predictions || []).map(function (prediction) {
+              let badgeClass = 'info';
+              let badgeText = 'در انتظار نتیجه';
+              if (match.status === 'finished' && prediction.is_correct == 1) {
+                badgeClass = 'success';
+                badgeText = '+' + toFaDigits(prediction.points_earned) + ' امتیاز';
+              } else if (match.status === 'finished' && prediction.is_correct == 0) {
+                badgeClass = 'danger';
+                badgeText = 'اشتباه';
+              }
+              return (
+              '<div class="history-row">' +
+                  '<div><strong>' + prediction.bet_label + '</strong><small>انتخاب شما: ' + prediction.selected_option + '</small></div>' +
+                  '<span class="wc-badge ' + badgeClass + '">' + badgeText + '</span>' +
+                  '<a href="/match?id=' + match.id + '" class="history-points">مشاهده بازی</a>' +
+                '</div>'
+              );
+            }).join('') +
+          '</article>'
+        );
+      }).join('');
+    }
+
+    async function loadProfile() {
+      const [meRes, profileRes, leaderboardRes, rewardsRes] = await Promise.all([
+        WC.apiFetch('me'),
+        WC.apiFetch('user_profile'),
+        WC.apiFetch('leaderboard', { limit: 50 }),
+        WC.apiFetch('rewards')
+      ]);
+
+      if (!meRes.success || !meRes.user || meRes.user.role === 'admin' || !profileRes.success) {
+        document.getElementById('authWall').style.display = 'block';
+        document.getElementById('heroBlock').style.display = 'none';
+        document.getElementById('profileLayout').style.display = 'none';
+        return;
+      }
+
+      currentUser = profileRes.user;
+      const leaderboard = leaderboardRes.success ? (leaderboardRes.leaderboard || []) : [];
+      const rank = leaderboard.findIndex(function (item) { return item.id == currentUser.id; });
+      const finalRank = rank >= 0 ? rank + 1 : null;
+      renderHero(currentUser, profileRes.stats || {}, finalRank);
+      renderFacts(currentUser, profileRes.stats || {}, finalRank);
+      renderLeaderboard(leaderboard, currentUser.id);
+      renderHistory(profileRes.matches || []);
+      renderRewards(rewardsRes.success ? rewardsRes : { rewards: [], user: currentUser, redemptions: [] });
+    }
+
+    async function redeemReward(id) {
+      const response = await WC.apiFetch('redeem_reward', { reward_id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'دریافت جایزه انجام نشد.', 'err');
+        return;
+      }
+      showRewardPopupByCode(response.code || '', response.already_redeemed ? 'این جایزه قبلا برای شما ثبت شده است' : 'تبریک، جایزه برای شما ثبت شد', response.product_url || '');
+      loadProfile();
+    }
+
+    function burstConfetti() {
+      const root = document.getElementById('rewardConfetti');
+      root.innerHTML = '';
+      const colors = ['#d9a441', '#0b8c53', '#27496d', '#d64545', '#8fc1ff'];
+      for (let i = 0; i < 26; i += 1) {
+        const piece = document.createElement('span');
+        piece.style.left = Math.round(Math.random() * 100) + '%';
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = (Math.random() * 240) + 'ms';
+        piece.style.transform = 'translateY(0) rotate(' + Math.round(Math.random() * 180) + 'deg)';
+        root.appendChild(piece);
+      }
+    }
+
+    function showRewardPopupByCode(code, title, productUrl) {
+      lastRewardCode = code || '';
+      document.getElementById('rewardPopupTitle').textContent = title || 'جایزه شما آماده است';
+      document.getElementById('rewardPopupText').textContent = 'کد تخفیف یا هدیه شما ثبت شد و هر زمان بخواهید از همین بخش قابل مشاهده است.';
+      document.getElementById('rewardPopupCode').textContent = code || '—';
+      const buyBtn = document.getElementById('rewardPopupBuy');
+      if (productUrl) {
+        buyBtn.style.display = 'inline-flex';
+        buyBtn.href = productUrl;
+      } else {
+        buyBtn.style.display = 'none';
+        buyBtn.removeAttribute('href');
+      }
+      document.getElementById('rewardPopup').classList.add('open');
+      burstConfetti();
+    }
+
+    function showRewardPopupFromCard(rewardId) {
+      const rewards = window.__profileRewardsCache || [];
+      const target = rewards.find(function (row) { return row.reward_id == rewardId; });
+      if (target) {
+        showRewardPopupByCode(target.delivered_code || '', target.reward_title || 'جایزه شما آماده است', target.product_url || '');
+      }
+    }
+
+    function closeRewardPopup() {
+      document.getElementById('rewardPopup').classList.remove('open');
+      document.getElementById('rewardConfetti').innerHTML = '';
+    }
+
+    async function copyRewardCode() {
+      if (!lastRewardCode) return;
+      try {
+        await navigator.clipboard.writeText(lastRewardCode);
+        WC.toast('کد کپی شد.');
+      } catch (error) {
+        WC.toast('کپی کد انجام نشد.', 'err');
+      }
+    }
+
+    function onLoginSuccess() {
+      document.getElementById('authWall').style.display = 'none';
+      loadProfile();
+    }
+
+    window._wcOnAuth = function (user) {
+      if (user && user.role !== 'admin') {
+        loadProfile();
+      } else {
+        document.getElementById('heroBlock').style.display = 'none';
+        document.getElementById('profileLayout').style.display = 'none';
+        document.getElementById('authWall').style.display = 'block';
+      }
+    };
+
+    WC.refreshSettings().then(loadProfile);
+
+    document.getElementById('rewardPopup').addEventListener('click', function (event) {
+      if (event.target === this) closeRewardPopup();
+    });
+  </script>
+</body>
+</html>

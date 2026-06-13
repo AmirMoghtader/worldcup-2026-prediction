@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مرحله حذفی</title>
+  <link rel="stylesheet" href="/assets/shared.css">
+  <style>
+    .ko-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ko-note {
+      padding: 0.85rem 1rem;
+      color: var(--wc-muted);
+      font-size: 0.84rem;
+    }
+
+    .ko-board-wrap {
+      overflow: hidden;
+      padding-bottom: 0;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .ko-board {
+      min-width: 1680px;
+      display: grid;
+      grid-template-columns: repeat(9, 180px);
+      gap: 1.35rem;
+      align-items: start;
+      padding: 0.5rem 0.25rem 1rem;
+      transform-origin: top center;
+    }
+
+    .ko-round {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .ko-slot {
+      position: relative;
+    }
+
+    .ko-slot.ltr::after,
+    .ko-slot.rtl::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 1.35rem;
+      border-top: 2px solid rgba(16,36,63,0.18);
+    }
+
+    .ko-slot.ltr::after {
+      left: 100%;
+    }
+
+    .ko-slot.rtl::before {
+      right: 100%;
+    }
+
+    .ko-round-title {
+      text-align: center;
+      color: var(--wc-navy);
+      font-weight: 900;
+      font-size: 0.92rem;
+      padding-bottom: 0.4rem;
+    }
+
+    .ko-card {
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(145,164,184,0.22);
+      box-shadow: 0 16px 30px rgba(16,36,63,0.08);
+    }
+
+    .ko-card-head {
+      background: linear-gradient(135deg, #0f1d34, #172742);
+      color: #fff;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .ko-card-head.final {
+      background: linear-gradient(135deg, #3553d9, #4a63f2);
+    }
+
+    .ko-card-body {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .ko-team-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.55rem;
+      color: var(--wc-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .ko-team-row span:last-child {
+      color: var(--wc-muted);
+      font-size: 1rem;
+    }
+
+    .ko-closed {
+      margin-top: 0.2rem;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--wc-red);
+      background: rgba(214,69,69,0.08);
+      border-radius: 12px;
+      padding: 0.45rem 0.6rem;
+    }
+
+    .ko-spacer-1 { margin-top: 58px; }
+    .ko-spacer-2 { margin-top: 128px; }
+    .ko-spacer-3 { margin-top: 260px; }
+    .ko-spacer-4 { margin-top: 420px; }
+
+    @media (max-width: 760px) {
+      .ko-note {
+        padding: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="wc-page-hero">
+    <div class="wc-page wc-page-hero-inner">
+      <div class="wc-page-hero-copy">
+        <div class="wc-chip-row">
+          <span class="wc-chip">مرحله حذفی</span>
+          <span class="wc-chip">پیش‌بینی این بخش فعلاً بسته است</span>
+        </div>
+        <h1>نمودار مرحله حذفی جام جهانی ۲۰۲۶</h1>
+        <p>مسیر کامل مرحله حذفی از حالا آماده است و تا شروع رسمی این مرحله، همه باکس‌ها فقط در حالت نمایش قرار دارند.</p>
+      </div>
+      <div class="wc-hero-brand">
+        <img src="/assets/worldcup.jpeg" alt="جام جهانی ۲۰۲۶" id="heroLogo">
+      </div>
+    </div>
+  </header>
+
+  <main class="wc-page ko-shell">
+    <div class="wc-glass-panel ko-note">
+      نمودار متناسب با عرض صفحه به صورت خودکار فشرده می‌شود.
+    </div>
+    <div class="wc-glass-panel" style="padding:1rem">
+      <div class="ko-board-wrap">
+        <div class="ko-board" id="knockoutBoard"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: 'knockout' });
+
+    const placeholder = {
+      r32Left: [
+        ['تیم اول گروه C', 'تیم دوم گروه F', '۱۴۰۵/۰۴/۰۸ - ۲۰:۳۰'],
+        ['تیم دوم گروه E', 'تیم دوم گروه I', '۱۴۰۵/۰۴/۰۹ - ۲۰:۳۰'],
+        ['تیم اول گروه A', 'تیم سوم گروه C/E/F/H/I', '۱۴۰۵/۰۴/۱۰ - ۰۴:۳۰'],
+        ['تیم اول گروه L', 'تیم سوم گروه E/H/I/J/K', '۱۴۰۵/۰۴/۱۰ - ۱۹:۳۰'],
+        ['تیم اول گروه J', 'تیم دوم گروه H', '۱۴۰۵/۰۴/۱۳ - ۰۱:۳۰'],
+        ['تیم دوم گروه C', 'تیم سوم گروه A/B/F/G', '۱۴۰۵/۰۴/۱۳ - ۲۰:۳۰'],
+        ['تیم دوم گروه D', 'تیم دوم گروه G', '۱۴۰۵/۰۴/۱۲ - ۲۱:۳۰'],
+        ['تیم اول گروه B', 'تیم سوم گروه E/F/G/I/J', '۱۴۰۵/۰۴/۱۲ - ۰۶:۳۰']
+      ],
+      r16Left: [
+        ['برنده بازی ۷۳', 'برنده بازی ۷۴', '۱۴۰۵/۰۴/۱۴ - ۲۳:۳۰'],
+        ['برنده بازی ۷۵', 'برنده بازی ۷۶', '۱۴۰۵/۰۴/۱۵ - ۰۳:۳۰'],
+        ['برنده بازی ۷۷', 'برنده بازی ۷۸', '۱۴۰۵/۰۴/۱۵ - ۱۹:۳۰'],
+        ['برنده بازی ۷۹', 'برنده بازی ۸۰', '۱۴۰۵/۰۴/۱۶ - ۲۲:۳۰']
+      ],
+      qfLeft: [
+        ['برنده بازی ۸۹', 'برنده بازی ۹۰', '۱۴۰۵/۰۴/۲۱ - ۰۰:۳۰'],
+        ['برنده بازی ۹۱', 'برنده بازی ۹۲', '۱۴۰۵/۰۴/۲۱ - ۰۴:۳۰']
+      ],
+      sfLeft: [
+        ['برنده بازی ۹۷', 'برنده بازی ۹۸', '۱۴۰۵/۰۴/۲۳ - ۲۲:۳۰']
+      ],
+      final: [
+        ['برنده نیمه‌نهایی ۱', 'برنده نیمه‌نهایی ۲', '۱۴۰۵/۰۴/۲۸ - ۲۲:۳۰']
+      ],
+      sfRight: [
+        ['برنده بازی ۹۹', 'برنده بازی ۱۰۰', '۱۴۰۵/۰۴/۲۴ - ۲۲:۳۰']
+      ],
+      qfRight: [
+        ['برنده بازی ۹۳', 'برنده بازی ۹۴', '۱۴۰۵/۰۴/۱۸ - ۲۲:۳۰'],
+        ['برنده بازی ۹۵', 'برنده بازی ۹۶', '۱۴۰۵/۰۴/۱۹ - ۲۲:۳۰']
+      ],
+      r16Right: [
+        ['برنده بازی ۸۱', 'برنده بازی ۸۲', '۱۴۰۵/۰۴/۱۴ - ۰۰:۳۰'],
+        ['برنده بازی ۸۳', 'برنده بازی ۸۴', '۱۴۰۵/۰۴/۱۳ - ۲۰:۳۰'],
+        ['برنده بازی ۸۵', 'برنده بازی ۸۶', '۱۴۰۵/۰۴/۱۵ - ۲۲:۳۰'],
+        ['برنده بازی ۸۷', 'برنده بازی ۸۸', '۱۴۰۵/۰۴/۱۶ - ۰۳:۳۰']
+      ],
+      r32Right: [
+        ['تیم دوم گروه A', 'تیم دوم گروه B', '۱۴۰۵/۰۴/۰۷ - ۲۲:۳۰'],
+        ['تیم اول گروه E', 'تیم سوم گروه A/B/C/D/F', '۱۴۰۵/۰۴/۰۹ - ۰۰:۰۰'],
+        ['تیم اول گروه F', 'تیم دوم گروه C', '۱۴۰۵/۰۴/۰۹ - ۰۴:۳۰'],
+        ['تیم اول گروه I', 'تیم سوم گروه C/D/F/G/H', '۱۴۰۵/۰۴/۱۰ - ۰۰:۳۰'],
+        ['تیم دوم گروه K', 'تیم دوم گروه L', '۱۴۰۵/۰۴/۱۲ - ۲۲:۳۰'],
+        ['تیم اول گروه D', 'تیم سوم گروه B/E/F/I/J', '۱۴۰۵/۰۴/۱۱ - ۰۳:۳۰'],
+        ['تیم اول گروه H', 'تیم دوم گروه J', '۱۴۰۵/۰۴/۱۱ - ۲۲:۳۰'],
+        ['تیم اول گروه K', 'تیم سوم گروه A/B/C/G/L', '۱۴۰۵/۰۴/۱۳ - --:--']
+      ]
+    };
+
+    function renderCard(item, isFinal) {
+      return (
+        '<article class="ko-card">' +
+          '<div class="ko-card-head ' + (isFinal ? 'final' : '') + '">' + item[2] + '</div>' +
+          '<div class="ko-card-body">' +
+            '<div class="ko-team-row"><span>' + item[0] + '</span><span>🛡️</span></div>' +
+            '<div class="ko-team-row"><span>' + item[1] + '</span><span>🛡️</span></div>' +
+            '<div class="ko-closed">پیش‌بینی بسته است</div>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+
+    function renderRound(title, items, spacerClass, isFinal, slotDirection) {
+      return (
+        '<section class="ko-round">' +
+          '<div class="ko-round-title">' + title + '</div>' +
+          items.map(function (item, index) {
+            const extra = spacerClass && index > 0 ? ' ' + spacerClass : '';
+            const slotClass = ['ko-slot', slotDirection || '', extra.trim()].filter(Boolean).join(' ');
+            return '<div class="' + slotClass + '">' + renderCard(item, !!isFinal) + '</div>';
+          }).join('') +
+        '</section>'
+      );
+    }
+
+    function buildBoard() {
+      document.getElementById('heroLogo').src = WC.getSettings().logo_url || '/assets/worldcup.jpeg';
+      document.getElementById('knockoutBoard').innerHTML = [
+        renderRound('یک‌شانزدهم نهایی', placeholder.r32Left, 'ko-spacer-1', false, 'ltr'),
+        renderRound('یک‌هشتم نهایی', placeholder.r16Left, 'ko-spacer-2', false, 'ltr'),
+        renderRound('یک‌چهارم نهایی', placeholder.qfLeft, 'ko-spacer-3', false, 'ltr'),
+        renderRound('نیمه‌نهایی', placeholder.sfLeft, 'ko-spacer-4', false, 'ltr'),
+        renderRound('فینال', placeholder.final, '', true, ''),
+        renderRound('نیمه‌نهایی', placeholder.sfRight, 'ko-spacer-4', false, 'rtl'),
+        renderRound('یک‌چهارم نهایی', placeholder.qfRight, 'ko-spacer-3', false, 'rtl'),
+        renderRound('یک‌هشتم نهایی', placeholder.r16Right, 'ko-spacer-2', false, 'rtl'),
+        renderRound('یک‌شانزدهم نهایی', placeholder.r32Right, 'ko-spacer-1', false, 'rtl')
+      ].join('');
+      fitBoard();
+    }
+
+    function fitBoard() {
+      const wrap = document.querySelector('.ko-board-wrap');
+      const board = document.getElementById('knockoutBoard');
+      if (!wrap || !board) return;
+      board.style.transform = 'scale(1)';
+      wrap.style.height = 'auto';
+      const naturalWidth = board.scrollWidth;
+      const naturalHeight = board.scrollHeight;
+      if (!naturalWidth || !naturalHeight) return;
+      const scale = Math.min(1, wrap.clientWidth / naturalWidth);
+      board.style.transform = 'scale(' + scale + ')';
+      wrap.style.height = Math.ceil(naturalHeight * scale) + 'px';
+    }
+
+    window.addEventListener('resize', fitBoard);
+    WC.refreshSettings().then(buildBoard);
+  </script>
+</body>
+</html>

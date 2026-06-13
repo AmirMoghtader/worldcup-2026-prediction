@@ -1,0 +1,12 @@
+.DS_Store
+.claude/
+config.php
+uploads/
+*.log
+*.zip
+*.sql
+*.sqlite
+*.sqlite3
+node_modules/
+.env
+.env.*
