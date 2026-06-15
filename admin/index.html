@@ -21,7 +21,7 @@
 
     .admin-shell {
       width: min(1280px, calc(100% - 1.5rem));
-      margin: calc(var(--wc-nav-h) + 1rem) auto 1.5rem;
+      margin: calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1rem) auto 1.5rem;
       display: grid;
       grid-template-columns: 270px minmax(0, 1fr);
       gap: 1rem;
@@ -41,7 +41,7 @@
 
     .admin-sidebar {
       position: sticky;
-      top: calc(var(--wc-nav-h) + 1rem);
+      top: calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1rem);
       border-radius: 20px;
       padding: 1rem;
       color: rgba(255,255,255,0.86);
@@ -196,6 +196,33 @@
     .admin-toolbar h3 {
       margin: 0;
       color: var(--wc-navy);
+    }
+
+    .settings-stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .settings-box {
+      border-radius: 14px;
+      border: 1px solid rgba(145,164,184,0.18);
+      background: rgba(247,250,253,0.92);
+      padding: 1rem;
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .settings-box-head h4 {
+      margin: 0;
+      color: var(--wc-navy);
+      font-size: 0.98rem;
+    }
+
+    .settings-box-head p {
+      margin: 0.35rem 0 0;
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      line-height: 1.9;
     }
 
     .admin-actions {
@@ -593,6 +620,7 @@
         <button data-section="bets">شرط‌های هر بازی</button>
         <button data-section="defaults">شرط‌های پیش‌فرض</button>
         <button data-section="users">کاربران</button>
+        <button data-section="vip">VIP</button>
         <button data-section="rewards">جوایز</button>
         <button data-section="ads">بنرها</button>
         <button data-section="backup">بکاپ</button>
@@ -682,6 +710,54 @@
           </div>
         </div>
 
+        <div class="admin-section" data-section="vip">
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>کاربران VIP</h3>
+              <div class="admin-actions">
+                <button class="admin-btn secondary" type="button" onclick="clearVipMemberForm()">فرم جدید</button>
+              </div>
+            </div>
+            <div class="admin-note" style="margin-bottom:1rem">هر شماره‌ای که اینجا ثبت شود، بعد از ورود کاربر به حسابش به بخش `VIP` متصل می‌شود. اعتبار اولیه پیش‌فرض `500000` تومان است و فقط همین کاربران دکمه میز شرطبندی را در حساب کاربری می‌بینند.</div>
+            <input type="hidden" id="vipMemberId">
+            <div class="admin-form-grid three" style="margin-bottom:1rem">
+              <div class="admin-field"><label>شماره موبایل VIP</label><input id="vipMemberPhone" type="text" placeholder="09xxxxxxxxx"></div>
+              <div class="admin-field"><label>اعتبار فعلی (تومان)</label><input id="vipMemberBalance" type="number" min="0" value="500000"></div>
+              <div class="admin-field"><label><input id="vipMemberIsActive" type="checkbox" checked> فعال</label></div>
+            </div>
+            <div class="admin-actions" style="margin-bottom:1rem">
+              <button class="admin-btn" type="button" onclick="saveVipMember()">ذخیره کاربر VIP</button>
+            </div>
+            <div id="vipMembersRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-toolbar">
+              <h3>بازی‌های میز شرطبندی VIP</h3>
+              <div class="admin-actions">
+                <button class="admin-btn" type="button" onclick="openVipMatchModal()">افزودن بازی VIP</button>
+              </div>
+            </div>
+            <div class="admin-note" style="margin-bottom:1rem">فقط بازی‌هایی که اینجا ثبت شوند در صفحه میز شرطبندی نمایش داده می‌شوند. می‌توانید یک بازی عادی سایت را انتخاب کنید و همان اطلاعات را برای VIP کپی کنید.</div>
+            <div class="admin-form-grid" style="margin-bottom:1rem">
+              <div class="admin-field">
+                <label>کپی از بازی‌های سایت</label>
+                <select id="vipSourceMatchSelect"></select>
+              </div>
+              <div class="admin-field" style="justify-content:end">
+                <label>&nbsp;</label>
+                <button class="admin-btn secondary" type="button" onclick="importSelectedVipMatch()">کپی بازی انتخاب‌شده</button>
+              </div>
+            </div>
+            <div id="vipMatchesRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-toolbar"><h3>آخرین شرط‌های VIP</h3></div>
+            <div id="vipRecentBetsRoot" class="wc-loader">در حال بارگذاری...</div>
+          </div>
+        </div>
+
         <div class="admin-section" data-section="rewards">
           <div class="admin-card">
             <div class="admin-toolbar">
@@ -740,142 +816,207 @@
         <div class="admin-section" data-section="settings">
           <div class="admin-card">
             <div class="admin-toolbar"><h3>تنظیمات برندینگ و پیش‌بینی</h3></div>
-            <div class="admin-form-grid">
-              <div class="admin-field"><label>نام سایت</label><input id="settingSiteName" type="text"></div>
-              <div class="admin-field"><label>نام برند</label><input id="settingBrandName" type="text" placeholder="مثلا: آنوبز"></div>
-              <div class="admin-field"><label>تگ‌لاین</label><input id="settingSiteTagline" type="text"></div>
-              <div class="admin-field"><label>قفل پیش‌بینی (دقیقه)</label><input id="settingLockMinutes" type="number" min="0"></div>
-              <div class="admin-field"><label>پنجره فعال‌سازی (ساعت)</label><input id="settingWindowHours" type="number" min="1" max="168"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>لوگوی اصلی</label><input id="settingLogoUrl" type="text" oninput="previewLogo('settingLogoUrl', 'logoPreviewMain')"></div>
-              <div class="admin-field"><label>آیکن مرورگر و جستجوی گوگل</label><input id="settingBrowserIconUrl" type="text" oninput="previewLogo('settingBrowserIconUrl', 'logoPreviewBrowser')"></div>
-              <div class="admin-field"><label>لوگوی نوبار</label><input id="settingNavLogoUrl" type="text" oninput="previewLogo('settingNavLogoUrl', 'logoPreviewNav')"></div>
-              <div class="admin-field"><label>لوگوی مودال ورود</label><input id="settingAuthLogoUrl" type="text" oninput="previewLogo('settingAuthLogoUrl', 'logoPreviewAuth')"></div>
-              <div class="admin-field"><label>لوگوی فوتر</label><input id="settingFooterLogoUrl" type="text" oninput="previewLogo('settingFooterLogoUrl', 'logoPreviewFooter')"></div>
-              <div class="admin-field"><label>لوگوی پنل ادمین</label><input id="settingAdminLogoUrl" type="text" oninput="previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin')"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field">
-                <label>آپلود آیکن مرورگر</label>
-                <div class="upload-row">
-                  <input id="browserIconUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('browserIconUpload', 'settingBrowserIconUrl', 'brand')">آپلود</button>
+            <div class="settings-stack">
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>هویت برند و سئو</h4>
+                  <p>نام برند، نام سایت و متن‌های اصلی از اینجا کنترل می‌شوند و روی عنوان صفحه‌ها، توضیحات متا و برندینگ کلی پروژه اثر می‌گذارند.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>نام سایت</label><input id="settingSiteName" type="text"></div>
+                  <div class="admin-field"><label>نام برند</label><input id="settingBrandName" type="text" placeholder="مثلا: آنوبز"></div>
+                  <div class="admin-field"><label>تگ‌لاین</label><input id="settingSiteTagline" type="text"></div>
+                  <div class="admin-field"><label>قفل پیش‌بینی (دقیقه)</label><input id="settingLockMinutes" type="number" min="0"></div>
+                  <div class="admin-field"><label>پنجره فعال‌سازی (ساعت)</label><input id="settingWindowHours" type="number" min="1" max="168"></div>
+                  <div class="admin-field"><label>متن فوتر</label><input id="settingFooterNote" type="text"></div>
+                  <div class="admin-field"><label>اعتبارسنجی فوتر</label><input id="settingFooterCredit" type="text"></div>
+                </div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>لوگوها و آیکن‌ها</h4>
+                  <p>لوگوی اصلی بهتر است `512x512` باشد. آیکن مرورگر و جستجوی گوگل بهتر است مربع و ترجیحا `512x512` یا `192x192` باشد. لوگوهای نوبار، ورود، فوتر و پنل بهتر است `256x256` و PNG شفاف باشند.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>لوگوی اصلی</label><input id="settingLogoUrl" type="text" oninput="previewLogo('settingLogoUrl', 'logoPreviewMain')"></div>
+                  <div class="admin-field"><label>آیکن مرورگر و جستجوی گوگل</label><input id="settingBrowserIconUrl" type="text" oninput="previewLogo('settingBrowserIconUrl', 'logoPreviewBrowser')"></div>
+                  <div class="admin-field"><label>لوگوی نوبار</label><input id="settingNavLogoUrl" type="text" oninput="previewLogo('settingNavLogoUrl', 'logoPreviewNav')"></div>
+                  <div class="admin-field"><label>لوگوی مودال ورود</label><input id="settingAuthLogoUrl" type="text" oninput="previewLogo('settingAuthLogoUrl', 'logoPreviewAuth')"></div>
+                  <div class="admin-field"><label>لوگوی فوتر</label><input id="settingFooterLogoUrl" type="text" oninput="previewLogo('settingFooterLogoUrl', 'logoPreviewFooter')"></div>
+                  <div class="admin-field"><label>لوگوی پنل ادمین</label><input id="settingAdminLogoUrl" type="text" oninput="previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin')"></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود آیکن مرورگر</label>
+                    <div class="upload-row">
+                      <input id="browserIconUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('browserIconUpload', 'settingBrowserIconUrl', 'brand')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="admin-actions">
+                  <div class="logo-preview" id="logoPreviewMain"><img alt=""></div>
+                  <div class="logo-preview" id="logoPreviewBrowser"><img alt=""></div>
+                  <div class="logo-preview" id="logoPreviewNav"><img alt=""></div>
+                  <div class="logo-preview" id="logoPreviewAuth"><img alt=""></div>
+                  <div class="logo-preview" id="logoPreviewFooter"><img alt=""></div>
+                  <div class="logo-preview" id="logoPreviewAdmin"><img alt=""></div>
+                </div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>نوار باریک بالای سایت</h4>
+                  <p>این نوار به صورت پیش‌فرض نمایش داده نمی‌شود. اگر عکس بگذارید، به صورت یک بنر باریک و کلیکی بالای سایت ظاهر می‌شود. سایز پیشنهادی دسکتاپ `1600x80` و موبایل `960x96` است.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>بنر بالایی دسکتاپ</label><input id="settingTopStripBannerUrl" type="text" oninput="previewAsset('settingTopStripBannerUrl', 'topStripBannerPreview')"></div>
+                  <div class="admin-field"><label>بنر بالایی موبایل</label><input id="settingTopStripBannerMobileUrl" type="text" oninput="previewAsset('settingTopStripBannerMobileUrl', 'topStripBannerPreview')"></div>
+                  <div class="admin-field"><label>لینک بنر بالایی</label><input id="settingTopStripBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود بنر بالایی دسکتاپ</label>
+                    <div class="upload-row">
+                      <input id="topStripDesktopUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('topStripDesktopUpload', 'settingTopStripBannerUrl', 'banner')">آپلود</button>
+                    </div>
+                  </div>
+                  <div class="admin-field">
+                    <label>آپلود بنر بالایی موبایل</label>
+                    <div class="upload-row">
+                      <input id="topStripMobileUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('topStripMobileUpload', 'settingTopStripBannerMobileUrl', 'banner')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="asset-preview hero" id="topStripBannerPreview"><img alt="پیش‌نمایش نوار بالایی"></div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>بنر هیرو صفحه اصلی</h4>
+                  <p>سایز پیشنهادی دسکتاپ `1600x360` و موبایل `900x320` است. اگر خالی بماند، هیروی شیشه‌ای پیش‌فرض سایت نمایش داده می‌شود.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>بنر هیرو دسکتاپ</label><input id="settingHeroBannerUrl" type="text" oninput="previewAsset('settingHeroBannerUrl', 'heroBannerPreview')"></div>
+                  <div class="admin-field"><label>بنر هیرو موبایل</label><input id="settingHeroBannerMobileUrl" type="text" oninput="previewAsset('settingHeroBannerMobileUrl', 'heroBannerPreview')"></div>
+                  <div class="admin-field"><label>ارتفاع بنر دسکتاپ</label><input id="settingHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
+                  <div class="admin-field"><label>ارتفاع بنر موبایل</label><input id="settingHeroBannerHeightMobile" type="number" min="96" max="360"></div>
+                  <div class="admin-field"><label>لینک کلیک بنر هیرو</label><input id="settingHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+                  <div class="admin-field"><label><input id="settingHeroBannerPureMode" type="checkbox"> وقتی بنر فعال است فقط خود بنر نمایش داده شود</label></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود بنر هیرو دسکتاپ</label>
+                    <div class="upload-row">
+                      <input id="heroDesktopUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroDesktopUpload', 'settingHeroBannerUrl', 'hero')">آپلود</button>
+                    </div>
+                  </div>
+                  <div class="admin-field">
+                    <label>آپلود بنر هیرو موبایل</label>
+                    <div class="upload-row">
+                      <input id="heroMobileUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroMobileUpload', 'settingHeroBannerMobileUrl', 'hero')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="asset-preview hero" id="heroBannerPreview"><img alt="پیش‌نمایش بنر هیرو"></div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>بنر هیرو صفحه جوایز</h4>
+                  <p>سایز پیشنهادی دسکتاپ `1600x360` و موبایل `900x320` است. با فعال شدن این بنر، متن و اطلاعات دیفالت هیروی صفحه جوایز حذف می‌شود.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>بنر جوایز دسکتاپ</label><input id="settingRewardsHeroBannerUrl" type="text" oninput="previewAsset('settingRewardsHeroBannerUrl', 'rewardsHeroBannerPreview')"></div>
+                  <div class="admin-field"><label>بنر جوایز موبایل</label><input id="settingRewardsHeroBannerMobileUrl" type="text" oninput="previewAsset('settingRewardsHeroBannerMobileUrl', 'rewardsHeroBannerPreview')"></div>
+                  <div class="admin-field"><label>ارتفاع دسکتاپ</label><input id="settingRewardsHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
+                  <div class="admin-field"><label>ارتفاع موبایل</label><input id="settingRewardsHeroBannerHeightMobile" type="number" min="96" max="360"></div>
+                  <div class="admin-field"><label>لینک کلیک بنر جوایز</label><input id="settingRewardsHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+                  <div class="admin-field"><label><input id="settingRewardsHeroBannerPureMode" type="checkbox"> در صورت نیاز فقط خود بنر نمایش داده شود</label></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود بنر جوایز دسکتاپ</label>
+                    <div class="upload-row">
+                      <input id="rewardsHeroDesktopUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroDesktopUpload', 'settingRewardsHeroBannerUrl', 'hero')">آپلود</button>
+                    </div>
+                  </div>
+                  <div class="admin-field">
+                    <label>آپلود بنر جوایز موبایل</label>
+                    <div class="upload-row">
+                      <input id="rewardsHeroMobileUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroMobileUpload', 'settingRewardsHeroBannerMobileUrl', 'hero')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="asset-preview hero" id="rewardsHeroBannerPreview"><img alt="پیش‌نمایش بنر هیرو جوایز"></div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>اسلایدر جوایز و بنر ویژه صفحه اصلی</h4>
+                  <p>اسلایدر بالای نفرات برتر از اولین جوایز فعال خوانده می‌شود. بنر ویژه پایین آن هم از همین باکس مدیریت می‌شود. سایز پیشنهادی بنر ویژه `1200x1200` است.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>تعداد اسلایدهای جوایز</label><input id="settingHomeRewardSliderLimit" type="number" min="1" max="12"></div>
+                  <div class="admin-field"><label>عکس بنر ویژه</label><input id="settingHomeSidebarBannerUrl" type="text" oninput="previewAsset('settingHomeSidebarBannerUrl', 'sidebarBannerPreview')"></div>
+                  <div class="admin-field"><label>لینک بنر ویژه</label><input id="settingHomeSidebarBannerLinkUrl" type="text" placeholder="https://example.com"></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود بنر ویژه</label>
+                    <div class="upload-row">
+                      <input id="sidebarBannerUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('sidebarBannerUpload', 'settingHomeSidebarBannerUrl', 'sidebar')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="asset-preview sidebar" id="sidebarBannerPreview"><img alt="پیش‌نمایش بنر ستون کناری"></div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>پاپ‌آپ شروع سایت</h4>
+                  <p>بعد از ورود کاربر به صفحه اصلی نمایش داده می‌شود. سایز پیشنهادی تصویر `1200x1500` یا نزدیک به آن است تا داخل مودال تمیز دیده شود.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>عکس پاپ‌آپ</label><input id="settingWelcomePopupImageUrl" type="text" oninput="previewAsset('settingWelcomePopupImageUrl', 'welcomePopupPreview')"></div>
+                  <div class="admin-field"><label>متن دکمه</label><input id="settingWelcomePopupButtonLabel" type="text" placeholder="شروع پیشبینی"></div>
+                  <div class="admin-field"><label>لینک دکمه</label><input id="settingWelcomePopupButtonUrl" type="text" placeholder="/"></div>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field">
+                    <label>آپلود عکس پاپ‌آپ</label>
+                    <div class="upload-row">
+                      <input id="welcomePopupUpload" type="file" accept="image/*">
+                      <button class="admin-btn secondary" type="button" onclick="uploadImageToField('welcomePopupUpload', 'settingWelcomePopupImageUrl', 'popup')">آپلود</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="asset-preview sidebar" id="welcomePopupPreview"><img alt="پیش‌نمایش پاپ‌آپ"></div>
+              </div>
+
+              <div class="settings-box">
+                <div class="settings-box-head">
+                  <h4>سینک نتایج زنده و ثبت نتیجه</h4>
+                  <p>برای سینک خودکار نتیجه و لایو می‌توانی از `Varzesh3` یا یک API JSON استفاده کنی. برای `Varzesh3` همین لینک جواب می‌دهد: `https://www.varzesh3.com/livescore` و هر ۵ دقیقه خوانده می‌شود.</p>
+                </div>
+                <div class="admin-form-grid">
+                  <div class="admin-field"><label>فعال‌سازی سینک نتایج</label><label><input id="settingLiveScoresEnabled" type="checkbox"> نتایج و لایو به صورت خودکار سینک شود</label></div>
+                  <div class="admin-field"><label>منبع سینک</label><select id="settingLiveScoresProvider"><option value="varzesh3_html">Varzesh3 Livescore</option><option value="espn_scoreboard">ESPN Scoreboard JSON</option><option value="generic_json">JSON سفارشی</option></select></div>
+                  <div class="admin-field"><label>URL فید نتایج</label><input id="settingLiveScoresFeedUrl" type="text" placeholder="https://www.varzesh3.com/livescore"></div>
+                  <div class="admin-field"><label>بازه تازه‌سازی (دقیقه)</label><input id="settingLiveScoresRefreshMinutes" type="number" min="1" max="60"></div>
+                  <div class="admin-field"><label>آخرین سینک</label><input id="settingLiveScoresLastSyncAt" type="text" readonly></div>
                 </div>
               </div>
             </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>متن فوتر</label><input id="settingFooterNote" type="text"></div>
-              <div class="admin-field"><label>اعتبارسنجی فوتر</label><input id="settingFooterCredit" type="text"></div>
-            </div>
-            <div class="admin-note" style="margin-top:1rem">راهنمای عکس‌ها: لوگوی اصلی بهتر است `512x512` باشد. آیکن مرورگر و جستجوی گوگل بهتر است `512x512` یا `192x192` و مربع باشد. لوگوی نوبار، ورود، فوتر و پنل بهتر است `256x256` و PNG شفاف باشند. بنر هیرو: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. اگر خالی بماند، هیروی شیشه‌ای پیش‌فرض سایت نمایش داده می‌شود.</div>
-            <div class="admin-note" style="margin-top:1rem">برندینگ و سئو: اگر در فیلد نام برند مثلا `آنوبز` وارد شود، عنوان صفحه‌ها، توضیحات متا، favicon، و لینک‌های sitemap با همان هویت برند برای کل سایت ساخته و به‌روز می‌شوند.</div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>بنر هیرو دسکتاپ</label><input id="settingHeroBannerUrl" type="text"></div>
-              <div class="admin-field"><label>بنر هیرو موبایل</label><input id="settingHeroBannerMobileUrl" type="text"></div>
-              <div class="admin-field"><label>ارتفاع بنر دسکتاپ</label><input id="settingHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
-              <div class="admin-field"><label>ارتفاع بنر موبایل</label><input id="settingHeroBannerHeightMobile" type="number" min="96" max="360"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>لینک کلیک بنر هیرو</label><input id="settingHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
-              <div class="admin-field"><label><input id="settingHeroBannerPureMode" type="checkbox"> وقتی بنر هیرو فعال است فقط خود بنر دیده شود و متن و لوگوی پیش‌فرض حذف شود</label></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field">
-                <label>آپلود بنر هیرو دسکتاپ</label>
-                <div class="upload-row">
-                  <input id="heroDesktopUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroDesktopUpload', 'settingHeroBannerUrl', 'hero')">آپلود</button>
-                </div>
-              </div>
-              <div class="admin-field">
-                <label>آپلود بنر هیرو موبایل</label>
-                <div class="upload-row">
-                  <input id="heroMobileUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('heroMobileUpload', 'settingHeroBannerMobileUrl', 'hero')">آپلود</button>
-                </div>
-              </div>
-            </div>
-            <div class="asset-preview hero" id="heroBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر هیرو"></div>
-            <div class="admin-note" style="margin-top:1rem">بنر هیرو صفحه جوایز: برای دسکتاپ سایز پیشنهادی `1600x360` و برای موبایل `900x320` است. به محض آپلود این بنر، هیروی صفحه جوایز فقط خود بنر را نشان می‌دهد و متن و اطلاعات دیفالت دیگر نمایش داده نمی‌شود.</div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>بنر هیرو جوایز دسکتاپ</label><input id="settingRewardsHeroBannerUrl" type="text"></div>
-              <div class="admin-field"><label>بنر هیرو جوایز موبایل</label><input id="settingRewardsHeroBannerMobileUrl" type="text"></div>
-              <div class="admin-field"><label>ارتفاع بنر جوایز دسکتاپ</label><input id="settingRewardsHeroBannerHeightDesktop" type="number" min="120" max="520"></div>
-              <div class="admin-field"><label>ارتفاع بنر جوایز موبایل</label><input id="settingRewardsHeroBannerHeightMobile" type="number" min="96" max="360"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>لینک کلیک بنر هیرو جوایز</label><input id="settingRewardsHeroBannerLinkUrl" type="text" placeholder="https://example.com"></div>
-              <div class="admin-note">اگر این فیلد خالی بماند، با کلیک روی بنر خود تصویر باز می‌شود.</div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field">
-                <label>آپلود بنر جوایز دسکتاپ</label>
-                <div class="upload-row">
-                  <input id="rewardsHeroDesktopUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroDesktopUpload', 'settingRewardsHeroBannerUrl', 'hero')">آپلود</button>
-                </div>
-              </div>
-              <div class="admin-field">
-                <label>آپلود بنر جوایز موبایل</label>
-                <div class="upload-row">
-                  <input id="rewardsHeroMobileUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('rewardsHeroMobileUpload', 'settingRewardsHeroBannerMobileUrl', 'hero')">آپلود</button>
-                </div>
-              </div>
-            </div>
-            <div class="asset-preview hero" id="rewardsHeroBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر هیرو جوایز"></div>
-            <div class="admin-note" style="margin-top:1rem">اسلایدر جوایز بالای نفرات برتر: به صورت خودکار از اولین جوایز فعال نمایش داده می‌شود. اینجا فقط تعداد اسلایدهای قابل نمایش را مشخص می‌کنید. بنر ویژه پایین نفرات برتر هم با سایز پیشنهادی `1200x1200` از همین بخش تنظیم می‌شود.</div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>تعداد جوایز اسلایدر</label><input id="settingHomeRewardSliderLimit" type="number" min="1" max="12"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>عکس بنر ویژه پایین نفرات برتر</label><input id="settingHomeSidebarBannerUrl" type="text"></div>
-              <div class="admin-field"><label>لینک بنر ویژه</label><input id="settingHomeSidebarBannerLinkUrl" type="text" placeholder="https://example.com"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field">
-                <label>آپلود بنر ویژه</label>
-                <div class="upload-row">
-                  <input id="sidebarBannerUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('sidebarBannerUpload', 'settingHomeSidebarBannerUrl', 'sidebar')">آپلود</button>
-                </div>
-              </div>
-            </div>
-            <div class="asset-preview sidebar" id="sidebarBannerPreview" style="margin-top:1rem"><img alt="پیش‌نمایش بنر ستون کناری"></div>
-            <div class="admin-note" style="margin-top:1rem">پاپ‌آپ ورودی سایت: بعد از ورود کاربر به صفحه اصلی نمایش داده می‌شود. سایز پیشنهادی عکس `1200x1500` یا نزدیک به آن است تا داخل مودال تمیز دیده شود.</div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>عکس پاپ‌آپ صفحه اصلی</label><input id="settingWelcomePopupImageUrl" type="text"></div>
-              <div class="admin-field"><label>متن دکمه پاپ‌آپ</label><input id="settingWelcomePopupButtonLabel" type="text" placeholder="شروع پیشبینی"></div>
-              <div class="admin-field"><label>لینک دکمه پاپ‌آپ</label><input id="settingWelcomePopupButtonUrl" type="text" placeholder="/"></div>
-            </div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field">
-                <label>آپلود عکس پاپ‌آپ</label>
-                <div class="upload-row">
-                  <input id="welcomePopupUpload" type="file" accept="image/*">
-                  <button class="admin-btn secondary" type="button" onclick="uploadImageToField('welcomePopupUpload', 'settingWelcomePopupImageUrl', 'popup')">آپلود</button>
-                </div>
-              </div>
-            </div>
-            <div class="asset-preview sidebar" id="welcomePopupPreview" style="margin-top:1rem"><img alt="پیش‌نمایش پاپ‌آپ"></div>
-            <div class="admin-note" style="margin-top:1rem">برای سینک خودکار نتیجه و لایو، می‌توانی از `Varzesh3` یا یک API JSON استفاده کنی. برای `Varzesh3` همین لینک جواب می‌دهد: `https://www.varzesh3.com/livescore` و هر ۵ دقیقه خوانده می‌شود. برای JSON هم اگر برای هر بازی `شناسه منبع` ثبت شود، سینک دقیق‌تر می‌شود.</div>
-            <div class="admin-form-grid" style="margin-top:1rem">
-              <div class="admin-field"><label>فعال‌سازی سینک نتایج</label><label><input id="settingLiveScoresEnabled" type="checkbox"> نتایج و لایو به صورت خودکار سینک شود</label></div>
-              <div class="admin-field"><label>منبع سینک</label><select id="settingLiveScoresProvider"><option value="varzesh3_html">Varzesh3 Livescore</option><option value="espn_scoreboard">ESPN Scoreboard JSON</option><option value="generic_json">JSON سفارشی</option></select></div>
-              <div class="admin-field"><label>URL فید نتایج</label><input id="settingLiveScoresFeedUrl" type="text" placeholder="https://www.varzesh3.com/livescore"></div>
-              <div class="admin-field"><label>بازه تازه‌سازی (دقیقه)</label><input id="settingLiveScoresRefreshMinutes" type="number" min="1" max="60"></div>
-              <div class="admin-field"><label>آخرین سینک</label><input id="settingLiveScoresLastSyncAt" type="text" readonly></div>
-            </div>
-            <div class="admin-actions" style="margin:1rem 0">
-              <div class="logo-preview" id="logoPreviewMain"><img alt=""></div>
-              <div class="logo-preview" id="logoPreviewBrowser"><img alt=""></div>
-              <div class="logo-preview" id="logoPreviewNav"><img alt=""></div>
-              <div class="logo-preview" id="logoPreviewAuth"><img alt=""></div>
-              <div class="logo-preview" id="logoPreviewFooter"><img alt=""></div>
-              <div class="logo-preview" id="logoPreviewAdmin"><img alt=""></div>
-            </div>
-            <div class="admin-actions"><button class="admin-btn success" type="button" onclick="saveSettings()">ذخیره تنظیمات</button></div>
+            <div class="admin-actions"><button class="admin-btn success" id="settingsSaveBtn" type="button" onclick="saveSettings()">ذخیره تنظیمات</button></div>
           </div>
         </div>
       </div>
@@ -1035,6 +1176,52 @@
     </div>
   </div>
 
+  <div class="admin-modal" id="vipMatchModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3 id="vipMatchModalTitle">افزودن بازی VIP</h3><button class="admin-close" type="button" onclick="closeModal('vipMatchModal')">×</button></div>
+      <input type="hidden" id="vipMatchId">
+      <input type="hidden" id="vipMatchSourceId">
+      <div class="admin-form-grid">
+        <div class="admin-field"><label>تیم اول</label><input id="vipMatchTeam1" type="text"></div>
+        <div class="admin-field"><label>تیم دوم</label><input id="vipMatchTeam2" type="text"></div>
+        <div class="admin-field"><label>پرچم تیم اول</label><input id="vipMatchFlag1" type="text" placeholder="🇮🇷"></div>
+        <div class="admin-field"><label>پرچم تیم دوم</label><input id="vipMatchFlag2" type="text" placeholder="🇧🇷"></div>
+      </div>
+      <div class="admin-form-grid three" style="margin-top:1rem">
+        <div class="admin-field"><label>گروه / دسته</label><input id="vipMatchGroup" type="text" placeholder="ویژه"></div>
+        <div class="admin-field"><label>مرحله</label><input id="vipMatchStage" type="text" placeholder="vip"></div>
+        <div class="admin-field"><label>وضعیت</label><select id="vipMatchStatus"><option value="upcoming">آینده</option><option value="live">زنده</option><option value="finished">پایان یافته</option></select></div>
+      </div>
+      <div class="admin-form-grid" style="margin-top:1rem">
+        <div class="admin-field"><label>تاریخ و زمان</label><input id="vipMatchDatetime" type="datetime-local"></div>
+        <div class="admin-field"><label>محل برگزاری</label><input id="vipMatchVenue" type="text"></div>
+      </div>
+      <div class="admin-field" style="margin-top:1rem"><label><input id="vipMatchIsActive" type="checkbox" checked> در صفحه میز شرطبندی نمایش داده شود</label></div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('vipMatchModal')">انصراف</button>
+        <button class="admin-btn" type="button" onclick="saveVipMatch()">ذخیره</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-modal" id="vipSettleModal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-head"><h3>تسویه بازی VIP</h3><button class="admin-close" type="button" onclick="closeModal('vipSettleModal')">×</button></div>
+      <input type="hidden" id="vipSettleMatchId">
+      <div id="vipSettleMatchName" class="admin-pill" style="margin-bottom:1rem"></div>
+      <div class="admin-form-grid three">
+        <div class="admin-field"><label id="vipSettleScore1Label">گل تیم اول</label><input id="vipSettleScore1" type="number" min="0" value="0"></div>
+        <div class="admin-field"><label id="vipSettleScore2Label">گل تیم دوم</label><input id="vipSettleScore2" type="number" min="0" value="0"></div>
+        <div class="admin-field"><label>نتیجه نهایی</label><select id="vipSettleResult"><option value="team1">برد تیم اول</option><option value="draw">مساوی</option><option value="team2">برد تیم دوم</option></select></div>
+      </div>
+      <div class="admin-note" style="margin-top:1rem">بعد از تسویه، سهم برندگان از کل استخر شرط همین بازی به صورت نسبی به اعتبارشان برمی‌گردد.</div>
+      <div class="admin-modal-actions">
+        <button class="admin-btn secondary" type="button" onclick="closeModal('vipSettleModal')">انصراف</button>
+        <button class="admin-btn success" type="button" onclick="settleVipMatch()">ثبت نتیجه و تسویه</button>
+      </div>
+    </div>
+  </div>
+
   <script src="/assets/shared.js"></script>
   <script>
     WC.init({
@@ -1055,12 +1242,29 @@
     let currentMatchBets = [];
     let rewardsCache = [];
     let adsCache = [];
+    let vipMembersCache = [];
+    let vipMatchesCache = [];
+    let vipRecentBetsCache = [];
     let booted = false;
     let isRefreshingSection = false;
     let adminRefreshTimer = null;
 
     function toFaDigits(value) {
       return String(value).replace(/\d/g, function (digit) { return '۰۱۲۳۴۵۶۷۸۹'[digit]; });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatMoney(value) {
+      const number = Number(value || 0);
+      return toFaDigits(number.toLocaleString('en-US')) + ' تومان';
     }
 
     function parseTehranDate(value) {
@@ -1129,6 +1333,7 @@
         bets: 'شرط‌های هر بازی',
         defaults: 'شرط‌های پیش‌فرض',
         users: 'کاربران',
+        vip: 'VIP',
         rewards: 'جوایز',
         ads: 'بنرها',
         backup: 'بکاپ',
@@ -1144,6 +1349,7 @@
         bets: loadBetsSection,
         defaults: loadDefaults,
         users: loadUsers,
+        vip: loadVipSection,
         rewards: loadRewards,
         ads: loadAds,
         backup: loadBackupSection,
@@ -1185,7 +1391,9 @@
         ['بازی‌های آینده', stats.upcoming_matches || 0],
         ['بازی‌های زنده', stats.live_matches || 0],
         ['جوایز فعال', stats.active_rewards || 0],
-        ['بازی‌های پایان‌یافته', stats.finished_matches || 0]
+        ['بازی‌های پایان‌یافته', stats.finished_matches || 0],
+        ['کاربران VIP', stats.active_vip_members || 0],
+        ['بازی‌های VIP', stats.active_vip_matches || 0]
       ].map(function (item) {
         return '<div class="admin-stat"><strong>' + toFaDigits(item[1]) + '</strong><span>' + item[0] + '</span></div>';
       }).join('');
@@ -1297,6 +1505,241 @@
 
     function downloadUsersExport() {
       window.open('/backend/export_users.php', '_blank');
+    }
+
+    function renderVipSourceSelect() {
+      const select = document.getElementById('vipSourceMatchSelect');
+      if (!select) return;
+      select.innerHTML = '<option value="">انتخاب بازی از برنامه اصلی سایت</option>' + matchesCache.map(function (match) {
+        return '<option value="' + match.id + '">' + escapeHtml(match.team1 + ' - ' + match.team2 + ' | ' + formatDate(match.match_datetime)) + '</option>';
+      }).join('');
+    }
+
+    function clearVipMemberForm() {
+      document.getElementById('vipMemberId').value = '';
+      document.getElementById('vipMemberPhone').value = '';
+      document.getElementById('vipMemberBalance').value = 500000;
+      document.getElementById('vipMemberIsActive').checked = true;
+    }
+
+    function editVipMember(id) {
+      const member = vipMembersCache.find(function (item) { return item.id == id; });
+      if (!member) return;
+      document.getElementById('vipMemberId').value = member.id;
+      document.getElementById('vipMemberPhone').value = member.phone || '';
+      document.getElementById('vipMemberBalance').value = member.current_balance || 0;
+      document.getElementById('vipMemberIsActive').checked = !!member.is_active;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function saveVipMember() {
+      const payload = {
+        id: parseInt(document.getElementById('vipMemberId').value || '0', 10) || undefined,
+        phone: document.getElementById('vipMemberPhone').value.trim(),
+        current_balance: document.getElementById('vipMemberBalance').value.trim(),
+        is_active: document.getElementById('vipMemberIsActive').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_vip_member' : 'admin_add_vip_member', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'ذخیره کاربر VIP انجام نشد.', 'err');
+        return;
+      }
+      WC.toast('کاربر VIP ذخیره شد.');
+      clearVipMemberForm();
+      loadVipSection();
+    }
+
+    async function deleteVipMember(id) {
+      if (!confirm('این دسترسی VIP غیرفعال شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_vip_member', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'غیرفعال‌سازی VIP انجام نشد.', 'err');
+        return;
+      }
+      WC.toast('کاربر VIP غیرفعال شد.');
+      loadVipSection();
+    }
+
+    function openVipMatchModal(id) {
+      document.getElementById('vipMatchModalTitle').textContent = id ? 'ویرایش بازی VIP' : 'افزودن بازی VIP';
+      document.getElementById('vipMatchId').value = '';
+      document.getElementById('vipMatchSourceId').value = '';
+      ['vipMatchTeam1', 'vipMatchTeam2', 'vipMatchFlag1', 'vipMatchFlag2', 'vipMatchGroup', 'vipMatchStage', 'vipMatchVenue', 'vipMatchDatetime'].forEach(function (field) {
+        document.getElementById(field).value = '';
+      });
+      document.getElementById('vipMatchStatus').value = 'upcoming';
+      document.getElementById('vipMatchIsActive').checked = true;
+
+      if (id) {
+        const match = vipMatchesCache.find(function (item) { return item.id == id; });
+        if (match) {
+          document.getElementById('vipMatchId').value = match.id;
+          document.getElementById('vipMatchSourceId').value = match.source_match_id || '';
+          document.getElementById('vipMatchTeam1').value = match.team1 || '';
+          document.getElementById('vipMatchTeam2').value = match.team2 || '';
+          document.getElementById('vipMatchFlag1').value = match.team1_flag || '';
+          document.getElementById('vipMatchFlag2').value = match.team2_flag || '';
+          document.getElementById('vipMatchGroup').value = match.group_name || '';
+          document.getElementById('vipMatchStage').value = match.stage || 'vip';
+          document.getElementById('vipMatchVenue').value = match.venue || '';
+          document.getElementById('vipMatchStatus').value = match.status || 'upcoming';
+          document.getElementById('vipMatchIsActive').checked = !!match.is_active;
+          document.getElementById('vipMatchDatetime').value = (match.match_datetime || '').replace(' ', 'T').slice(0, 16);
+        }
+      } else {
+        document.getElementById('vipMatchStage').value = 'vip';
+      }
+      openModal('vipMatchModal');
+    }
+
+    async function saveVipMatch() {
+      const payload = {
+        id: parseInt(document.getElementById('vipMatchId').value || '0', 10) || undefined,
+        source_match_id: parseInt(document.getElementById('vipMatchSourceId').value || '0', 10) || 0,
+        team1: document.getElementById('vipMatchTeam1').value.trim(),
+        team2: document.getElementById('vipMatchTeam2').value.trim(),
+        team1_flag: document.getElementById('vipMatchFlag1').value.trim(),
+        team2_flag: document.getElementById('vipMatchFlag2').value.trim(),
+        group_name: document.getElementById('vipMatchGroup').value.trim(),
+        stage: document.getElementById('vipMatchStage').value.trim(),
+        venue: document.getElementById('vipMatchVenue').value.trim(),
+        match_datetime: document.getElementById('vipMatchDatetime').value,
+        status: document.getElementById('vipMatchStatus').value,
+        is_active: document.getElementById('vipMatchIsActive').checked ? 1 : 0
+      };
+      const response = await WC.apiFetch(payload.id ? 'admin_update_vip_match' : 'admin_add_vip_match', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'ذخیره بازی VIP انجام نشد.', 'err');
+        return;
+      }
+      closeModal('vipMatchModal');
+      WC.toast('بازی VIP ذخیره شد.');
+      loadVipSection();
+    }
+
+    async function importSelectedVipMatch() {
+      const sourceMatchId = parseInt(document.getElementById('vipSourceMatchSelect').value || '0', 10);
+      if (!sourceMatchId) {
+        WC.toast('اول یک بازی از برنامه اصلی انتخاب کنید.', 'err');
+        return;
+      }
+      const response = await WC.apiFetch('admin_add_vip_match', { source_match_id: sourceMatchId }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'کپی بازی به بخش VIP انجام نشد.', 'err');
+        return;
+      }
+      WC.toast('بازی به میز VIP اضافه شد.');
+      loadVipSection();
+    }
+
+    function openVipSettleModal(id) {
+      const match = vipMatchesCache.find(function (item) { return item.id == id; });
+      if (!match) return;
+      document.getElementById('vipSettleMatchId').value = match.id;
+      document.getElementById('vipSettleMatchName').textContent = match.team1 + ' - ' + match.team2;
+      document.getElementById('vipSettleScore1Label').textContent = 'گل ' + match.team1;
+      document.getElementById('vipSettleScore2Label').textContent = 'گل ' + match.team2;
+      document.getElementById('vipSettleScore1').value = match.score_team1 != null ? match.score_team1 : 0;
+      document.getElementById('vipSettleScore2').value = match.score_team2 != null ? match.score_team2 : 0;
+      document.getElementById('vipSettleResult').innerHTML =
+        '<option value="team1">برد ' + escapeHtml(match.team1) + '</option>' +
+        '<option value="draw">مساوی</option>' +
+        '<option value="team2">برد ' + escapeHtml(match.team2) + '</option>';
+      document.getElementById('vipSettleResult').value = match.result_option || 'draw';
+      openModal('vipSettleModal');
+    }
+
+    async function settleVipMatch() {
+      const payload = {
+        match_id: parseInt(document.getElementById('vipSettleMatchId').value || '0', 10),
+        score_team1: parseInt(document.getElementById('vipSettleScore1').value || '0', 10),
+        score_team2: parseInt(document.getElementById('vipSettleScore2').value || '0', 10),
+        result_option: document.getElementById('vipSettleResult').value
+      };
+      const response = await WC.apiFetch('admin_settle_vip_match', payload, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'تسویه بازی VIP انجام نشد.', 'err');
+        return;
+      }
+      closeModal('vipSettleModal');
+      WC.toast(
+        'بازی VIP تسویه شد. ' +
+        'برندگان نتیجه: ' + toFaDigits(response.winners || 0) +
+        ' | برندگان دقیق: ' + toFaDigits(response.exact_winners || 0) +
+        ' | مجموع بانک پرداختی: ' + formatMoney(response.jackpot_paid_total || 0) +
+        ' | بانک باقی‌مانده: ' + formatMoney(response.vip_bank_balance || 0)
+      );
+      loadVipSection();
+    }
+
+    async function deleteVipMatch(id) {
+      if (!confirm('این بازی VIP حذف شود؟')) return;
+      const response = await WC.apiFetch('admin_delete_vip_match', { id: id }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'حذف بازی VIP انجام نشد.', 'err');
+        return;
+      }
+      WC.toast('بازی VIP حذف شد.');
+      loadVipSection();
+    }
+
+    async function loadVipSection() {
+      if (!matchesCache.length) {
+        const matchesRes = await WC.apiFetch('admin_matches');
+        if (matchesRes.success) matchesCache = matchesRes.matches || [];
+      }
+      renderVipSourceSelect();
+
+      const response = await WC.apiFetch('admin_vip');
+      if (!response.success) {
+        document.getElementById('vipMembersRoot').innerHTML = '<div class="wc-empty">' + (response.error || 'خطا در بارگذاری VIP') + '</div>';
+        document.getElementById('vipMatchesRoot').innerHTML = '';
+        document.getElementById('vipRecentBetsRoot').innerHTML = '';
+        return;
+      }
+
+      vipMembersCache = response.members || [];
+      vipMatchesCache = response.matches || [];
+      vipRecentBetsCache = response.recent_bets || [];
+      const vipBankBalance = Number(response.vip_bank_balance || 0);
+
+      document.getElementById('vipMembersRoot').innerHTML = vipMembersCache.length ? (
+        '<div class="admin-actions" style="margin-bottom:0.9rem"><span class="admin-pill">بانک فعلی VIP: ' + formatMoney(vipBankBalance) + '</span><span class="admin-pill">کاربران VIP فعال: ' + toFaDigits(vipMembersCache.filter(function (item) { return !!item.is_active; }).length) + '</span></div>' +
+        '<table><thead><tr><th>شماره</th><th>کاربر متصل</th><th>اعتبار</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>' +
+        vipMembersCache.map(function (member) {
+          return '<tr><td dir="ltr">' + escapeHtml(member.phone || '') + '</td><td>' + escapeHtml(member.user_name || 'هنوز وارد نشده') + '</td><td>' + formatMoney(member.current_balance || 0) + '</td><td>' + ((member.is_active ? '<span class="wc-badge success">فعال</span>' : '<span class="wc-badge danger">غیرفعال</span>')) + '</td><td><div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="editVipMember(' + member.id + ')">ویرایش</button><button class="admin-btn danger small" type="button" onclick="deleteVipMember(' + member.id + ')">غیرفعال</button></div></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هنوز شماره VIP ثبت نشده است.</div>';
+
+      document.getElementById('vipMatchesRoot').innerHTML = vipMatchesCache.length ? (
+        '<table><thead><tr><th>بازی</th><th>زمان</th><th>استخر</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody>' +
+        vipMatchesCache.map(function (match) {
+          const totalPool = Number(match.pool_total || 0);
+          const totalBets = Number(match.bets_count || 0);
+          const statusHtml = match.settled_at
+            ? '<span class="wc-badge success">تسویه شده</span>'
+            : (match.status === 'finished'
+              ? '<span class="wc-badge warning">آماده تسویه</span>'
+              : (match.status === 'live' ? '<span class="wc-badge warning">زنده</span>' : '<span class="wc-badge info">آینده</span>'));
+          return '<tr><td>' + escapeHtml((match.team1_flag || '🏳️') + ' ' + match.team1 + ' - ' + match.team2 + ' ' + (match.team2_flag || '🏳️')) + '<div style="margin-top:0.25rem;color:var(--wc-muted);font-size:0.74rem">' + escapeHtml(match.group_name || match.stage || 'vip') + '</div></td><td>' + formatDate(match.match_datetime) + '</td><td>' + formatMoney(totalPool) + '<div style="margin-top:0.25rem;color:var(--wc-muted);font-size:0.74rem">' + toFaDigits(totalBets) + ' شرط • استخر خالص: ' + formatMoney(Math.floor(totalPool * 0.9)) + ' • سهم بانک: ' + formatMoney(Math.floor(totalPool * 0.1)) + '</div></td><td>' + statusHtml + '</td><td><div class="admin-actions"><button class="admin-btn secondary small" type="button" onclick="openVipMatchModal(' + match.id + ')">ویرایش</button><button class="admin-btn success small" type="button" onclick="openVipSettleModal(' + match.id + ')">تسویه</button><button class="admin-btn danger small" type="button" onclick="deleteVipMatch(' + match.id + ')">حذف</button></div></td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هنوز بازی VIP ثبت نشده است.</div>';
+
+      document.getElementById('vipRecentBetsRoot').innerHTML = vipRecentBetsCache.length ? (
+        '<table><thead><tr><th>کاربر</th><th>بازی</th><th>خروجی</th><th>نتیجه دقیق</th><th>مبلغ</th><th>تاریخ</th></tr></thead><tbody>' +
+        vipRecentBetsCache.map(function (bet) {
+          const outcomeLabel = bet.outcome === 'team1'
+            ? ('برد ' + bet.team1)
+            : (bet.outcome === 'team2' ? ('برد ' + bet.team2) : 'مساوی');
+          const exactScore = (bet.exact_score_team1 !== null && bet.exact_score_team2 !== null)
+            ? (toFaDigits(bet.exact_score_team1) + ' - ' + toFaDigits(bet.exact_score_team2))
+            : '—';
+          return '<tr><td>' + escapeHtml(bet.user_name || 'کاربر VIP') + '<div style="margin-top:0.25rem;color:var(--wc-muted);font-size:0.74rem" dir="ltr">' + escapeHtml(bet.user_phone || '') + '</div></td><td>' + escapeHtml((bet.team1 || '') + ' - ' + (bet.team2 || '')) + '</td><td>' + escapeHtml(outcomeLabel) + '</td><td>' + exactScore + '</td><td>' + formatMoney(bet.amount || 0) + '</td><td>' + formatDate(bet.created_at) + '</td></tr>';
+        }).join('') +
+        '</tbody></table>'
+      ) : '<div class="wc-empty">هنوز شرط VIP ثبت نشده است.</div>';
     }
 
     async function loadRewards() {
@@ -1423,6 +1866,9 @@
       document.getElementById('settingRewardsHeroBannerMobileUrl').value = settings.rewards_hero_banner_mobile_url || '';
       document.getElementById('settingRewardsHeroBannerHeightDesktop').value = settings.rewards_hero_banner_height_desktop || 220;
       document.getElementById('settingRewardsHeroBannerHeightMobile').value = settings.rewards_hero_banner_height_mobile || 168;
+      document.getElementById('settingTopStripBannerUrl').value = settings.top_strip_banner_url || '';
+      document.getElementById('settingTopStripBannerLinkUrl').value = settings.top_strip_banner_link_url || '';
+      document.getElementById('settingTopStripBannerMobileUrl').value = settings.top_strip_banner_mobile_url || '';
       document.getElementById('settingHomeSidebarBannerUrl').value = settings.home_sidebar_banner_url || '';
       document.getElementById('settingHomeSidebarBannerLinkUrl').value = settings.home_sidebar_banner_link_url || '';
       document.getElementById('settingHomeRewardSliderLimit').value = settings.home_reward_slider_limit || 3;
@@ -1443,8 +1889,9 @@
       previewLogo('settingAuthLogoUrl', 'logoPreviewAuth');
       previewLogo('settingFooterLogoUrl', 'logoPreviewFooter');
       previewLogo('settingAdminLogoUrl', 'logoPreviewAdmin');
-      previewAsset('settingHeroBannerUrl', 'heroBannerPreview');
-      previewAsset('settingRewardsHeroBannerUrl', 'rewardsHeroBannerPreview');
+      previewAsset(document.getElementById('settingHeroBannerUrl').value ? 'settingHeroBannerUrl' : 'settingHeroBannerMobileUrl', 'heroBannerPreview');
+      previewAsset(document.getElementById('settingRewardsHeroBannerUrl').value ? 'settingRewardsHeroBannerUrl' : 'settingRewardsHeroBannerMobileUrl', 'rewardsHeroBannerPreview');
+      previewAsset(document.getElementById('settingTopStripBannerUrl').value ? 'settingTopStripBannerUrl' : 'settingTopStripBannerMobileUrl', 'topStripBannerPreview');
       previewAsset('settingHomeSidebarBannerUrl', 'sidebarBannerPreview');
       previewAsset('settingWelcomePopupImageUrl', 'welcomePopupPreview');
       WC.setDeferredImage('adminBrandLogo', settings.admin_logo_url || settings.logo_url || '/assets/worldcup.jpeg');
@@ -1510,6 +1957,29 @@
       target.value = data.url;
       fileInput.value = '';
       target.dispatchEvent(new Event('input'));
+      const previewMap = {
+        settingLogoUrl: ['logo', 'logoPreviewMain'],
+        settingBrowserIconUrl: ['logo', 'logoPreviewBrowser'],
+        settingNavLogoUrl: ['logo', 'logoPreviewNav'],
+        settingAuthLogoUrl: ['logo', 'logoPreviewAuth'],
+        settingFooterLogoUrl: ['logo', 'logoPreviewFooter'],
+        settingAdminLogoUrl: ['logo', 'logoPreviewAdmin'],
+        settingHeroBannerUrl: ['asset', 'heroBannerPreview'],
+        settingHeroBannerMobileUrl: ['asset', 'heroBannerPreview'],
+        settingRewardsHeroBannerUrl: ['asset', 'rewardsHeroBannerPreview'],
+        settingRewardsHeroBannerMobileUrl: ['asset', 'rewardsHeroBannerPreview'],
+        settingTopStripBannerUrl: ['asset', 'topStripBannerPreview'],
+        settingTopStripBannerMobileUrl: ['asset', 'topStripBannerPreview'],
+        settingHomeSidebarBannerUrl: ['asset', 'sidebarBannerPreview'],
+        settingWelcomePopupImageUrl: ['asset', 'welcomePopupPreview']
+      };
+      if (previewMap[targetInputId]) {
+        if (previewMap[targetInputId][0] === 'logo') {
+          previewLogo(targetInputId, previewMap[targetInputId][1]);
+        } else {
+          previewAsset(targetInputId, previewMap[targetInputId][1]);
+        }
+      }
       WC.toast('عکس آپلود شد.');
     }
 
@@ -1796,6 +2266,7 @@
     }
 
     async function saveSettings() {
+      const saveButton = document.getElementById('settingsSaveBtn');
       const payload = {
         site_name: document.getElementById('settingSiteName').value.trim(),
         brand_name: document.getElementById('settingBrandName').value.trim(),
@@ -1820,6 +2291,9 @@
         rewards_hero_banner_mobile_url: document.getElementById('settingRewardsHeroBannerMobileUrl').value.trim(),
         rewards_hero_banner_height_desktop: parseInt(document.getElementById('settingRewardsHeroBannerHeightDesktop').value || '220', 10),
         rewards_hero_banner_height_mobile: parseInt(document.getElementById('settingRewardsHeroBannerHeightMobile').value || '168', 10),
+        top_strip_banner_url: document.getElementById('settingTopStripBannerUrl').value.trim(),
+        top_strip_banner_link_url: document.getElementById('settingTopStripBannerLinkUrl').value.trim(),
+        top_strip_banner_mobile_url: document.getElementById('settingTopStripBannerMobileUrl').value.trim(),
         home_sidebar_banner_url: document.getElementById('settingHomeSidebarBannerUrl').value.trim(),
         home_sidebar_banner_link_url: document.getElementById('settingHomeSidebarBannerLinkUrl').value.trim(),
         home_reward_slider_limit: parseInt(document.getElementById('settingHomeRewardSliderLimit').value || '3', 10),
@@ -1833,14 +2307,27 @@
         footer_note: document.getElementById('settingFooterNote').value.trim(),
         footer_credit: document.getElementById('settingFooterCredit').value.trim()
       };
-      const response = await WC.apiFetch('admin_settings', payload, 'POST');
-      if (!response.success) {
-        WC.toast(response.error || 'خطا در ذخیره تنظیمات', 'err');
-        return;
+      if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.textContent = 'در حال ذخیره...';
       }
-      WC.toast('تنظیمات ذخیره شد.');
-      await WC.refreshSettings();
-      loadSettings();
+      try {
+        const response = await WC.apiFetch('admin_settings', payload, 'POST');
+        if (!response.success) {
+          WC.toast(response.error || 'خطا در ذخیره تنظیمات', 'err');
+          return;
+        }
+        WC.toast('تنظیمات ذخیره شد.');
+        await WC.refreshSettings();
+        await loadSettings();
+      } catch (_) {
+        WC.toast('ذخیره تنظیمات انجام نشد.', 'err');
+      } finally {
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.textContent = 'ذخیره تنظیمات';
+        }
+      }
     }
 
     function openRewardModal(id) {

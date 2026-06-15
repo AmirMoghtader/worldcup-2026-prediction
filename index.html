@@ -465,6 +465,129 @@
       font-size: 0.8rem;
     }
 
+    .home-leaderboard {
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .home-leaderboard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 34px rgba(16,36,63,0.12);
+      border-color: rgba(182,136,36,0.2);
+    }
+
+    .home-leaderboard:focus-visible {
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba(182,136,36,0.2);
+      border-color: rgba(182,136,36,0.26);
+    }
+
+    .leaderboard-pop-card {
+      width: min(620px, 100%);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(145,164,184,0.18);
+      box-shadow: 0 32px 72px rgba(7,14,24,0.22);
+      padding: 1.15rem;
+      position: relative;
+    }
+
+    .leaderboard-pop-card .wc-section-title {
+      margin-bottom: 1rem;
+      padding-inline-start: 2.6rem;
+    }
+
+    .leaderboard-chart {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      align-items: end;
+      min-height: 320px;
+      direction: ltr;
+    }
+
+    .leaderboard-bar-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      min-width: 0;
+    }
+
+    .leaderboard-score-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 104px;
+      padding: 0.52rem 0.72rem;
+      border-radius: 10px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-navy);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .leaderboard-bar-track {
+      width: min(100%, 130px);
+      height: 228px;
+      padding: 0.7rem;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(243,246,250,0.96), rgba(233,239,245,0.74));
+      border: 1px solid rgba(145,164,184,0.16);
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .leaderboard-bar {
+      width: 100%;
+      min-height: 72px;
+      border-radius: 18px 18px 8px 8px;
+      box-shadow: 0 18px 28px rgba(16,36,63,0.16);
+    }
+
+    .leaderboard-bar.rank-1 {
+      background: linear-gradient(180deg, #f7e7a0, #d1a23a);
+    }
+
+    .leaderboard-bar.rank-2 {
+      background: linear-gradient(180deg, #eef3f8, #b9c3cf);
+    }
+
+    .leaderboard-bar.rank-3 {
+      background: linear-gradient(180deg, #d8a57e, #a85f33);
+    }
+
+    .leaderboard-bar-meta {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-align: center;
+    }
+
+    .leaderboard-bar-meta strong,
+    .leaderboard-bar-meta span {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .leaderboard-bar-meta strong {
+      color: var(--wc-navy);
+      font-size: 0.95rem;
+    }
+
+    .leaderboard-bar-meta span {
+      color: var(--wc-muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
     .home-hero {
       width: min(1180px, calc(100% - 1rem));
       padding: 1rem 1.1rem;
@@ -588,6 +711,30 @@
         min-height: var(--home-hero-height-mobile, 168px);
       }
 
+      .leaderboard-pop-card {
+        padding: 1rem 0.85rem;
+      }
+
+      .leaderboard-pop-card .wc-section-title {
+        padding-inline-start: 2.2rem;
+      }
+
+      .leaderboard-chart {
+        gap: 0.55rem;
+        min-height: 260px;
+      }
+
+      .leaderboard-bar-track {
+        height: 180px;
+        padding: 0.5rem;
+      }
+
+      .leaderboard-score-pill {
+        min-width: 0;
+        width: 100%;
+        font-size: 0.76rem;
+      }
+
       .home-hero .wc-chip-row {
         gap: 0.45rem;
       }
@@ -647,7 +794,7 @@
       <aside style="display:flex;flex-direction:column;gap:1rem">
         <div id="rewardShowcaseRoot" class="home-reward-showcase is-loading"></div>
 
-        <div class="wc-glass-panel home-leaderboard">
+        <div class="wc-glass-panel home-leaderboard" id="homeLeaderboardPanel" role="button" tabindex="0" aria-label="نمایش نمودار سه نفر برتر" onclick="openLeaderboardPopup()" onkeydown="handleLeaderboardPanelKeydown(event)">
           <div class="wc-section-title">
             <h3>نفرات برتر</h3>
             <span class="wc-badge info">امتیاز</span>
@@ -668,6 +815,17 @@
       <div class="home-popup-actions">
         <a class="wc-button" href="/" id="homePopupCta">شروع پیشبینی</a>
       </div>
+    </div>
+  </div>
+
+  <div class="home-popup" id="leaderboardPopup">
+    <div class="leaderboard-pop-card">
+      <button class="home-popup-close" id="leaderboardPopupClose" type="button" aria-label="بستن">×</button>
+      <div class="wc-section-title">
+        <h3>سه نفر برتر</h3>
+        <span class="wc-badge info">نمودار امتیاز</span>
+      </div>
+      <div class="leaderboard-chart" id="leaderboardChartRoot"></div>
     </div>
   </div>
 
@@ -704,6 +862,12 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function syncModalState() {
+      const hasOpenModal = document.getElementById('homePopup').classList.contains('open')
+        || document.getElementById('leaderboardPopup').classList.contains('open');
+      document.body.classList.toggle('wc-modal-open', hasOpenModal);
     }
 
     function parseTehranDate(value) {
@@ -943,12 +1107,61 @@
       cta.href = settings.welcome_popup_button_url || '/';
       card.classList.remove('is-loading');
       popup.classList.add('open');
-      document.body.classList.add('wc-modal-open');
+      syncModalState();
     }
 
     function closeWelcomePopup() {
       document.getElementById('homePopup').classList.remove('open');
-      document.body.classList.remove('wc-modal-open');
+      syncModalState();
+    }
+
+    function openLeaderboardPopup() {
+      renderLeaderboardChart();
+      document.getElementById('leaderboardPopup').classList.add('open');
+      syncModalState();
+    }
+
+    function handleLeaderboardPanelKeydown(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openLeaderboardPopup();
+      }
+    }
+
+    function closeLeaderboardPopup() {
+      document.getElementById('leaderboardPopup').classList.remove('open');
+      syncModalState();
+    }
+
+    function renderLeaderboardChart() {
+      const root = document.getElementById('leaderboardChartRoot');
+      const topThree = leaderboard.slice(0, 3);
+      if (!topThree.length) {
+        root.innerHTML = '<div class="wc-empty" style="grid-column:1 / -1">هنوز امتیازی ثبت نشده است.</div>';
+        return;
+      }
+
+      const medals = ['طلا', 'نقره', 'برنز'];
+      const maxPoints = Math.max.apply(null, topThree.map(function (user) {
+        return Number(user.total_points || 0);
+      }).concat([1]));
+
+      root.innerHTML = topThree.map(function (user, index) {
+        const points = Number(user.total_points || 0);
+        const height = Math.max(32, Math.round((points / maxPoints) * 100));
+        return (
+          '<div class="leaderboard-bar-card">' +
+            '<div class="leaderboard-score-pill">' + toFaDigits(points) + ' امتیاز</div>' +
+            '<div class="leaderboard-bar-track">' +
+              '<div class="leaderboard-bar rank-' + (index + 1) + '" style="height:' + height + '%"></div>' +
+            '</div>' +
+            '<div class="leaderboard-bar-meta">' +
+              '<strong>' + escapeHtml(user.name || 'کاربر') + '</strong>' +
+              '<span>رتبه ' + toFaDigits(index + 1) + ' • ' + medals[index] + '</span>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
     }
 
     function buildDateFilters() {
@@ -1172,6 +1385,10 @@
     document.getElementById('homePopupClose').addEventListener('click', closeWelcomePopup);
     document.getElementById('homePopup').addEventListener('click', function (event) {
       if (event.target === this) closeWelcomePopup();
+    });
+    document.getElementById('leaderboardPopupClose').addEventListener('click', closeLeaderboardPopup);
+    document.getElementById('leaderboardPopup').addEventListener('click', function (event) {
+      if (event.target === this) closeLeaderboardPopup();
     });
     window.addEventListener('resize', buildHero);
 

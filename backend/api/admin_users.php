@@ -11,6 +11,7 @@ $rows = $pdo->query(
 )->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as &$row) {
     $row['available_points'] = wc_get_available_points($row);
+    $row = wc_attach_vip_to_user($pdo, $row);
 }
 unset($row);
 hmn_json_response(['success' => true, 'users' => $rows]);

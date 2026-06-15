@@ -21,5 +21,6 @@ $st->execute([':id' => $uid]);
 $u = $st->fetch(PDO::FETCH_ASSOC);
 if ($u) {
     $u['available_points'] = wc_get_available_points($u);
+    $u = wc_attach_vip_to_user($pdo, $u);
 }
 hmn_json_response(['success' => true, 'user' => $u ? array_merge($u, ['role' => 'user']) : null, 'role' => 'user']);

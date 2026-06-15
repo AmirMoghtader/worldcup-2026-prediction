@@ -325,6 +325,13 @@
       border-bottom: 0;
     }
 
+    .profile-side-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.9rem;
+    }
+
     .reward-code-box {
       padding: 0.8rem 0.9rem;
       border-radius: 12px;
@@ -475,7 +482,7 @@
   </header>
 
   <main class="wc-page">
-    <div id="authWall" class="wc-glass-panel wc-empty" style="margin-top:calc(var(--wc-nav-h) + 1.25rem);display:none">
+    <div id="authWall" class="wc-glass-panel wc-empty" style="margin-top:calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1.25rem);display:none">
       برای مشاهده حساب کاربری ابتدا وارد شوید.
       <div style="margin-top:1rem"><button class="wc-button" type="button" onclick="WC.openLogin(onLoginSuccess)">ورود / ثبت‌نام</button></div>
     </div>
@@ -610,7 +617,7 @@
     }
 
     function renderFacts(profile, stats, rank) {
-      document.getElementById('quickFacts').innerHTML = [
+      const factsHtml = [
         ['رتبه فعلی', rank ? toFaDigits(rank) : '—'],
         ['امتیاز محاسبه‌شده', toFaDigits(stats.total_points_earned || 0)],
         ['امتیاز خرج‌شده', toFaDigits(profile.redeemed_points || 0)],
@@ -620,6 +627,13 @@
       ].map(function (item) {
         return '<div class="wc-chip"><strong style="color:var(--wc-navy)">' + item[0] + ':</strong> <span>' + item[1] + '</span></div>';
       }).join('');
+
+      const vip = profile.vip || null;
+      document.getElementById('quickFacts').innerHTML = factsHtml + (
+        vip
+          ? '<div class="profile-side-actions"><div class="wc-chip"><strong style="color:var(--wc-navy)">اعتبار VIP:</strong> <span>' + toFaDigits(Number(vip.current_balance || 0).toLocaleString('en-US')) + ' تومان</span></div><a class="wc-button" href="/vip">میز شرطبندی</a></div>'
+          : ''
+      );
     }
 
     function renderRewards(payload) {

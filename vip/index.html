@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>میز شرطبندی VIP</title>
+  <meta name="description" content="میز شرطبندی ویژه کاربران VIP با اعتبار اختصاصی و بازی‌های انتخابی ادمین.">
+  <link rel="preload" href="/assets/IRANSansX-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="/assets/IRANSansX-Medium.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="icon" href="/favicon.php">
+  <link rel="stylesheet" href="/assets/shared.css">
+  <script>document.documentElement.classList.add('wc-boot-loading');</script>
+  <style>
+    .vip-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .vip-main,
+    .vip-side {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .vip-card {
+      padding: 1.15rem;
+    }
+
+    .vip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+
+    .vip-match-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(145,164,184,0.16);
+      box-shadow: 0 18px 38px rgba(16,36,63,0.08);
+      padding: 1rem;
+    }
+
+    .vip-card-head,
+    .vip-card-meta,
+    .vip-bet-summary,
+    .vip-history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .vip-team-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.75rem;
+      align-items: center;
+      text-align: center;
+    }
+
+    .vip-team {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .vip-team span {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .vip-team strong {
+      color: var(--wc-navy);
+      font-size: 1rem;
+    }
+
+    .vip-vs {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: rgba(16,36,63,0.06);
+      color: var(--wc-muted);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .vip-options {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .vip-option {
+      width: 100%;
+      border: 1px solid rgba(145,164,184,0.18);
+      border-radius: 14px;
+      background: rgba(248,250,252,0.94);
+      padding: 0.8rem 0.9rem;
+      text-align: right;
+      cursor: pointer;
+      transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .vip-option.active {
+      border-color: rgba(182,136,36,0.35);
+      box-shadow: 0 16px 30px rgba(182,136,36,0.12);
+      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(255,248,224,0.98), rgba(255,255,255,0.96));
+    }
+
+    .vip-option strong,
+    .vip-option small {
+      display: block;
+    }
+
+    .vip-option strong {
+      color: var(--wc-navy);
+      font-size: 0.92rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .vip-option small {
+      color: var(--wc-muted);
+      line-height: 1.8;
+      font-size: 0.76rem;
+    }
+
+    .vip-bet-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.7rem;
+      align-items: end;
+    }
+
+    .vip-exact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.65rem;
+    }
+
+    .vip-bet-form input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(145,164,184,0.24);
+      background: rgba(255,255,255,0.96);
+      padding: 0.85rem 0.95rem;
+      color: var(--wc-text);
+      outline: none;
+    }
+
+    .vip-bet-result {
+      padding: 0.85rem 0.9rem;
+      border-radius: 14px;
+      background: rgba(16,36,63,0.04);
+      color: var(--wc-muted);
+      line-height: 1.9;
+      font-size: 0.82rem;
+    }
+
+    .vip-side-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .vip-side-item {
+      padding: 0.9rem;
+      border-radius: 14px;
+      border: 1px solid rgba(145,164,184,0.16);
+      background: rgba(255,255,255,0.78);
+    }
+
+    .vip-side-item strong,
+    .vip-side-item small {
+      display: block;
+    }
+
+    .vip-side-item strong {
+      color: var(--wc-navy);
+      line-height: 1.8;
+    }
+
+    .vip-side-item small {
+      color: var(--wc-muted);
+      line-height: 1.9;
+      font-size: 0.76rem;
+    }
+
+    @media (max-width: 980px) {
+      .vip-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .vip-bet-form,
+      .vip-exact-grid,
+      .vip-team-row {
+        grid-template-columns: 1fr;
+      }
+
+      .vip-vs {
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="wc-page-hero" id="vipHero" style="display:none">
+    <div class="wc-page wc-page-hero-inner">
+      <div class="wc-page-hero-copy">
+        <div class="wc-chip-row">
+          <span class="wc-chip">دسترسی ویژه VIP</span>
+          <span class="wc-chip">اعتبار اولیه ۵۰۰۰۰۰ تومان</span>
+        </div>
+        <h1>میز شرطبندی VIP</h1>
+        <p id="vipHeroText">در حال آماده‌سازی اعتبار و بازی‌های ویژه...</p>
+        <div class="wc-hero-stats" id="vipHeroStats"></div>
+      </div>
+      <div class="wc-hero-brand">
+        <img alt="VIP" id="vipHeroLogo" class="wc-deferred-media">
+      </div>
+    </div>
+  </header>
+
+  <main class="wc-page">
+    <div id="authWall" class="wc-glass-panel wc-empty" style="margin-top:calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1.25rem);display:none">
+      برای ورود به میز شرطبندی ابتدا وارد حساب کاربری شوید.
+      <div style="margin-top:1rem"><button class="wc-button" type="button" onclick="WC.openLogin(loadVipPage)">ورود / ثبت‌نام</button></div>
+    </div>
+
+    <div id="vipForbidden" class="wc-glass-panel wc-empty" style="margin-top:calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1.25rem);display:none">
+      این بخش فقط برای کاربران VIP فعال است.
+      <div style="margin-top:1rem"><a class="wc-button" href="/profile">بازگشت به حساب کاربری</a></div>
+    </div>
+
+    <div id="vipLayout" class="vip-layout" style="display:none">
+      <section class="vip-main">
+        <div class="wc-glass-panel vip-card">
+          <div class="wc-section-title">
+            <h2>بازی‌های فعال VIP</h2>
+            <span class="wc-badge info" id="vipMatchesBadge">۰ بازی</span>
+          </div>
+          <div id="vipMatchesRoot" class="vip-grid"></div>
+        </div>
+      </section>
+
+      <aside class="vip-side">
+        <div class="wc-glass-panel vip-card">
+          <div class="wc-section-title"><h3>خلاصه اعتبار</h3></div>
+          <div id="vipWalletRoot" class="vip-side-list"></div>
+        </div>
+        <div class="wc-glass-panel vip-card">
+          <div class="wc-section-title"><h3>شرط‌های من</h3></div>
+          <div id="vipMyBetsRoot" class="vip-side-list"></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/assets/shared.js"></script>
+  <script>
+    WC.init({ activePage: 'vip' });
+
+    let currentUser = null;
+    let vipMember = null;
+    let vipBankBalance = 0;
+    let vipMatches = [];
+    let selectedOutcomes = {};
+
+    function toFaDigits(value) {
+      return String(value).replace(/\d/g, function (digit) {
+        return '۰۱۲۳۴۵۶۷۸۹'[digit];
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatMoney(value) {
+      return toFaDigits(Number(value || 0).toLocaleString('en-US')) + ' تومان';
+    }
+
+    function parseTehranDate(value) {
+      if (value instanceof Date) return value;
+      if (value && typeof value === 'object') {
+        if (typeof value.match_timestamp === 'number' && value.match_timestamp > 0) {
+          return new Date(value.match_timestamp * 1000);
+        }
+        if (typeof value.match_datetime === 'string') {
+          value = value.match_datetime;
+        } else if (typeof value.created_at === 'string') {
+          value = value.created_at;
+        }
+      }
+      const normalized = String(value || '').trim().replace('T', ' ');
+      const parts = normalized.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})(?::(\d{2}))?$/);
+      if (parts) {
+        const utcMs = Date.UTC(
+          Number(parts[1]),
+          Number(parts[2]) - 1,
+          Number(parts[3]),
+          Number(parts[4]),
+          Number(parts[5]),
+          Number(parts[6] || 0)
+        ) - (3.5 * 60 * 60 * 1000);
+        return new Date(utcMs);
+      }
+      return new Date(normalized);
+    }
+
+    function formatDateTime(dateValue) {
+      const date = parseTehranDate(dateValue);
+      return date.toLocaleString('fa-IR', {
+        timeZone: 'Asia/Tehran',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function statusBadge(match) {
+      if (match.settled_at) return '<span class="wc-badge success">تسویه شده</span>';
+      if (match.status === 'finished') return '<span class="wc-badge warning">آماده تسویه</span>';
+      if (match.status === 'live') return '<span class="wc-badge warning">زنده</span>';
+      return '<span class="wc-badge info">آینده</span>';
+    }
+
+    function buildHero(user, vip, matches) {
+      document.getElementById('vipHero').style.display = 'block';
+      WC.setDeferredImage('vipHeroLogo', WC.getSettings().logo_url || '/assets/worldcup.jpeg');
+      document.getElementById('vipHeroText').textContent = (user.name || 'کاربر VIP') + '، اعتبار فعلی شما برای شرط‌بندی روی بازی‌های ویژه از این بخش مدیریت می‌شود.';
+      const openCount = matches.filter(function (match) { return match.is_betting_open; }).length;
+      const myBets = matches.filter(function (match) { return !!match.user_bet; }).length;
+      document.getElementById('vipHeroStats').innerHTML = [
+        ['اعتبار فعلی', formatMoney(vip.current_balance || 0)],
+        ['بانک جاری', formatMoney(vipBankBalance || 0)],
+        ['کل بازی‌های VIP', toFaDigits(matches.length)],
+        ['باز برای شرط', toFaDigits(openCount)],
+        ['شرط‌های ثبت‌شده شما', toFaDigits(myBets)]
+      ].map(function (item) {
+        return '<div class="wc-hero-stat"><strong>' + item[1] + '</strong><span>' + item[0] + '</span></div>';
+      }).join('');
+    }
+
+    function renderWallet() {
+      document.getElementById('vipWalletRoot').innerHTML = [
+        ['اعتبار فعلی', formatMoney(vipMember.current_balance || 0)],
+        ['اعتبار اولیه', formatMoney(vipMember.initial_balance || 0)],
+        ['بانک فعلی VIP', formatMoney(vipBankBalance || 0)],
+        ['وضعیت عضویت', 'VIP فعال'],
+      ].map(function (item) {
+        return '<div class="vip-side-item"><strong>' + item[1] + '</strong><small>' + item[0] + '</small></div>';
+      }).join('') + '<a class="wc-button secondary" href="/profile">بازگشت به حساب کاربری</a>';
+    }
+
+    function renderMyBets() {
+      const mine = vipMatches.filter(function (match) { return !!match.user_bet; });
+      document.getElementById('vipMyBetsRoot').innerHTML = mine.length ? mine.map(function (match) {
+        const bet = match.user_bet;
+        const outcomeLabel = match.option_labels[bet.outcome] || bet.outcome;
+        let resultText = 'در انتظار نتیجه';
+        if (bet.result_status === 'won') {
+          resultText = 'برده‌اید • ' + formatMoney(bet.payout_amount || 0);
+        } else if (bet.result_status === 'lost') {
+          resultText = 'این شرط بازنده شده است';
+        }
+        if (Number(bet.jackpot_payout || 0) > 0) {
+          resultText += ' • سهم شما از بانک: ' + formatMoney(bet.jackpot_payout || 0);
+        }
+        return (
+          '<div class="vip-side-item">' +
+            '<strong>' + escapeHtml(match.team1 + ' - ' + match.team2) + '</strong>' +
+            '<small>انتخاب شما: ' + escapeHtml(outcomeLabel) + '</small>' +
+            '<small>نتیجه دقیق شما: ' + toFaDigits(bet.exact_score_team1 != null ? bet.exact_score_team1 : 0) + ' - ' + toFaDigits(bet.exact_score_team2 != null ? bet.exact_score_team2 : 0) + '</small>' +
+            '<small>مبلغ: ' + formatMoney(bet.amount || 0) + '</small>' +
+            (match.is_betting_open ? '<small>تا قبل از شروع بازی می‌توانید این شرط را ویرایش کنید.</small>' : '') +
+            '<small>' + escapeHtml(resultText) + '</small>' +
+          '</div>'
+        );
+      }).join('') : '<div class="wc-empty">هنوز شرطی ثبت نکرده‌اید.</div>';
+    }
+
+    function renderMatches() {
+      document.getElementById('vipMatchesBadge').textContent = toFaDigits(vipMatches.length) + ' بازی';
+      const root = document.getElementById('vipMatchesRoot');
+      if (!vipMatches.length) {
+        root.innerHTML = '<div class="wc-empty">فعلا بازی VIP فعالی ثبت نشده است.</div>';
+        return;
+      }
+
+      root.innerHTML = vipMatches.map(function (match) {
+        const userBet = match.user_bet;
+        const selected = selectedOutcomes[match.id] || (userBet ? userBet.outcome : '');
+        const optionHtml = ['team1', 'draw', 'team2'].map(function (option) {
+          const stats = match.estimates[option] || { share_percent: 0, multiplier: 0 };
+          const total = (match.pools && match.pools[option]) || 0;
+          return (
+            '<button class="vip-option ' + (selected === option ? 'active' : '') + '" type="button" data-match-option="' + match.id + ':' + option + '" ' + (!match.is_betting_open ? 'disabled' : '') + '>' +
+              '<strong>' + escapeHtml(match.option_labels[option] || option) + '</strong>' +
+              '<small>استخر این گزینه: ' + formatMoney(total) + '</small>' +
+              '<small>سهم: ' + toFaDigits(stats.share_percent || 0) + '٪ • ضریب تقریبی: ' + (stats.multiplier ? (toFaDigits(stats.multiplier) + ' به ۱') : '—') + '</small>' +
+            '</button>'
+          );
+        }).join('');
+
+        const existingSummary = userBet
+          ? '<div class="vip-bet-result">شرط فعلی شما: <strong style="color:var(--wc-navy)">' + escapeHtml(match.option_labels[userBet.outcome] || userBet.outcome) + '</strong> • مبلغ: <strong style="color:var(--wc-navy)">' + formatMoney(userBet.amount || 0) + '</strong> • نتیجه دقیق: <strong style="color:var(--wc-navy)">' + toFaDigits(userBet.exact_score_team1 != null ? userBet.exact_score_team1 : 0) + ' - ' + toFaDigits(userBet.exact_score_team2 != null ? userBet.exact_score_team2 : 0) + '</strong>' + (userBet.result_status === 'won' ? ' • برد شما: <strong style="color:var(--wc-green)">' + formatMoney(userBet.payout_amount || 0) + '</strong>' : (userBet.result_status === 'lost' ? ' • این شرط بازنده شده است.' : '')) + (Number(userBet.jackpot_payout || 0) > 0 ? ' • سهم شما از بانک: <strong style="color:var(--wc-gold)">' + formatMoney(userBet.jackpot_payout || 0) + '</strong>' : '') + '</div>'
+          : '';
+        const resultText = match.is_betting_open
+          ? (
+            existingSummary +
+            '<div class="vip-bet-form"><input id="vipAmount-' + match.id + '" type="number" min="1" step="1" placeholder="مبلغ شرط به تومان" value="' + escapeHtml(userBet ? userBet.amount : '') + '"><button class="wc-button" type="button" onclick="placeBet(' + match.id + ')">' + (userBet ? 'ویرایش شرط' : 'ثبت شرط') + '</button></div><div class="vip-exact-grid"><input id="vipExactScore1-' + match.id + '" type="number" min="0" max="20" step="1" placeholder="' + escapeHtml(match.team1) + '" value="' + escapeHtml(userBet && userBet.exact_score_team1 != null ? userBet.exact_score_team1 : '') + '"><input id="vipExactScore2-' + match.id + '" type="number" min="0" max="20" step="1" placeholder="' + escapeHtml(match.team2) + '" value="' + escapeHtml(userBet && userBet.exact_score_team2 != null ? userBet.exact_score_team2 : '') + '"></div><div class="vip-bet-result">۱۰٪ هر شرط وارد بانک VIP می‌شود. اگر چند نفر نتیجه دقیق را درست بزنند، بانک بین آن‌ها تقسیم می‌شود.' + (userBet ? ' می‌توانید تا قبل از شروع بازی این شرط را تغییر دهید.' : '') + '</div>'
+          )
+          : (existingSummary || '<div class="vip-bet-result">برای این بازی شرط‌بندی باز نیست.</div>');
+
+        return (
+          '<article class="vip-match-card">' +
+            '<div class="vip-card-head">' +
+              '<span class="wc-badge info">' + escapeHtml(match.group_name || match.stage || 'vip') + '</span>' +
+              statusBadge(match) +
+            '</div>' +
+            '<div class="vip-team-row">' +
+              '<div class="vip-team"><span>' + (match.team1_flag || '🏳️') + '</span><strong>' + escapeHtml(match.team1) + '</strong></div>' +
+              '<div class="vip-vs">' + (match.status === 'finished' && match.score_team1 != null && match.score_team2 != null ? (toFaDigits(match.score_team1) + ' - ' + toFaDigits(match.score_team2)) : 'VS') + '</div>' +
+              '<div class="vip-team"><span>' + (match.team2_flag || '🏳️') + '</span><strong>' + escapeHtml(match.team2) + '</strong></div>' +
+            '</div>' +
+            '<div class="vip-card-meta">' +
+              '<span class="wc-chip">' + formatDateTime(match.match_datetime) + '</span>' +
+              '<span class="wc-chip">استخر کل: ' + formatMoney(match.pool_total || 0) + '</span>' +
+              '<span class="wc-chip">استخر قابل تقسیم: ' + formatMoney(match.net_pool_total || 0) + '</span>' +
+            '</div>' +
+            '<div class="vip-options">' + optionHtml + '</div>' +
+            resultText +
+          '</article>'
+        );
+      }).join('');
+
+      root.querySelectorAll('[data-match-option]').forEach(function (button) {
+        button.addEventListener('click', function () {
+          const parts = this.getAttribute('data-match-option').split(':');
+          selectedOutcomes[parts[0]] = parts[1];
+          renderMatches();
+        });
+      });
+    }
+
+    async function placeBet(matchId) {
+      const outcome = selectedOutcomes[String(matchId)] || selectedOutcomes[matchId];
+      const amountInput = document.getElementById('vipAmount-' + matchId);
+      const amount = parseInt((amountInput && amountInput.value) || '0', 10) || 0;
+      const exactScore1Input = document.getElementById('vipExactScore1-' + matchId);
+      const exactScore2Input = document.getElementById('vipExactScore2-' + matchId);
+      const exactScoreTeam1 = parseInt((exactScore1Input && exactScore1Input.value) || '', 10);
+      const exactScoreTeam2 = parseInt((exactScore2Input && exactScore2Input.value) || '', 10);
+      if (!outcome) {
+        WC.toast('اول نتیجه مدنظر را انتخاب کنید.', 'err');
+        return;
+      }
+      if (amount <= 0) {
+        WC.toast('مبلغ شرط را وارد کنید.', 'err');
+        return;
+      }
+      if (Number.isNaN(exactScoreTeam1) || Number.isNaN(exactScoreTeam2)) {
+        WC.toast('نتیجه دقیق را هم وارد کنید.', 'err');
+        return;
+      }
+      const response = await WC.apiFetch('vip_place_bet', { match_id: matchId, outcome: outcome, amount: amount, exact_score_team1: exactScoreTeam1, exact_score_team2: exactScoreTeam2 }, 'POST');
+      if (!response.success) {
+        WC.toast(response.error || 'ثبت شرط انجام نشد.', 'err');
+        return;
+      }
+      WC.toast(response.mode === 'updated' ? 'شرط شما ویرایش شد.' : 'شرط شما ثبت شد.');
+      await loadVipPage();
+    }
+
+    async function loadVipPage() {
+      const meRes = await WC.apiFetch('me');
+      if (!meRes.success || !meRes.user || meRes.user.role === 'admin') {
+        document.getElementById('authWall').style.display = 'block';
+        document.getElementById('vipForbidden').style.display = 'none';
+        document.getElementById('vipLayout').style.display = 'none';
+        document.getElementById('vipHero').style.display = 'none';
+        return;
+      }
+
+      const overview = await WC.apiFetch('vip_overview');
+      if (!overview.success) {
+        document.getElementById('authWall').style.display = 'none';
+        document.getElementById('vipForbidden').style.display = 'block';
+        document.getElementById('vipLayout').style.display = 'none';
+        document.getElementById('vipHero').style.display = 'none';
+        return;
+      }
+
+      currentUser = overview.user || null;
+      vipMember = overview.vip || null;
+      vipBankBalance = Number(overview.vip_bank_balance || 0);
+      vipMatches = overview.matches || [];
+      selectedOutcomes = {};
+      vipMatches.forEach(function (match) {
+        if (match.user_bet && match.user_bet.outcome) {
+          selectedOutcomes[match.id] = match.user_bet.outcome;
+        }
+      });
+      document.getElementById('authWall').style.display = 'none';
+      document.getElementById('vipForbidden').style.display = 'none';
+      document.getElementById('vipLayout').style.display = 'grid';
+      buildHero(currentUser, vipMember, vipMatches);
+      renderWallet();
+      renderMatches();
+      renderMyBets();
+    }
+
+    window._wcOnAuth = function (user) {
+      if (user && user.role !== 'admin') {
+        loadVipPage();
+      } else {
+        document.getElementById('authWall').style.display = 'block';
+        document.getElementById('vipForbidden').style.display = 'none';
+        document.getElementById('vipLayout').style.display = 'none';
+      }
+    };
+
+    WC.refreshSettings().then(loadVipPage);
+  </script>
+</body>
+</html>

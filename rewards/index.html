@@ -94,8 +94,9 @@
 
     .rewards-podium {
       display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.95rem;
+      align-items: stretch;
     }
 
     .reward-tier-card {
@@ -108,23 +109,35 @@
       background: rgba(255,255,255,0.88);
       box-shadow: 0 18px 42px rgba(16,36,63,0.08);
       min-width: 0;
+      height: 100%;
     }
 
     .reward-tier-card.rank-1 {
-      grid-column: span 6;
-      background: linear-gradient(135deg, rgba(16,36,63,0.98), rgba(35,58,89,0.92));
-      border-color: rgba(255,255,255,0.08);
-      color: #fff;
+      background: linear-gradient(180deg, rgba(255,247,214,0.96), rgba(255,255,255,0.94));
+      border-color: rgba(201,150,38,0.24);
     }
 
     .reward-tier-card.rank-2,
     .reward-tier-card.rank-3 {
-      grid-column: span 3;
+      background: linear-gradient(180deg, rgba(248,250,252,0.96), rgba(255,255,255,0.92));
     }
 
     .reward-tier-card.rank-4,
     .reward-tier-card.rank-5 {
-      grid-column: span 6;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.9));
+    }
+
+    .reward-tier-card.rank-2 {
+      border-color: rgba(145,164,184,0.26);
+    }
+
+    .reward-tier-card.rank-3 {
+      border-color: rgba(183,127,78,0.24);
+    }
+
+    .reward-tier-card.rank-4,
+    .reward-tier-card.rank-5 {
+      border-color: rgba(145,164,184,0.18);
     }
 
     .reward-tier-media {
@@ -132,15 +145,11 @@
       padding: 0.95rem 0.95rem 0;
     }
 
-    .reward-tier-card.rank-1 .reward-tier-media {
-      padding: 1.1rem 1.1rem 0;
-    }
-
     .reward-tier-media img {
       width: 100%;
       aspect-ratio: 1 / 1;
       object-fit: contain;
-      border-radius: 14px;
+      border-radius: 12px;
       display: block;
       background: rgba(16,36,63,0.05);
     }
@@ -171,22 +180,12 @@
       box-shadow: 0 12px 22px rgba(16,36,63,0.12);
     }
 
-    .reward-tier-card.rank-1 .reward-tier-discount {
-      background: rgba(255,255,255,0.16);
-      color: #fff;
-      box-shadow: none;
-    }
-
     .reward-tier-body {
       display: flex;
       flex-direction: column;
       gap: 0.78rem;
       padding: 1rem;
       flex: 1;
-    }
-
-    .reward-tier-card.rank-1 .reward-tier-body {
-      padding: 1.1rem;
     }
 
     .reward-tier-kicker,
@@ -201,19 +200,10 @@
       font-weight: 900;
     }
 
-    .reward-tier-card.rank-1 .reward-tier-kicker {
-      color: #f6d37c;
-    }
-
     .reward-tier-title {
       color: var(--wc-navy);
       font-size: 1.1rem;
       line-height: 1.8;
-    }
-
-    .reward-tier-card.rank-1 .reward-tier-title {
-      color: #fff;
-      font-size: 1.28rem;
     }
 
     .reward-tier-desc {
@@ -221,10 +211,6 @@
       font-size: 0.84rem;
       line-height: 1.95;
       min-height: 3.8em;
-    }
-
-    .reward-tier-card.rank-1 .reward-tier-desc {
-      color: rgba(255,255,255,0.75);
     }
 
     .reward-meta {
@@ -244,11 +230,6 @@
       color: var(--wc-navy);
       font-size: 0.78rem;
       font-weight: 800;
-    }
-
-    .reward-tier-card.rank-1 .reward-meta-item {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
     }
 
     .reward-actions {
@@ -273,24 +254,15 @@
       letter-spacing: 0.08em;
     }
 
-    .reward-tier-card.rank-1 .reward-inline-code {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-    }
-
     .reward-claimed-at {
       color: var(--wc-muted);
       font-size: 0.76rem;
       line-height: 1.8;
     }
 
-    .reward-tier-card.rank-1 .reward-claimed-at {
-      color: rgba(255,255,255,0.72);
-    }
-
     .rewards-wallet {
       position: sticky;
-      top: calc(var(--wc-nav-h) + 1rem);
+      top: calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1rem);
     }
 
     .rewards-wallet-head h2,
@@ -387,6 +359,7 @@
       background: rgba(255,255,255,0.9);
       border: 1px solid rgba(145,164,184,0.18);
       box-shadow: 0 18px 42px rgba(16,36,63,0.08);
+      height: 100%;
     }
 
     .reward-grid-media {
@@ -548,6 +521,12 @@
 
       .rewards-wallet {
         position: static;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .rewards-podium {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
@@ -851,7 +830,7 @@
       if (!enough) {
         return (
           '<div class="reward-actions">' +
-            '<span class="wc-badge danger">امتیاز شما کم است</span>' +
+            (productUrl ? '<a class="wc-button" href="' + productUrl + '" target="_blank" rel="noopener">خرید محصول</a>' : '<span class="wc-badge danger">امتیاز شما کم است</span>') +
             '<a class="wc-button secondary" href="/">پیش‌بینی بیشتر</a>' +
           '</div>'
         );

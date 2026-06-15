@@ -11,6 +11,7 @@ $user->execute([':id' => $userId]);
 $u = $user->fetch(PDO::FETCH_ASSOC);
 if (!$u) { hmn_json_response(['success' => false, 'error' => 'کاربر یافت نشد']); }
 $u['available_points'] = wc_get_available_points($u);
+$u = wc_attach_vip_to_user($pdo, $u);
 
 // Stats
 $stats = $pdo->prepare(
@@ -69,6 +70,7 @@ foreach ($allPreds as $row) {
 hmn_json_response([
     'success' => true,
     'user' => $u,
+    'vip' => $u['vip'] ?? null,
     'stats' => $st,
     'matches' => array_values($byMatch),
 ]);

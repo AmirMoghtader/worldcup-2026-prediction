@@ -28,12 +28,16 @@ function wc_default_settings_row(): array
         'rewards_hero_banner_mobile_url' => '',
         'rewards_hero_banner_height_desktop' => 220,
         'rewards_hero_banner_height_mobile' => 168,
+        'top_strip_banner_url' => '',
+        'top_strip_banner_link_url' => '',
+        'top_strip_banner_mobile_url' => '',
         'home_sidebar_banner_url' => '',
         'home_sidebar_banner_link_url' => '',
         'home_reward_slider_limit' => 3,
         'welcome_popup_image_url' => '',
         'welcome_popup_button_label' => 'شروع پیشبینی',
         'welcome_popup_button_url' => '/',
+        'vip_bank_balance' => 0,
         'live_scores_enabled' => 0,
         'live_scores_provider' => 'varzesh3_html',
         'live_scores_feed_url' => '',
@@ -223,6 +227,9 @@ function wc_ensure_tables(PDO $pdo): void
         rewards_hero_banner_mobile_url VARCHAR(500) DEFAULT '',
         rewards_hero_banner_height_desktop INT NOT NULL DEFAULT 220,
         rewards_hero_banner_height_mobile INT NOT NULL DEFAULT 168,
+        top_strip_banner_url VARCHAR(500) DEFAULT '',
+        top_strip_banner_link_url VARCHAR(500) DEFAULT '',
+        top_strip_banner_mobile_url VARCHAR(500) DEFAULT '',
         home_sidebar_banner_url VARCHAR(500) DEFAULT '',
         home_sidebar_banner_link_url VARCHAR(500) DEFAULT '',
         home_reward_slider_limit INT NOT NULL DEFAULT 3,
@@ -286,6 +293,61 @@ function wc_ensure_tables(PDO $pdo): void
         last_fail_at DATETIME NULL DEFAULT NULL,
         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE IF NOT EXISTS {$px}vip_members (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        phone VARCHAR(20) NOT NULL UNIQUE,
+        user_id INT UNSIGNED NULL DEFAULT NULL,
+        current_balance BIGINT NOT NULL DEFAULT 500000,
+        initial_balance BIGINT NOT NULL DEFAULT 500000,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX idx_user (user_id),
+        INDEX idx_active (is_active)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE IF NOT EXISTS {$px}vip_matches (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        source_match_id INT UNSIGNED NULL DEFAULT NULL,
+        team1 VARCHAR(100) NOT NULL DEFAULT 'تیم اول',
+        team2 VARCHAR(100) NOT NULL DEFAULT 'تیم دوم',
+        team1_flag VARCHAR(10) DEFAULT '',
+        team2_flag VARCHAR(10) DEFAULT '',
+        group_name VARCHAR(20) DEFAULT '',
+        stage VARCHAR(20) DEFAULT 'vip',
+        match_datetime DATETIME NOT NULL,
+        venue VARCHAR(200) DEFAULT '',
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        status VARCHAR(20) NOT NULL DEFAULT 'upcoming',
+        score_team1 SMALLINT UNSIGNED NULL DEFAULT NULL,
+        score_team2 SMALLINT UNSIGNED NULL DEFAULT NULL,
+        result_option VARCHAR(20) DEFAULT '',
+        settled_at DATETIME NULL DEFAULT NULL,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_datetime (match_datetime),
+        INDEX idx_source_match (source_match_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+    CREATE TABLE IF NOT EXISTS {$px}vip_bets (
+        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        vip_member_id INT UNSIGNED NOT NULL,
+        user_id INT UNSIGNED NOT NULL,
+        vip_match_id INT UNSIGNED NOT NULL,
+        outcome VARCHAR(20) NOT NULL,
+        amount BIGINT NOT NULL DEFAULT 0,
+        payout_amount BIGINT NOT NULL DEFAULT 0,
+        jackpot_payout BIGINT NOT NULL DEFAULT 0,
+        exact_score_team1 SMALLINT UNSIGNED NULL DEFAULT NULL,
+        exact_score_team2 SMALLINT UNSIGNED NULL DEFAULT NULL,
+        exact_score_hit TINYINT(1) NOT NULL DEFAULT 0,
+        result_status VARCHAR(20) NOT NULL DEFAULT 'open',
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        settled_at DATETIME NULL DEFAULT NULL,
+        UNIQUE KEY uq_user_match (user_id, vip_match_id),
+        INDEX idx_vip_match (vip_match_id),
+        INDEX idx_vip_member (vip_member_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ";
 
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $query) {
@@ -322,12 +384,16 @@ function wc_ensure_tables(PDO $pdo): void
     wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_mobile_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_height_desktop', 'INT NOT NULL DEFAULT 220');
     wc_ensure_column($pdo, $settingsTable, 'rewards_hero_banner_height_mobile', 'INT NOT NULL DEFAULT 168');
+    wc_ensure_column($pdo, $settingsTable, 'top_strip_banner_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'top_strip_banner_link_url', "VARCHAR(500) DEFAULT ''");
+    wc_ensure_column($pdo, $settingsTable, 'top_strip_banner_mobile_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'home_sidebar_banner_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'home_sidebar_banner_link_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'home_reward_slider_limit', 'INT NOT NULL DEFAULT 3');
     wc_ensure_column($pdo, $settingsTable, 'welcome_popup_image_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, $settingsTable, 'welcome_popup_button_label', "VARCHAR(120) DEFAULT 'شروع پیشبینی'");
     wc_ensure_column($pdo, $settingsTable, 'welcome_popup_button_url', "VARCHAR(500) DEFAULT '/'");
+    wc_ensure_column($pdo, $settingsTable, 'vip_bank_balance', 'BIGINT NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, $settingsTable, 'live_scores_enabled', 'TINYINT(1) NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, $settingsTable, 'live_scores_provider', "VARCHAR(40) NOT NULL DEFAULT 'varzesh3_html'");
     wc_ensure_column($pdo, $settingsTable, 'live_scores_feed_url', "VARCHAR(500) DEFAULT ''");
@@ -342,14 +408,30 @@ function wc_ensure_tables(PDO $pdo): void
     wc_ensure_column($pdo, $usersTable, 'redeemed_points', 'INT NOT NULL DEFAULT 0');
     wc_ensure_column($pdo, hmn_table('rewards'), 'product_url', "VARCHAR(500) DEFAULT ''");
     wc_ensure_column($pdo, hmn_table('rewards'), 'discount_percent', 'SMALLINT UNSIGNED NOT NULL DEFAULT 0');
+    wc_ensure_column($pdo, hmn_table('vip_members'), 'user_id', 'INT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_members'), 'current_balance', 'BIGINT NOT NULL DEFAULT 500000');
+    wc_ensure_column($pdo, hmn_table('vip_members'), 'initial_balance', 'BIGINT NOT NULL DEFAULT 500000');
+    wc_ensure_column($pdo, hmn_table('vip_members'), 'is_active', 'TINYINT(1) NOT NULL DEFAULT 1');
+    wc_ensure_column($pdo, hmn_table('vip_matches'), 'source_match_id', 'INT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_matches'), 'score_team1', 'SMALLINT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_matches'), 'score_team2', 'SMALLINT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_matches'), 'result_option', "VARCHAR(20) DEFAULT ''");
+    wc_ensure_column($pdo, hmn_table('vip_matches'), 'settled_at', 'DATETIME NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'payout_amount', 'BIGINT NOT NULL DEFAULT 0');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'jackpot_payout', 'BIGINT NOT NULL DEFAULT 0');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'exact_score_team1', 'SMALLINT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'exact_score_team2', 'SMALLINT UNSIGNED NULL DEFAULT NULL');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'exact_score_hit', 'TINYINT(1) NOT NULL DEFAULT 0');
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'result_status', "VARCHAR(20) NOT NULL DEFAULT 'open'");
+    wc_ensure_column($pdo, hmn_table('vip_bets'), 'settled_at', 'DATETIME NULL DEFAULT NULL');
 
     $defaults = wc_default_settings_row();
     $existing = $pdo->query("SELECT * FROM {$settingsTable} WHERE id = 1 LIMIT 1")->fetch(PDO::FETCH_ASSOC);
     if (!$existing) {
         $pdo->prepare(
             "INSERT INTO {$settingsTable}
-            (id, site_name, brand_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, browser_icon_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, rewards_hero_banner_url, rewards_hero_banner_link_url, rewards_hero_banner_pure_mode, rewards_hero_banner_mobile_url, rewards_hero_banner_height_desktop, rewards_hero_banner_height_mobile, home_sidebar_banner_url, home_sidebar_banner_link_url, home_reward_slider_limit, welcome_popup_image_url, welcome_popup_button_label, welcome_popup_button_url, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
-            VALUES (1, :site_name, :brand_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :browser_icon_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :rewards_hero_banner_url, :rewards_hero_banner_link_url, :rewards_hero_banner_pure_mode, :rewards_hero_banner_mobile_url, :rewards_hero_banner_height_desktop, :rewards_hero_banner_height_mobile, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :home_reward_slider_limit, :welcome_popup_image_url, :welcome_popup_button_label, :welcome_popup_button_url, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
+            (id, site_name, brand_name, site_tagline, prediction_lock_minutes, prediction_window_hours, logo_url, browser_icon_url, nav_logo_url, auth_logo_url, footer_logo_url, admin_logo_url, hero_banner_url, hero_banner_link_url, hero_banner_pure_mode, hero_banner_mobile_url, hero_banner_height_desktop, hero_banner_height_mobile, rewards_hero_banner_url, rewards_hero_banner_link_url, rewards_hero_banner_pure_mode, rewards_hero_banner_mobile_url, rewards_hero_banner_height_desktop, rewards_hero_banner_height_mobile, top_strip_banner_url, top_strip_banner_link_url, top_strip_banner_mobile_url, home_sidebar_banner_url, home_sidebar_banner_link_url, home_reward_slider_limit, welcome_popup_image_url, welcome_popup_button_label, welcome_popup_button_url, vip_bank_balance, live_scores_enabled, live_scores_provider, live_scores_feed_url, live_scores_refresh_minutes, live_scores_last_sync_at, footer_note, footer_credit, schedule_seeded)
+            VALUES (1, :site_name, :brand_name, :site_tagline, :prediction_lock_minutes, :prediction_window_hours, :logo_url, :browser_icon_url, :nav_logo_url, :auth_logo_url, :footer_logo_url, :admin_logo_url, :hero_banner_url, :hero_banner_link_url, :hero_banner_pure_mode, :hero_banner_mobile_url, :hero_banner_height_desktop, :hero_banner_height_mobile, :rewards_hero_banner_url, :rewards_hero_banner_link_url, :rewards_hero_banner_pure_mode, :rewards_hero_banner_mobile_url, :rewards_hero_banner_height_desktop, :rewards_hero_banner_height_mobile, :top_strip_banner_url, :top_strip_banner_link_url, :top_strip_banner_mobile_url, :home_sidebar_banner_url, :home_sidebar_banner_link_url, :home_reward_slider_limit, :welcome_popup_image_url, :welcome_popup_button_label, :welcome_popup_button_url, :vip_bank_balance, :live_scores_enabled, :live_scores_provider, :live_scores_feed_url, :live_scores_refresh_minutes, :live_scores_last_sync_at, :footer_note, :footer_credit, :schedule_seeded)"
         )->execute($defaults);
     } else {
         $merged = array_merge($defaults, $existing);
@@ -377,12 +459,16 @@ function wc_ensure_tables(PDO $pdo): void
             'rewards_hero_banner_mobile_url' => $merged['rewards_hero_banner_mobile_url'],
             'rewards_hero_banner_height_desktop' => (int)$merged['rewards_hero_banner_height_desktop'],
             'rewards_hero_banner_height_mobile' => (int)$merged['rewards_hero_banner_height_mobile'],
+            'top_strip_banner_url' => $merged['top_strip_banner_url'],
+            'top_strip_banner_link_url' => $merged['top_strip_banner_link_url'],
+            'top_strip_banner_mobile_url' => $merged['top_strip_banner_mobile_url'],
             'home_sidebar_banner_url' => $merged['home_sidebar_banner_url'],
             'home_sidebar_banner_link_url' => $merged['home_sidebar_banner_link_url'],
             'home_reward_slider_limit' => (int)$merged['home_reward_slider_limit'],
             'welcome_popup_image_url' => $merged['welcome_popup_image_url'],
             'welcome_popup_button_label' => $merged['welcome_popup_button_label'],
             'welcome_popup_button_url' => $merged['welcome_popup_button_url'],
+            'vip_bank_balance' => (int)$merged['vip_bank_balance'],
             'live_scores_enabled' => (int)$merged['live_scores_enabled'],
             'live_scores_provider' => $merged['live_scores_provider'],
             'live_scores_feed_url' => $merged['live_scores_feed_url'],
@@ -417,12 +503,16 @@ function wc_ensure_tables(PDO $pdo): void
             rewards_hero_banner_mobile_url = :rewards_hero_banner_mobile_url,
             rewards_hero_banner_height_desktop = :rewards_hero_banner_height_desktop,
             rewards_hero_banner_height_mobile = :rewards_hero_banner_height_mobile,
+            top_strip_banner_url = :top_strip_banner_url,
+            top_strip_banner_link_url = :top_strip_banner_link_url,
+            top_strip_banner_mobile_url = :top_strip_banner_mobile_url,
             home_sidebar_banner_url = :home_sidebar_banner_url,
             home_sidebar_banner_link_url = :home_sidebar_banner_link_url,
             home_reward_slider_limit = :home_reward_slider_limit,
             welcome_popup_image_url = :welcome_popup_image_url,
             welcome_popup_button_label = :welcome_popup_button_label,
             welcome_popup_button_url = :welcome_popup_button_url,
+            vip_bank_balance = :vip_bank_balance,
             live_scores_enabled = :live_scores_enabled,
             live_scores_provider = :live_scores_provider,
             live_scores_feed_url = :live_scores_feed_url,
@@ -442,6 +532,251 @@ function wc_ensure_tables(PDO $pdo): void
 
     wc_seed_default_bets($pdo);
     $done = true;
+}
+
+function wc_vip_default_credit(): int
+{
+    return 500000;
+}
+
+function wc_vip_match_result_option(?int $score1, ?int $score2): string
+{
+    if ($score1 === null || $score2 === null) {
+        return '';
+    }
+    if ($score1 > $score2) {
+        return 'team1';
+    }
+    if ($score2 > $score1) {
+        return 'team2';
+    }
+    return 'draw';
+}
+
+function wc_get_user_vip(PDO $pdo, int $userId, ?string $phone = null): ?array
+{
+    if ($userId <= 0) {
+        return null;
+    }
+
+    $vipTable = hmn_table('vip_members');
+    $vip = null;
+
+    $byUser = $pdo->prepare("SELECT * FROM {$vipTable} WHERE user_id = :user_id LIMIT 1");
+    $byUser->execute([':user_id' => $userId]);
+    $vip = $byUser->fetch(PDO::FETCH_ASSOC) ?: null;
+
+    if (!$vip && $phone) {
+        $variants = hmn_phone_variants($phone);
+        $placeholders = implode(',', array_fill(0, count($variants), '?'));
+        $byPhone = $pdo->prepare("SELECT * FROM {$vipTable} WHERE phone IN ({$placeholders}) LIMIT 1");
+        $byPhone->execute($variants);
+        $vip = $byPhone->fetch(PDO::FETCH_ASSOC) ?: null;
+        if ($vip && (int)($vip['user_id'] ?? 0) !== $userId) {
+            $cleaned = hmn_normalize_phone($phone);
+            $pdo->prepare("UPDATE {$vipTable} SET user_id = :user_id, phone = :phone WHERE id = :id")
+                ->execute([
+                    ':user_id' => $userId,
+                    ':phone' => $cleaned,
+                    ':id' => $vip['id'],
+                ]);
+            $vip['user_id'] = $userId;
+            $vip['phone'] = $cleaned;
+        }
+    }
+
+    if (!$vip || (int)($vip['is_active'] ?? 0) !== 1) {
+        return null;
+    }
+
+    $vip['current_balance'] = (int)($vip['current_balance'] ?? wc_vip_default_credit());
+    $vip['initial_balance'] = (int)($vip['initial_balance'] ?? wc_vip_default_credit());
+    return $vip;
+}
+
+function wc_attach_vip_to_user(PDO $pdo, array $user): array
+{
+    if (empty($user['id'])) {
+        $user['is_vip'] = 0;
+        return $user;
+    }
+
+    $vip = wc_get_user_vip($pdo, (int)$user['id'], (string)($user['phone'] ?? ''));
+    $user['is_vip'] = $vip ? 1 : 0;
+    if ($vip) {
+        $user['vip'] = [
+            'id' => (int)$vip['id'],
+            'phone' => $vip['phone'],
+            'current_balance' => (int)$vip['current_balance'],
+            'initial_balance' => (int)$vip['initial_balance'],
+            'is_active' => (int)$vip['is_active'],
+        ];
+    }
+    return $user;
+}
+
+function wc_vip_match_row_for_display(array $row): array
+{
+    if (!empty($row['match_datetime'])) {
+        $row['match_datetime_raw'] = $row['match_datetime'];
+        $row['match_timestamp'] = wc_match_storage_timestamp((string)$row['match_datetime']);
+        $row['match_datetime'] = wc_match_display_datetime((string)$row['match_datetime']);
+    }
+    if (empty($row['result_option'])) {
+        $row['result_option'] = wc_vip_match_result_option(
+            isset($row['score_team1']) ? (int)$row['score_team1'] : null,
+            isset($row['score_team2']) ? (int)$row['score_team2'] : null
+        );
+    }
+    return $row;
+}
+
+function wc_settle_vip_match(PDO $pdo, int $vipMatchId): array
+{
+    $matchTable = hmn_table('vip_matches');
+    $betTable = hmn_table('vip_bets');
+    $memberTable = hmn_table('vip_members');
+    $settingsTable = hmn_table('settings');
+
+    $matchSt = $pdo->prepare("SELECT * FROM {$matchTable} WHERE id = :id LIMIT 1 FOR UPDATE");
+    $matchSt->execute([':id' => $vipMatchId]);
+    $match = $matchSt->fetch(PDO::FETCH_ASSOC);
+    if (!$match) {
+        throw new RuntimeException('بازی VIP پیدا نشد.');
+    }
+    if (!empty($match['settled_at'])) {
+        return ['already_settled' => true, 'winners' => 0, 'total_pool' => 0];
+    }
+
+    $resultOption = trim((string)($match['result_option'] ?? ''));
+    if ($resultOption === '') {
+        $resultOption = wc_vip_match_result_option(
+            isset($match['score_team1']) ? (int)$match['score_team1'] : null,
+            isset($match['score_team2']) ? (int)$match['score_team2'] : null
+        );
+    }
+    if (!in_array($resultOption, ['team1', 'draw', 'team2'], true)) {
+        throw new RuntimeException('برای این بازی نتیجه معتبر ثبت نشده است.');
+    }
+
+    $betsSt = $pdo->prepare("SELECT * FROM {$betTable} WHERE vip_match_id = :match_id ORDER BY id ASC FOR UPDATE");
+    $betsSt->execute([':match_id' => $vipMatchId]);
+    $bets = $betsSt->fetchAll(PDO::FETCH_ASSOC);
+
+    $totalPool = 0;
+    $outcomePool = 0;
+    $winnerPool = 0;
+    $bankContribution = 0;
+    foreach ($bets as $bet) {
+        $amount = (int)($bet['amount'] ?? 0);
+        $totalPool += $amount;
+        $cut = (int)floor($amount * 0.10);
+        $bankContribution += $cut;
+        $netAmount = $amount - $cut;
+        $outcomePool += $netAmount;
+        if (($bet['outcome'] ?? '') === $resultOption) {
+            $winnerPool += $amount;
+        }
+    }
+
+    $bankSt = $pdo->query("SELECT vip_bank_balance FROM {$settingsTable} WHERE id = 1 LIMIT 1 FOR UPDATE");
+    $bankBalance = (int)($bankSt->fetchColumn() ?: 0);
+    $bankBalance += $bankContribution;
+
+    $updateBet = $pdo->prepare(
+        "UPDATE {$betTable}
+         SET payout_amount = :payout_amount,
+             jackpot_payout = :jackpot_payout,
+             exact_score_hit = :exact_score_hit,
+             result_status = :result_status,
+             settled_at = NOW()
+         WHERE id = :id"
+    );
+    $creditMember = $pdo->prepare("UPDATE {$memberTable} SET current_balance = current_balance + :amount WHERE id = :id");
+
+    $exactWinners = [];
+    foreach ($bets as $bet) {
+        if (
+            $bet['exact_score_team1'] !== null &&
+            $bet['exact_score_team2'] !== null &&
+            (int)$bet['exact_score_team1'] === (int)$match['score_team1'] &&
+            (int)$bet['exact_score_team2'] === (int)$match['score_team2']
+        ) {
+            $exactWinners[] = (int)$bet['id'];
+        }
+    }
+
+    $exactWinnerCount = count($exactWinners);
+    $jackpotBaseShare = $exactWinnerCount > 0 ? (int)floor($bankBalance / $exactWinnerCount) : 0;
+    $jackpotRemainder = $exactWinnerCount > 0 ? ($bankBalance % $exactWinnerCount) : 0;
+    $jackpotByBetId = [];
+    if ($exactWinnerCount > 0) {
+        foreach ($exactWinners as $index => $betId) {
+            $jackpotByBetId[$betId] = $jackpotBaseShare + ($index < $jackpotRemainder ? 1 : 0);
+        }
+    }
+
+    $winnerCount = 0;
+    foreach ($bets as $bet) {
+        $amount = (int)($bet['amount'] ?? 0);
+        $isWinner = ($bet['outcome'] ?? '') === $resultOption;
+        $payout = ($isWinner && $winnerPool > 0)
+            ? (int)floor(($outcomePool * $amount) / $winnerPool)
+            : 0;
+        $betId = (int)$bet['id'];
+        $exactHit = isset($jackpotByBetId[$betId]);
+        $jackpotPayout = $exactHit ? (int)$jackpotByBetId[$betId] : 0;
+        $status = $isWinner ? 'won' : 'lost';
+        $updateBet->execute([
+            ':payout_amount' => $payout,
+            ':jackpot_payout' => $jackpotPayout,
+            ':exact_score_hit' => $exactHit ? 1 : 0,
+            ':result_status' => $status,
+            ':id' => $bet['id'],
+        ]);
+        if ($payout > 0) {
+            $creditMember->execute([
+                ':amount' => $payout,
+                ':id' => $bet['vip_member_id'],
+            ]);
+        }
+        if ($jackpotPayout > 0) {
+            $creditMember->execute([
+                ':amount' => $jackpotPayout,
+                ':id' => $bet['vip_member_id'],
+            ]);
+        }
+        if ($isWinner) {
+            $winnerCount++;
+        }
+    }
+
+    $bankBalance = count($exactWinners) > 0 ? 0 : $bankBalance;
+    $pdo->prepare("UPDATE {$settingsTable} SET vip_bank_balance = :balance WHERE id = 1")
+        ->execute([':balance' => $bankBalance]);
+
+    $pdo->prepare(
+        "UPDATE {$matchTable}
+         SET result_option = :result_option, status = 'finished', settled_at = NOW()
+         WHERE id = :id"
+    )->execute([
+        ':result_option' => $resultOption,
+        ':id' => $vipMatchId,
+    ]);
+
+    return [
+        'already_settled' => false,
+        'winners' => $winnerCount,
+        'winner_pool' => $winnerPool,
+        'total_pool' => $totalPool,
+        'outcome_pool' => $outcomePool,
+        'bank_contribution' => $bankContribution,
+        'exact_winners' => $exactWinnerCount,
+        'jackpot_paid_total' => $exactWinnerCount > 0 ? array_sum($jackpotByBetId) : 0,
+        'jackpot_paid_per_winner' => $jackpotBaseShare,
+        'vip_bank_balance' => $bankBalance,
+        'result_option' => $resultOption,
+    ];
 }
 
 function wc_seed_default_bets(PDO $pdo): void
@@ -507,6 +842,51 @@ function wc_seed_matches(PDO $pdo, bool $force = false): int
     $pdo->exec("UPDATE {$settingsTable} SET schedule_seeded = 1 WHERE id = 1");
 
     return count($rows);
+}
+
+function wc_official_schedule_2026(): array
+{
+    static $rows = null;
+    if ($rows === null) {
+        $rows = require __DIR__ . '/official_schedule_2026.php';
+    }
+    return $rows;
+}
+
+function wc_sync_official_schedule_2026(PDO $pdo): int
+{
+    $table = hmn_table('matches');
+    $rows = $pdo->query("SELECT id, team1, team2, stage, match_datetime FROM {$table}")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) {
+        return 0;
+    }
+
+    $officialByPair = [];
+    foreach (wc_official_schedule_2026() as $item) {
+        $key = wc_team_key((string)$item['team1']) . '|' . wc_team_key((string)$item['team2']);
+        $officialByPair[$key] = (string)$item['match_datetime'];
+        $officialByPair[wc_team_key((string)$item['team2']) . '|' . wc_team_key((string)$item['team1'])] = (string)$item['match_datetime'];
+    }
+
+    $updated = 0;
+    $updateSt = $pdo->prepare("UPDATE {$table} SET match_datetime = :match_datetime WHERE id = :id");
+    foreach ($rows as $row) {
+        if (($row['stage'] ?? 'group') !== 'group') {
+            continue;
+        }
+        $key = wc_team_key((string)$row['team1']) . '|' . wc_team_key((string)$row['team2']);
+        $official = $officialByPair[$key] ?? null;
+        if (!$official || $official === (string)$row['match_datetime']) {
+            continue;
+        }
+        $updateSt->execute([
+            ':match_datetime' => $official,
+            ':id' => (int)$row['id'],
+        ]);
+        $updated++;
+    }
+
+    return $updated;
 }
 
 function wc_sync_default_bets_to_match(PDO $pdo, int $matchId): array

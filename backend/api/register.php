@@ -50,5 +50,5 @@ $_SESSION['started_at'] = time();
 
 hmn_json_response([
     'success' => true,
-    'user'    => ['id' => $userId, 'name' => $userName, 'phone' => $cleaned],
+    'user'    => wc_attach_vip_to_user($pdo, ['id' => $userId, 'name' => $userName, 'phone' => $cleaned]),
 ]);

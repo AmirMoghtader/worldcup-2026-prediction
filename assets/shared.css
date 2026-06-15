@@ -41,6 +41,7 @@
   --wc-radius-sm: 12px;
   --wc-blur: blur(18px);
   --wc-nav-h: 82px;
+  --wc-top-strip-h: 0px;
 }
 
 * { box-sizing: border-box; }
@@ -89,7 +90,7 @@ button, input, select, textarea { font: inherit; }
 }
 
 .wc-page-hero {
-  margin: calc(var(--wc-nav-h) + 1.25rem) auto 1.5rem;
+  margin: calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 1.25rem) auto 1.5rem;
   padding: 1.4rem;
   border-radius: 24px;
   background:
@@ -357,11 +358,32 @@ button, input, select, textarea { font: inherit; }
 
 .wc-nav {
   position: fixed;
-  top: 0;
+  top: var(--wc-top-strip-h);
   right: 0;
   left: 0;
   z-index: 1000;
   padding: 1rem;
+}
+
+.wc-top-strip {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1002;
+  height: var(--wc-top-strip-h);
+  background: transparent;
+}
+
+.wc-top-strip-link,
+.wc-top-strip-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.wc-top-strip-image {
+  object-fit: cover;
 }
 
 .wc-nav-inner {
@@ -844,7 +866,7 @@ button, input, select, textarea { font: inherit; }
 @media (max-width: 760px) {
   :root { --wc-nav-h: 70px; }
   .wc-page { width: min(100%, calc(100% - 1rem)); }
-  .wc-page-hero { border-radius: 20px; margin-top: calc(var(--wc-nav-h) + 0.8rem); }
+  .wc-page-hero { border-radius: 20px; margin-top: calc(var(--wc-nav-h) + var(--wc-top-strip-h) + 0.8rem); }
   .wc-form-grid { grid-template-columns: 1fr; }
   .wc-nav {
     padding: 0.45rem;

@@ -26,6 +26,9 @@
     rewards_hero_banner_mobile_url: '',
     rewards_hero_banner_height_desktop: 220,
     rewards_hero_banner_height_mobile: 168,
+    top_strip_banner_url: '',
+    top_strip_banner_link_url: '',
+    top_strip_banner_mobile_url: '',
     home_sidebar_banner_url: '',
     home_sidebar_banner_link_url: '',
     home_reward_slider_limit: 3,
@@ -124,6 +127,36 @@
       }
       return chunk + '<a href="https://onwebs.ir" target="_blank" rel="noopener">ویرا وب آریا</a>';
     }).join('');
+  }
+
+  function ensureTopStrip() {
+    var existing = document.querySelector('.wc-top-strip');
+    if (!settingsReady()) {
+      document.documentElement.style.setProperty('--wc-top-strip-h', '0px');
+      if (existing) existing.remove();
+      return;
+    }
+    var settings = getSettings();
+    var banner = window.innerWidth <= 680 && settings.top_strip_banner_mobile_url
+      ? settings.top_strip_banner_mobile_url
+      : settings.top_strip_banner_url;
+    if (!banner) {
+      document.documentElement.style.setProperty('--wc-top-strip-h', '0px');
+      if (existing) existing.remove();
+      return;
+    }
+
+    var strip = existing;
+    if (!strip) {
+      strip = document.createElement('div');
+      strip.className = 'wc-top-strip';
+      document.body.insertBefore(strip, document.body.firstChild);
+    }
+    strip.innerHTML =
+      '<a class="wc-top-strip-link" href="' + escapeHtml(settings.top_strip_banner_link_url || banner) + '" target="_blank" rel="noopener">' +
+        '<img class="wc-top-strip-image" src="' + escapeHtml(banner) + '" alt="' + escapeHtml(displaySiteName()) + '">' +
+      '</a>';
+    document.documentElement.style.setProperty('--wc-top-strip-h', window.innerWidth <= 680 ? '46px' : '56px');
   }
 
   function ensureNav(cfg) {
@@ -297,6 +330,7 @@
   }
 
   function renderSettingsBoundElements() {
+    ensureTopStrip();
     ensureNav(window.__wcConfig || {});
     renderFooter();
     applySeo(window.__wcConfig || {});
@@ -340,6 +374,9 @@
     } else if (page === 'profile') {
       pageTitle = 'حساب کاربری | ' + base;
       pageDescription = 'حساب کاربری، امتیازها، تاریخچه پیش‌بینی‌ها و جوایز شما در ' + base + '.';
+    } else if (page === 'vip') {
+      pageTitle = 'میز شرطبندی VIP | ' + base;
+      pageDescription = 'میز شرطبندی ویژه کاربران VIP در ' + base + ' با اعتبار اختصاصی و بازی‌های انتخابی.';
     } else if (page === 'knockout') {
       pageTitle = 'مرحله حذفی | ' + base;
       pageDescription = 'نمودار مرحله حذفی و مسیر تیم‌ها در ' + base + '.';
@@ -463,7 +500,10 @@
       ensureModal();
       fetchSettings();
       fetchAuth();
-      window.addEventListener('resize', renderNavAuth);
+      window.addEventListener('resize', function () {
+        ensureTopStrip();
+        renderNavAuth();
+      });
     },
 
     openLogin: function (cb) {

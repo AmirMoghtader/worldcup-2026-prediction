@@ -120,6 +120,7 @@ if ((int)($bootSettings['schedule_seeded'] ?? 0) === 0) {
         wc_sync_default_bets_to_all_matches($pdo);
     }
 }
+wc_sync_official_schedule_2026($pdo);
 
 // ─── Route ────────────────────────────────────────────────────────────────────
 switch ($action) {
@@ -163,6 +164,12 @@ switch ($action) {
     case 'redeem_reward':
         hmn_require_user();
         require __DIR__ . '/api/redeem_reward.php'; break;
+    case 'vip_overview':
+        hmn_require_user();
+        require __DIR__ . '/api/vip_overview.php'; break;
+    case 'vip_place_bet':
+        hmn_require_user();
+        require __DIR__ . '/api/vip_place_bet.php'; break;
 
     // Admin auth
     case 'admin_login':
@@ -235,6 +242,9 @@ switch ($action) {
     case 'admin_rewards':
         hmn_require_admin();
         require __DIR__ . '/api/admin_rewards.php'; break;
+    case 'admin_vip':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_vip.php'; break;
     case 'admin_ads':
         hmn_require_admin();
         require __DIR__ . '/api/admin_ads.php'; break;
@@ -251,6 +261,25 @@ switch ($action) {
     case 'admin_delete_reward':
         hmn_require_admin();
         require __DIR__ . '/api/admin_delete_reward.php'; break;
+    case 'admin_save_vip_member':
+    case 'admin_add_vip_member':
+    case 'admin_update_vip_member':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_save_vip_member.php'; break;
+    case 'admin_delete_vip_member':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_delete_vip_member.php'; break;
+    case 'admin_save_vip_match':
+    case 'admin_add_vip_match':
+    case 'admin_update_vip_match':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_save_vip_match.php'; break;
+    case 'admin_delete_vip_match':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_delete_vip_match.php'; break;
+    case 'admin_settle_vip_match':
+        hmn_require_admin();
+        require __DIR__ . '/api/admin_settle_vip_match.php'; break;
     case 'admin_delete_ad':
         hmn_require_admin();
         require __DIR__ . '/api/admin_delete_ad.php'; break;
